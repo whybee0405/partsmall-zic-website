@@ -8,6 +8,7 @@ import { PRIMARY_CTA, SECONDARY_CTA } from '@/content/cta';
 import { Cta } from '@/components/ui';
 import Hero from '@/components/sections/Hero';
 import TheFive from '@/components/sections/TheFive';
+import SplashFrames, { type SplashApi } from '@/components/SplashFrames';
 
 /**
  * Sections 01-03: one becomes five.
@@ -53,6 +54,29 @@ const LINEUP = [
   { id: 'atf-multi', h: 18, arc: 34, rot: 5, z: 3, mh: 10, marc: 20 },
 ] as const;
 
+/**
+ * The stage headline size, shared by the hero and the range title so the three
+ * states cross-fade at one weight.
+ *
+ * The `min()` term is the point: sized on width alone, a 69px headline keeps
+ * its full height on a 720px-tall laptop and leaves the product 191px to live
+ * in. Height is the scarcer axis on a laptop, so it caps the type.
+ */
+const HEAD_SIZE = 'clamp(2rem, min(5.4vw, 7.6vh), 4.75rem)';
+
+/** Frames in /public/splash, sampled every third frame of the source footage. */
+const SPLASH_FRAMES = 39;
+
+/** Sequence position of the impact, used to land the canister's dip on it. */
+const SPLASH_IMPACT = 0.16;
+
+/**
+ * Height fraction of a splash frame at which the oil surface sits. The frames
+ * are aligned to the canister's foot on this line, so the product stands in
+ * the oil at every viewport instead of floating above it.
+ */
+const SPLASH_SURFACE = 0.67;
+
 const CENTRE_INDEX = 2;
 const MAX_H = 26; // vh, the centre pack, wide
 const MAX_H_COMPACT = 13.5; // vh, the centre pack, phone
@@ -72,6 +96,7 @@ export default function OpeningSequence() {
   const statement = useRef<HTMLDivElement>(null);
   const rangeHead = useRef<HTMLDivElement>(null);
   const splash = useRef<HTMLDivElement>(null);
+  const splashApi = useRef<SplashApi | null>(null);
   const row = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -115,8 +140,6 @@ export default function OpeningSequence() {
           offsets.set(el, cx - (r.left + r.width / 2));
         }
       };
-      measure();
-      ScrollTrigger.addEventListener('refreshInit', measure);
 
       // The rainbow. Applied to the pack inside each cell so the leader lines
       // and callouts stay on one straight line beneath the curve.
@@ -128,18 +151,86 @@ export default function OpeningSequence() {
         });
       });
 
-      // Travel is viewport-relative pixels, resolved at refresh.
-      const vh = () => window.innerHeight;
-      const restY = () => (compact ? vh() * 0.1 : vh() * 0.05);
-      const heroScale = compact ? 1.55 : 1.42;
-
       // --- Resting state: the centre pack alone, oversized -------------------
-      gsap.set(row.current, { scale: heroScale, y: restY, transformOrigin: '50% 78%' });
-      gsap.set(siblings, {
-        x: (i, el) => offsets.get(el as HTMLElement) ?? 0,
-        opacity: 0,
-        scale: 0.9,
-      });
+      // The hero type is positioned from the top of the stage and the line-up
+      // from the bottom, so a fixed hero scale only composes at one viewport
+      // height: 1.42 cleared the paragraph at 1080px and drove the canister
+      // 111px through it at 720px. The rest transform is therefore measured,
+      // not authored. The canister fills the band between the paragraph and the
+      // CTAs, up to a ceiling, and never enters either.
+      // Clearances scale with height: 34px reads as air at 1080 and as waste at
+      // 720, where every pixel belongs to the product.
+      const gapAbove = () => (compact ? 22 : gsap.utils.clamp(22, 40, innerHeight * 0.038));
+      const gapBelow = () => (compact ? 18 : gsap.utils.clamp(20, 34, innerHeight * 0.032));
+      const MAX_SCALE = compact ? 2 : 1.7;
+
+      let restScale = MAX_SCALE;
+      let restY = 0;
+
+      /** Rect with the element's own transform neutralised. */
+      const rawRect = (el: HTMLElement) => {
+        const prev = el.style.transform;
+        el.style.transform = 'none';
+        const r = el.getBoundingClientRect();
+        el.style.transform = prev;
+        return r;
+      };
+
+      const fitBand = () => {
+        const rowEl = row.current;
+        const type = heroType.current;
+        const foot = heroFoot.current;
+        const centre = packs[CENTRE_INDEX]?.querySelector('img');
+        if (!rowEl || !type || !foot || !centre) return;
+
+        const rowTop = rowEl.getBoundingClientRect().top;
+        const pack = centre.getBoundingClientRect();
+        const top = rawRect(type).bottom + gapAbove();
+        const bottom = rawRect(foot).top - gapBelow();
+
+        // Fill the band, then sit on its centre line rather than its floor: the
+        // hero is a portrait of one product, so it wants to be the optical
+        // centre of the stage, not something standing on the CTAs.
+        // Origin-independent: newY = O + s * (y - O) + ty.
+        // The floor is 0.92 rather than 1 so that a viewport short enough to
+        // beat the type concessions still yields air, never an intersection.
+        restScale = gsap.utils.clamp(0.92, MAX_SCALE, (bottom - top) / pack.height);
+        const bandMid = (top + bottom) / 2;
+        const packMid = (pack.top + pack.bottom) / 2;
+        restY = bandMid - rowTop - restScale * (packMid - rowTop);
+
+        // Put the oil surface under the canister's foot. Anchoring the splash
+        // to the stage floor instead leaves the product hovering above it on a
+        // phone, where the band centre and the floor are far apart.
+        const sp = splash.current;
+        if (!sp) return;
+        const packFoot = rowTop + restScale * (pack.bottom - rowTop) + restY;
+        const sr = rawRect(sp);
+        gsap.set(sp, {
+          y: packFoot - (sr.top + SPLASH_SURFACE * sr.height),
+          transformOrigin: `50% ${SPLASH_SURFACE * 100}%`,
+        });
+      };
+
+      /**
+       * Neutral first, then measure, then rest. Sibling offsets are applied in
+       * the row's local space but read in viewport space, so they are only
+       * correct when the row is unscaled at the moment of reading.
+       */
+      const layout = () => {
+        gsap.set(row.current, { scale: 1, y: 0, transformOrigin: '50% 0%' });
+        measure();
+        fitBand();
+        gsap.set(row.current, { scale: restScale, y: restY });
+        gsap.set(siblings, {
+          x: (i, el) => offsets.get(el as HTMLElement) ?? 0,
+          opacity: 0,
+          scale: 0.9,
+        });
+      };
+      layout();
+      ScrollTrigger.addEventListener('refreshInit', layout);
+
       gsap.set([statement.current, rangeHead.current], { opacity: 0, y: 26 });
       gsap.set(splash.current, { opacity: 0, scale: 0.72 });
       gsap.set(leaders, { scaleY: 0, transformOrigin: '50% 0%' });
@@ -152,6 +243,11 @@ export default function OpeningSequence() {
           end: 'bottom bottom',
           scrub: 0.6,
           invalidateOnRefresh: true,
+          // The frames are wanted a beat before they are shown, and never by
+          // someone who arrives and leaves without scrolling.
+          onUpdate: (self) => {
+            if (self.progress > 0.02) splashApi.current?.prime();
+          },
         },
         defaults: { ease: 'none' },
       });
@@ -165,10 +261,30 @@ export default function OpeningSequence() {
         .to(bg.current, { backgroundColor: CARBON, duration: 0.08 }, 0.17);
 
       // --- Act 2: the splash ------------------------------------------------
+      // The frame index is scrubbed on a proxy rather than a DOM property, so
+      // the canvas paints once per animation frame no matter how fast the
+      // scroll is. The impact wants to land under the canister, so the sequence
+      // runs slightly ahead of the container's own fade.
+      const shot = { t: 0 };
       tl.to(statement.current, { opacity: 1, y: 0, duration: 0.1 }, 0.24)
-        .to(splash.current, { opacity: 1, scale: 1.12, duration: 0.24 }, 0.28)
+        .to(splash.current, { opacity: 1, scale: 1.12, duration: 0.2 }, 0.26)
+        .to(
+          shot,
+          { t: 1, duration: 0.32, onUpdate: () => splashApi.current?.(shot.t) },
+          0.26,
+        )
         .to(statement.current, { opacity: 0, y: -28, duration: 0.09 }, 0.5)
         .to(splash.current, { opacity: 0.14, scale: 0.96, duration: 0.14 }, 0.54);
+
+      // The canister meets its own impact. Function values so the dip survives
+      // a resize, which rewrites restY underneath it.
+      const impact = 0.26 + SPLASH_IMPACT * 0.32;
+      const dip = () => window.innerHeight * 0.018;
+      tl.to(
+        row.current,
+        { y: () => restY + dip(), duration: impact - 0.265, ease: 'power2.in' },
+        0.265,
+      ).to(row.current, { y: () => restY, duration: 0.1, ease: 'power2.out' }, impact);
 
       // --- Act 3: one becomes five ------------------------------------------
       tl.to(rangeHead.current, { opacity: 1, y: 0, duration: 0.11 }, 0.56)
@@ -177,7 +293,7 @@ export default function OpeningSequence() {
         .to(leaders, { scaleY: 1, duration: 0.14, stagger: 0.03 }, 0.76)
         .to(callouts, { opacity: 1, y: 0, duration: 0.15, stagger: 0.03 }, 0.8);
 
-      return () => ScrollTrigger.removeEventListener('refreshInit', measure);
+      return () => ScrollTrigger.removeEventListener('refreshInit', layout);
     }, wrap);
 
     return () => ctx.revert();
@@ -225,21 +341,21 @@ export default function OpeningSequence() {
         </span>
 
         {/* Text zone. The three states cross-fade in one place, clear of the nav. */}
-        <div className="shell absolute inset-x-0 top-[13%] z-30 flex flex-col items-center text-center md:top-[14%]">
+        <div className="shell absolute inset-x-0 top-[13%] z-30 flex flex-col items-center text-center md:top-[14%] short:top-[11%]">
           <div ref={heroType} className="flex flex-col items-center">
             <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
               SK ZIC · Distributed across Southern Africa by Parts-Mall Africa
             </p>
             <h1
-              className="t-display mt-5"
-              style={{ fontSize: 'clamp(2.25rem, 5.4vw, 4.75rem)', lineHeight: 0.94 }}
+              className="t-display mt-5 short:mt-3"
+              style={{ fontSize: HEAD_SIZE, lineHeight: 0.94 }}
             >
               Performance
               <br />
               Starts Within.
             </h1>
             <p
-              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem]"
+              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 540, color: 'var(--color-deep-steel)' }}
             >
               The world&rsquo;s number one Group III base oil, engineered into motor oil for South
@@ -252,13 +368,17 @@ export default function OpeningSequence() {
               The transition
             </p>
             <h2
-              className="t-display mt-5"
-              style={{ fontSize: 'clamp(2rem, 5vw, 4.25rem)', lineHeight: 0.98, color: ENG_WHITE }}
+              className="t-display mt-5 short:mt-3"
+              style={{
+                fontSize: 'clamp(1.75rem, min(5vw, 7vh), 4.25rem)',
+                lineHeight: 0.98,
+                color: ENG_WHITE,
+              }}
             >
               One engineering standard.
             </h2>
             <p
-              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem]"
+              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 560, color: 'var(--color-metal-grey)' }}
             >
               The same base oil, the same additive discipline, the same laboratory. What changes is
@@ -271,17 +391,13 @@ export default function OpeningSequence() {
               The South African range · Five products · Seven pack sizes
             </p>
             <h2
-              className="t-display mt-5"
-              style={{
-                fontSize: 'clamp(2.25rem, 5.4vw, 4.75rem)',
-                lineHeight: 0.98,
-                color: ENG_WHITE,
-              }}
+              className="t-display mt-5 short:mt-3"
+              style={{ fontSize: HEAD_SIZE, lineHeight: 0.98, color: ENG_WHITE }}
             >
               Five jobs.
             </h2>
             <p
-              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem]"
+              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 720, color: 'var(--color-metal-grey)' }}
             >
               Everything Parts-Mall Africa actually holds, and nothing it does not.
@@ -289,20 +405,34 @@ export default function OpeningSequence() {
           </div>
         </div>
 
-        {/* Splash, behind the packs, on the same baseline. */}
+        {/* Splash, behind the packs, on the same baseline. `screen` drops the
+            footage's black ground so the oil sits on the carbon backdrop. */}
         <div
           ref={splash}
           aria-hidden
           className="pointer-events-none absolute left-1/2 z-0 -translate-x-1/2"
-          style={{ bottom: '17%', width: 'min(96vw, 760px)' }}
+          style={{
+            // Hung low and wide so the crown erupts around the canister's foot
+            // and its rim clears the pack on both sides. The box runs off the
+            // bottom of the stage on purpose; the column below the crown is
+            // the part worth hiding.
+            bottom: '-9%',
+            width: 'min(132vw, 1220px)',
+            mixBlendMode: 'screen',
+            // The footage is a rectangle of black with oil in the middle of it.
+            // Screen makes the black vanish, but the warm floor and backlight
+            // still stop dead at the box edge, so the box is masked out.
+            maskImage: 'radial-gradient(78% 46% at 50% 40%, #000 44%, transparent 92%)',
+            WebkitMaskImage: 'radial-gradient(78% 46% at 50% 40%, #000 44%, transparent 92%)',
+          }}
         >
-          <Image
-            src="/plates/oil-crown-splash.png"
-            alt=""
-            width={1200}
-            height={822}
-            sizes="(max-width: 768px) 96vw, 760px"
-            className="h-auto w-full"
+          <SplashFrames
+            api={splashApi}
+            count={SPLASH_FRAMES}
+            dir="/splash"
+            poster="/splash/f-20.webp"
+            width={900}
+            height={506}
           />
         </div>
 
@@ -387,15 +517,17 @@ export default function OpeningSequence() {
         {/* Hero footer: caption and CTAs, leaving with the hero type. */}
         <div
           ref={heroFoot}
-          className="absolute inset-x-0 bottom-[5%] z-30 flex flex-col items-center"
+          className="absolute inset-x-0 bottom-[5%] z-30 flex flex-col items-center short:bottom-[4%]"
         >
           <p
-            className="t-mono hidden text-[0.6875rem] tracking-[0.1em] md:block"
+            className="t-mono hidden text-[0.6875rem] tracking-[0.1em] md:block short:md:hidden"
             style={{ color: 'var(--color-steel-text)' }}
           >
             ZIC X7 · 5W-30 · FULLY SYNTHETIC · 4 L
           </p>
-          <div className="flex w-full max-w-[320px] flex-col gap-3 sm:max-w-none sm:flex-row sm:gap-4 md:mt-5">
+          {/* sm:w-auto matters: dropping the max-width without it leaves a
+              full-bleed row that packs both buttons against the left edge. */}
+          <div className="flex w-full max-w-[320px] flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:gap-4 md:mt-5 short:md:mt-0">
             <Cta href={PRIMARY_CTA.href} external={PRIMARY_CTA.external}>
               {PRIMARY_CTA.label}
             </Cta>

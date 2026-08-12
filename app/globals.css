@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* Short viewports. A 1366x768 laptop gives about 630px of usable height, and
+   the opening stage has to hold type, a product and two CTAs in it. When
+   height is scarce the type gives way first, never the product. */
+@custom-variant short (@media (max-height: 800px));
+
 /* ==========================================================================
    SK ZIC South Africa — token layer
    Mirrors the `ZIC` variable collection in Figma (VariableCollectionId:178:3).
