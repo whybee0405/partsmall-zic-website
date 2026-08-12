@@ -74,7 +74,11 @@ export default function FilmRail() {
   }, []);
 
   const current = SECTIONS[active] ?? SECTIONS[0];
-  const hairline = current.dark ? 'var(--color-deep-steel)' : 'var(--color-hairline)';
+  // Deep Steel on Carbon is all but invisible, which left the red column
+  // standing on its own down the edge of every dark chamber and reading as a
+  // stray rule rather than as fluid held between two walls. The walls have to
+  // be visible for the cross-section to be legible as one.
+  const hairline = current.dark ? 'rgba(169, 173, 178, 0.5)' : 'var(--color-hairline)';
 
   return (
     <>
@@ -103,15 +107,30 @@ export default function FilmRail() {
       >
         <div className="relative flex h-full items-stretch">
           <div style={{ width: 1, background: hairline }} />
+          {/* The column fills to the scroll position rather than running the
+              full height. Full height read as a rule someone had left behind;
+              filling reads as what it is, and the mobile half of this same
+              component was already a progress bar. */}
           <div
+            className="relative"
             style={{
               width: current.film,
-              background: 'var(--color-zic-red)',
-              transition:
-                'width 420ms var(--ease-in-out), opacity 300ms var(--ease-out)',
-              opacity: current.film === 0 ? 0 : 1,
+              transition: 'width 420ms var(--ease-in-out)',
             }}
-          />
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: `${progress * 100}%`,
+                background: 'var(--color-zic-red)',
+                transition: 'height 90ms linear, opacity 300ms var(--ease-out)',
+                opacity: current.film === 0 ? 0 : 1,
+              }}
+            />
+          </div>
           <div style={{ width: 1, background: hairline }} />
 
           {/* Chapter tick for the current chamber */}
