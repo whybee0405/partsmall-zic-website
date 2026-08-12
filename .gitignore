@@ -45,3 +45,4 @@ public/plates/*.orig.*
 
 # audit output
 scripts/audit-shots/
+scripts/mobile-strip/

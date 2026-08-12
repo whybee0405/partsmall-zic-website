@@ -42,8 +42,10 @@
   --radius-card: 8px;
   --radius-container: 12px;
 
-  /* --- Breakpoints ------------------------------------------------------ */
-  --breakpoint-sm: 375px;
+  /* --- Breakpoints ------------------------------------------------------
+     375 is the smallest device we support, not a breakpoint. Overriding `sm`
+     to 375 fires every sm: utility on every phone, which put the hero CTAs
+     side by side at 390px and wrapped both labels. Leave sm at its default. */
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1440px;

@@ -25,14 +25,27 @@ const LINEUP = [
 
 const CENTRE = 'x7-5w30';
 
-export default function TheFive() {
+export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
   return (
     <section
       id="range"
       className="chamber-dark relative overflow-hidden py-24 lg:py-28"
       style={{ background: 'var(--color-carbon)' }}
     >
-      <div className="shell stack-centre">
+      {backdrop && (
+        <Image
+          src="/plates/oil-crown-splash.png"
+          alt=""
+          aria-hidden
+          width={1200}
+          height={822}
+          sizes="100vw"
+          className="pointer-events-none absolute left-1/2 top-[22%] w-[min(96vw,760px)] -translate-x-1/2"
+          style={{ opacity: 0.16 }}
+        />
+      )}
+
+      <div className="shell stack-centre relative">
         <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
           The South African range · Five products · Seven pack sizes
         </p>
