@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { PRODUCTS, FAMILIES } from '@/content/products';
 import { Stamp, Notice, ClaimChip } from '@/components/ui';
 
@@ -136,55 +135,54 @@ export default function Products() {
                     </span>
                   </button>
 
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        id={`panel-${p.id}`}
-                        initial={{ gridTemplateRows: '0fr', opacity: 0 }}
-                        animate={{ gridTemplateRows: '1fr', opacity: 1 }}
-                        exit={{ gridTemplateRows: '0fr', opacity: 0 }}
-                        transition={{ duration: 0.24, ease: [0.23, 1, 0.32, 1] }}
-                        style={{ display: 'grid' }}
-                      >
-                        <div className="overflow-hidden">
-                          <div className="px-4 pb-8">
-                            {p.claims && p.claims.length > 0 && (
-                              <ul className="mb-6 flex flex-wrap gap-3">
-                                {p.claims.map((c) => (
-                                  <li key={c.value} className="flex items-center gap-2">
-                                    <ClaimChip verb={c.verb} />
-                                    <span className="t-mono text-[0.75rem]">{c.value}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
+                  <div
+                    id={`panel-${p.id}`}
+                    inert={!isOpen}
+                    style={{
+                      display: 'grid',
+                      gridTemplateRows: isOpen ? '1fr' : '0fr',
+                      opacity: isOpen ? 1 : 0,
+                      transition:
+                        'grid-template-rows var(--dur-disclose) var(--ease-out), opacity var(--dur-disclose) var(--ease-out)',
+                    }}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="px-4 pb-8">
+                        {p.claims && p.claims.length > 0 && (
+                          <ul className="mb-6 flex flex-wrap gap-3">
+                            {p.claims.map((c) => (
+                              <li key={c.value} className="flex items-center gap-2">
+                                <ClaimChip verb={c.verb} />
+                                <span className="t-mono text-[0.75rem]">{c.value}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
 
-                            {p.properties && (
-                              <dl className="grid grid-cols-2 gap-x-8 gap-y-2 md:grid-cols-4">
-                                {Object.entries(p.properties).map(([k, v]) => (
-                                  <div key={k}>
-                                    <dt className="t-label" style={{ color: 'var(--color-steel-text)' }}>
-                                      {k}
-                                    </dt>
-                                    <dd className="t-mono text-[0.8125rem]">{v}</dd>
-                                  </div>
-                                ))}
-                              </dl>
-                            )}
+                        {p.properties && (
+                          <dl className="grid grid-cols-2 gap-x-8 gap-y-2 md:grid-cols-4">
+                            {Object.entries(p.properties).map(([k, v]) => (
+                              <div key={k}>
+                                <dt className="t-label" style={{ color: 'var(--color-steel-text)' }}>
+                                  {k}
+                                </dt>
+                                <dd className="t-mono text-[0.8125rem]">{v}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        )}
 
-                            {p.warning && (
-                              <p
-                                className="mt-6 text-[0.875rem] leading-[1.55]"
-                                style={{ color: 'var(--color-zic-red)' }}
-                              >
-                                {p.warning}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        {p.warning && (
+                          <p
+                            className="mt-6 text-[0.875rem] leading-[1.55]"
+                            style={{ color: 'var(--color-zic-red)' }}
+                          >
+                            {p.warning}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </li>
               );
             })}

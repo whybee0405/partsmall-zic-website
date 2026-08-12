@@ -1,54 +1,36 @@
 'use client';
 
 import { useEffect } from 'react';
-import Lenis from 'lenis';
+import { initScroll, prefersReducedMotion } from '@/lib/scroll';
 import { createParallax } from '@/lib/parallax';
 
 /**
- * Owns the scroll. Lenis drives it, the parallax loop reads from it.
+ * Mounts the scroll stack once, at the root.
  *
- * Lenis is skipped entirely under prefers-reduced-motion so the page falls back
- * to native scrolling, which is what someone with vestibular sensitivity wants.
+ * Order matters: Lenis and ScrollTrigger come up first so the parallax loop
+ * reads a scroll position that is already being smoothed, otherwise planes
+ * judder against the eased scroll.
  */
 export default function SmoothScroll() {
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const teardownScroll = initScroll();
     const parallax = createParallax();
-
-    if (reduced) {
-      parallax.mount(); // no-ops internally, but keeps resize wiring consistent
-      return () => parallax.unmount();
-    }
-
-    const lenis = new Lenis({
-      duration: 1.05,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      touchMultiplier: 1.6,
-    });
-
-    let frame = 0;
-    function raf(time: number) {
-      lenis.raf(time);
-      frame = requestAnimationFrame(raf);
-    }
-    frame = requestAnimationFrame(raf);
-
     parallax.mount();
 
-    // Re-measure once fonts and product images have settled, otherwise section
-    // anchors are captured against the wrong heights.
-    const onLoad = () => parallax.measure();
-    window.addEventListener('load', onLoad);
-    document.fonts?.ready.then(() => parallax.measure());
+    // Re-measure once fonts and product renders have settled. Section anchors
+    // captured before layout stabilises put every plane in the wrong place.
+    const remeasure = () => parallax.measure();
+    window.addEventListener('load', remeasure);
+    document.fonts?.ready.then(remeasure).catch(() => {});
 
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('load', onLoad);
+      window.removeEventListener('load', remeasure);
       parallax.unmount();
-      lenis.destroy();
+      teardownScroll();
     };
   }, []);
 
   return null;
 }
+
+export { prefersReducedMotion };

@@ -1,8 +1,6 @@
 import Nav from '@/components/Nav';
 import FilmRail from '@/components/FilmRail';
-import Hero from '@/components/sections/Hero';
-import Splash from '@/components/sections/Splash';
-import TheFive from '@/components/sections/TheFive';
+import OpeningSequence from '@/components/sections/OpeningSequence';
 import Proof from '@/components/sections/Proof';
 import Inside from '@/components/sections/Inside';
 import Yubase from '@/components/sections/Yubase';
@@ -19,10 +17,8 @@ export default function Page() {
       <Nav />
       <FilmRail />
       <main id="main">
-        {/* Opening sequence: one becomes five */}
-        <Hero />
-        <Splash />
-        <TheFive />
+        {/* Opening sequence: one becomes five, pinned and scrubbed */}
+        <OpeningSequence />
         <Proof />
 
         {/* Chapters 01-06 */}
