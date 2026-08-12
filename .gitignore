@@ -42,3 +42,6 @@ tmp/
 
 # built output
 public/plates/*.orig.*
+
+# audit output
+scripts/audit-shots/

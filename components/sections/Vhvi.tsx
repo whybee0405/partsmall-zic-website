@@ -37,6 +37,7 @@ const CONV_PATH = 'M 0 8 C 320 90 640 168 1280 232';
 
 export default function Vhvi() {
   const [reduced, setReduced] = useState(false);
+  const [compact, setCompact] = useState(false);
   const wrap = useRef<HTMLElement>(null);
   const zicPath = useRef<SVGPathElement>(null);
   const convPath = useRef<SVGPathElement>(null);
@@ -44,15 +45,23 @@ export default function Vhvi() {
   const photo = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => setReduced(mq.matches);
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const narrow = window.matchMedia('(max-width: 767px)');
+    const sync = () => {
+      setReduced(motion.matches);
+      setCompact(narrow.matches);
+    };
     sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
+    motion.addEventListener('change', sync);
+    narrow.addEventListener('change', sync);
+    return () => {
+      motion.removeEventListener('change', sync);
+      narrow.removeEventListener('change', sync);
+    };
   }, []);
 
   useEffect(() => {
-    if (reduced || prefersReducedMotion() || !wrap.current) return;
+    if (reduced || compact || prefersReducedMotion() || !wrap.current) return;
     registerGsap();
 
     const ctx = gsap.context(() => {
@@ -96,7 +105,7 @@ export default function Vhvi() {
     }, wrap);
 
     return () => ctx.revert();
-  }, [reduced]);
+  }, [reduced, compact]);
 
   const Chart = (
     <figure className="mt-12 w-full">
@@ -159,7 +168,7 @@ export default function Vhvi() {
   const Stops = (
     <ul className="mt-10 grid w-full grid-cols-2 gap-6 text-left md:grid-cols-4">
       {STOPS.map((s, i) => (
-        <li key={s.temp} data-stop style={{ opacity: reduced ? 1 : i === 0 ? 1 : 0.4 }}>
+        <li key={s.temp} data-stop style={{ opacity: reduced || compact ? 1 : i === 0 ? 1 : 0.4 }}>
           <p
             className="t-mono text-[0.9375rem] font-semibold"
             style={{ color: i === 0 ? 'var(--color-zic-red)' : 'var(--color-eng-white)' }}
@@ -231,7 +240,7 @@ export default function Vhvi() {
     </>
   );
 
-  if (reduced) {
+  if (reduced || compact) {
     return (
       <section
         id="vhvi"
@@ -247,7 +256,7 @@ export default function Vhvi() {
   return (
     <section id="vhvi" ref={wrap} className="chamber-dark relative h-[260vh] md:h-[300vh]">
       <div
-        className="sticky top-0 flex h-[100dvh] items-center overflow-hidden"
+        className="sticky top-0 flex h-[100dvh] items-center overflow-hidden pt-[72px]"
         style={{ background: 'var(--color-carbon)' }}
       >
         {Backdrop}

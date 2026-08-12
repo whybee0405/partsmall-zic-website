@@ -45,19 +45,31 @@ const STATES = [
 
 export default function Inside() {
   const [reduced, setReduced] = useState(false);
+  const [compact, setCompact] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const plate = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => setReduced(mq.matches);
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    // A pinned three-panel cross-fade needs room the phone does not have, and
+    // the designed mobile interaction is swipe panels, not a scrub. Until those
+    // exist, phones read the three states stacked.
+    const narrow = window.matchMedia('(max-width: 767px)');
+    const sync = () => {
+      setReduced(motion.matches);
+      setCompact(narrow.matches);
+    };
     sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
+    motion.addEventListener('change', sync);
+    narrow.addEventListener('change', sync);
+    return () => {
+      motion.removeEventListener('change', sync);
+      narrow.removeEventListener('change', sync);
+    };
   }, []);
 
   useEffect(() => {
-    if (reduced || prefersReducedMotion() || !wrap.current) return;
+    if (reduced || compact || prefersReducedMotion() || !wrap.current) return;
     registerGsap();
 
     const ctx = gsap.context(() => {
@@ -75,6 +87,15 @@ export default function Inside() {
         defaults: { ease: 'none' },
       });
 
+      // Initial state up front, not via `fromTo` inside the timeline. A `fromTo`
+      // positioned late in a scrubbed timeline does not hold its "from" values
+      // at progress 0, so all three panels painted at once.
+      gsap.set(panels[0], { opacity: 1, y: 0 });
+      gsap.set(panels.slice(1), { opacity: 0, y: 20 });
+      gsap.set(ticks[0], { backgroundColor: '#e31e24' });
+      gsap.set(ticks.slice(1), { backgroundColor: '#2a3037' });
+      gsap.set(plate.current, { scaleY: STATES[0].film });
+
       // Each state holds, then hands over. Three equal beats across the scrub.
       STATES.forEach((s, i) => {
         const at = i / STATES.length;
@@ -83,12 +104,7 @@ export default function Inside() {
         if (i > 0) {
           tl.to(panels[i - 1], { opacity: 0, y: -20, duration: span * 0.3 }, at)
             .to(ticks[i - 1], { backgroundColor: '#2a3037', duration: span * 0.3 }, at)
-            .fromTo(
-              panels[i],
-              { opacity: 0, y: 20 },
-              { opacity: 1, y: 0, duration: span * 0.3 },
-              at + span * 0.15
-            )
+            .to(panels[i], { opacity: 1, y: 0, duration: span * 0.3 }, at + span * 0.15)
             .to(ticks[i], { backgroundColor: '#e31e24', duration: span * 0.3 }, at + span * 0.15);
         }
 
@@ -98,7 +114,9 @@ export default function Inside() {
     }, wrap);
 
     return () => ctx.revert();
-  }, [reduced]);
+  }, [reduced, compact]);
+
+  const staticLayout = reduced || compact;
 
   const Panels = (
     <ul className="relative w-full">
@@ -106,8 +124,8 @@ export default function Inside() {
         <li
           key={s.n}
           data-state-panel
-          className={reduced ? 'mb-10 last:mb-0' : 'absolute inset-x-0 top-0'}
-          style={reduced ? undefined : { opacity: i === 0 ? 1 : 0 }}
+          className={staticLayout ? 'mb-10 last:mb-0' : 'absolute inset-x-0 top-0'}
+          style={staticLayout ? undefined : { opacity: i === 0 ? 1 : 0 }}
         >
           <p className="t-label" style={{ color: 'var(--color-steel-text)' }}>
             {s.n} / 03
@@ -136,7 +154,7 @@ export default function Inside() {
   );
 
   const Stage = (
-    <div className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden">
+    <div className="relative flex h-[100dvh] flex-col items-center justify-between overflow-hidden pb-[6vh] pt-[calc(72px+6vh)]">
       {/* Full-bleed macro. The film sits on the horizontal centre line. */}
       <div ref={plate} aria-hidden className="absolute inset-0 origin-center">
         <Image
@@ -157,7 +175,7 @@ export default function Inside() {
         }}
       />
 
-      <div className="shell stack-centre relative">
+      <div className="shell stack-centre relative shrink-0">
         <Stamp dark>Ch.01 / 06 — Lubrication — The Protection Layer</Stamp>
         <h2 className="t-display t-h2 mt-6" style={{ color: 'var(--color-eng-white)' }}>
           What is happening inside?
@@ -172,8 +190,8 @@ export default function Inside() {
       </div>
 
       {/* State track */}
-      <div className="shell absolute inset-x-0 bottom-[8%] flex flex-col items-center text-center">
-        <div className="mb-8 flex gap-2" aria-hidden>
+      <div className="shell relative flex w-full flex-col items-center text-center">
+        <div className="mb-6 flex gap-2" aria-hidden>
           {STATES.map((s, i) => (
             <span
               key={s.n}
@@ -186,12 +204,12 @@ export default function Inside() {
             />
           ))}
         </div>
-        <div className="relative min-h-[220px] w-full">{Panels}</div>
+        <div className="relative min-h-[190px] w-full md:min-h-[210px]">{Panels}</div>
       </div>
     </div>
   );
 
-  if (reduced) {
+  if (staticLayout) {
     return (
       <section
         id="inside"

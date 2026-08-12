@@ -25,6 +25,8 @@ export interface Product {
   technology?: string;
   /** Headline specification, set in Roboto Mono. */
   specification: string[];
+  /** Compact label for the five-across line-up, where columns are narrow. */
+  shortSpec?: string;
   /** Additional OEM claims, rendered with claim chips. */
   claims?: Claim[];
   /** Plain language, Inter. Answers "is this me?" */
@@ -169,6 +171,7 @@ export const PRODUCTS: Product[] = [
     packSizes: ['1 L'],
     oilType: 'Fully synthetic multi-vehicle ATF',
     specification: [],
+    shortSpec: 'Fully synthetic',
     whoItsFor:
       'Automatic transmissions across a mixed workshop. Broad multi-vehicle coverage in a genuinely synthetic fluid.',
     positioning: 'Precision fluid control for smooth, consistent shifting.',

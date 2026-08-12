@@ -104,7 +104,7 @@ export default function TheFive() {
                     className="t-mono mt-1 text-[0.6875rem] leading-[1.5]"
                     style={{ color: 'var(--color-metal-grey)' }}
                   >
-                    {product.specification.join(' · ') || product.oilType}
+                    {product.shortSpec ?? (product.specification.join(' · ') || product.oilType)}
                   </p>
                   <p
                     className="t-mono mt-1 text-[0.6875rem] tracking-[0.08em]"

@@ -48,12 +48,19 @@ export function initScroll(): () => void {
 
   lenis.on('scroll', ScrollTrigger.update);
 
+  // Exposed so tooling can drive the page the way Lenis expects. A raw
+  // window.scrollTo sets scrollTop without updating Lenis's internal target,
+  // so Lenis animates straight back and any measurement taken in between is
+  // of a position the page is already leaving.
+  (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
   const tick = (time: number) => lenis.raf(time * 1000);
   gsap.ticker.add(tick);
   gsap.ticker.lagSmoothing(0);
 
   return () => {
     gsap.ticker.remove(tick);
+    delete (window as unknown as { __lenis?: Lenis }).__lenis;
     lenis.destroy();
     ScrollTrigger.getAll().forEach((t) => t.kill());
   };

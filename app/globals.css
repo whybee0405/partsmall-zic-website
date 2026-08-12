@@ -196,6 +196,12 @@ html.lenis body {
   text-align: center;
 }
 
+/* Anchor targets must clear the 72px fixed nav, or a jump to #products lands
+   the chapter stamp underneath it. */
+:where(section, footer)[id] {
+  scroll-margin-top: 88px;
+}
+
 /* ==========================================================================
    Parallax planes
    Transformed by a single rAF loop in lib/parallax.ts. Never animate layout.
