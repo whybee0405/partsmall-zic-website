@@ -64,6 +64,38 @@ const LINEUP = [
  */
 const HEAD_SIZE = 'clamp(2rem, min(5.4vw, 7.6vh), 4.75rem)';
 
+/**
+ * The descent notes.
+ *
+ * Four things worth knowing, in plain language, passing the canister on its way
+ * down. They alternate sides so the eye has somewhere new to go each time, and
+ * they travel upward, which is what makes the canister read as falling: a
+ * falling object against an empty background is indistinguishable from a still
+ * one, so the scenery has to move.
+ */
+const FALL_NOTES = [
+  {
+    side: 'left',
+    label: 'Where it starts',
+    text: 'Every motor oil starts as base oil. The world uses more of ours than anyone else’s.',
+  },
+  {
+    side: 'right',
+    label: 'Cold mornings',
+    text: 'Thin enough to reach the engine on a Highveld winter start.',
+  },
+  {
+    side: 'left',
+    label: 'Hot afternoons',
+    text: 'Steady enough to hold its film when the load and the heat climb together.',
+  },
+  {
+    side: 'right',
+    label: 'Between services',
+    text: 'Less of it burns off, so there is less to top up before the next one.',
+  },
+] as const;
+
 /** Frames in /public/splash, sampled every third frame of the source footage. */
 const SPLASH_FRAMES = 39;
 
@@ -123,6 +155,7 @@ export default function OpeningSequence() {
     const ctx = gsap.context(() => {
       const cells = gsap.utils.toArray<HTMLElement>('[data-cell]');
       const packs = gsap.utils.toArray<HTMLElement>('[data-pack]');
+      const centrePack = packs[CENTRE_INDEX];
       const siblings = cells.filter((_, i) => i !== CENTRE_INDEX);
       const leaders = gsap.utils.toArray<HTMLElement>('[data-leader]');
       const callouts = gsap.utils.toArray<HTMLElement>('[data-callout]');
@@ -164,6 +197,20 @@ export default function OpeningSequence() {
       const gapBelow = () => (compact ? 18 : gsap.utils.clamp(20, 34, innerHeight * 0.032));
       const MAX_SCALE = compact ? 2 : 1.7;
 
+      /**
+       * The descent.
+       *
+       * A centred hero canister has barely 15vh of headroom before its foot
+       * leaves the stage, so translation alone cannot carry a fall. Most of the
+       * read comes from recession: the pack shrinks as it drops, which is what
+       * falling away from a camera looks like, and it leaves the row closer to
+       * the size the line-up needs anyway.
+       */
+      const LAND_SHRINK = compact ? 0.82 : 0.84;
+      const landFoot = () => window.innerHeight * (compact ? 0.84 : 0.87);
+      let landScale = MAX_SCALE;
+      let landY = 0;
+
       let restScale = MAX_SCALE;
       let restY = 0;
 
@@ -204,10 +251,17 @@ export default function OpeningSequence() {
         // phone, where the band centre and the floor are far apart.
         const sp = splash.current;
         if (!sp) return;
-        const packFoot = rowTop + restScale * (pack.bottom - rowTop) + restY;
+        // Where the fall ends, solved from the foot line rather than from a
+        // travel distance, so the landing sits at the same place on the stage
+        // whatever the rest scale worked out to be.
+        landScale = restScale * LAND_SHRINK;
+        landY = landFoot() - rowTop - landScale * (pack.bottom - rowTop);
+
+        // Measured at the landing, not at rest: the canister falls before it
+        // hits, so the oil has to be where it ends up.
         const sr = rawRect(sp);
         gsap.set(sp, {
-          y: packFoot - (sr.top + SPLASH_SURFACE * sr.height),
+          y: landFoot() - (sr.top + SPLASH_SURFACE * sr.height),
           transformOrigin: `50% ${SPLASH_SURFACE * 100}%`,
         });
       };
@@ -236,6 +290,18 @@ export default function OpeningSequence() {
       gsap.set(leaders, { scaleY: 0, transformOrigin: '50% 0%' });
       gsap.set(callouts, { opacity: 0, y: 12 });
 
+      // Notes wait below the line they will cross, never at scale 0: nothing in
+      // the world appears out of nothing.
+      const notes = gsap.utils.toArray<HTMLElement>('[data-note]');
+      // The notes are the scenery, and the scenery is what makes the fall
+      // legible, so they sweep a long way rather than fading in place.
+      const travel = () => window.innerHeight * (compact ? 0.14 : 0.26);
+      notes.forEach((el) => {
+        const from = el.dataset.side === 'left' ? -34 : 34;
+        gsap.set(el, { opacity: 0, y: travel, x: compact ? from * 0.6 : from, scale: 0.98 });
+      });
+      gsap.set(centrePack, { transformOrigin: '50% 45%' });
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: wrap.current,
@@ -252,46 +318,117 @@ export default function OpeningSequence() {
         defaults: { ease: 'none' },
       });
 
+      // Beats. The acts overlap by design: a gap where nothing moves is what
+      // made the old sequence read as a cut rather than a fall.
+      const FALL_IN = 0.05; // the descent begins
+      const PLUNGE = 0.6; // the last, accelerating stretch
+      const LAND = 0.665; // contact
+      const REVEAL = 0.8; // one becomes five
+
       // --- Act 1: the type gives way to the product -------------------------
-      tl.to(heroType.current, { opacity: 0, y: -70, duration: 0.18 }, 0)
-        .to(heroFoot.current, { opacity: 0, y: -30, duration: 0.18 }, 0)
-        .to(ghost.current, { opacity: 0, y: -50, duration: 0.28 }, 0)
+      tl.to(heroType.current, { opacity: 0, y: -70, duration: 0.09 }, 0)
+        .to(heroFoot.current, { opacity: 0, y: -30, duration: 0.09 }, 0)
+        .to(ghost.current, { opacity: 0, y: -50, duration: 0.16 }, 0)
         // A white-to-carbon cross-fade parks on flat grey if you scrub slowly,
-        // so the flip is short enough to pass through rather than sit in.
-        .to(bg.current, { backgroundColor: CARBON, duration: 0.08 }, 0.17);
+        // so the flip is short enough to pass through rather than sit in. It
+        // now runs under the first of the fall, so the colour never changes on
+        // a still frame.
+        .to(bg.current, { backgroundColor: CARBON, duration: 0.07 }, 0.06);
 
-      // --- Act 2: the splash ------------------------------------------------
-      // The frame index is scrubbed on a proxy rather than a DOM property, so
-      // the canvas paints once per animation frame no matter how fast the
-      // scroll is. The impact wants to land under the canister, so the sequence
-      // runs slightly ahead of the container's own fade.
-      const shot = { t: 0 };
-      tl.to(statement.current, { opacity: 1, y: 0, duration: 0.1 }, 0.24)
-        .to(splash.current, { opacity: 1, scale: 1.12, duration: 0.2 }, 0.26)
-        .to(
-          shot,
-          { t: 1, duration: 0.32, onUpdate: () => splashApi.current?.(shot.t) },
-          0.26,
-        )
-        .to(statement.current, { opacity: 0, y: -28, duration: 0.09 }, 0.5)
-        .to(splash.current, { opacity: 0.14, scale: 0.96, duration: 0.14 }, 0.54);
-
-      // The canister meets its own impact. Function values so the dip survives
-      // a resize, which rewrites restY underneath it.
-      const impact = 0.26 + SPLASH_IMPACT * 0.32;
-      const dip = () => window.innerHeight * 0.018;
+      // --- Act 2: the fall --------------------------------------------------
+      // Constant velocity for the long stretch, because under scrub the reader
+      // sets the clock and any easing here reads as the page fighting them.
+      // The last stretch accelerates, which is the one place ease-in is the
+      // honest curve: it is gravity, not interface feedback.
+      const at = (a: number, b: number, f: number) => a + (b - a) * f;
       tl.to(
         row.current,
-        { y: () => restY + dip(), duration: impact - 0.265, ease: 'power2.in' },
-        0.265,
-      ).to(row.current, { y: () => restY, duration: 0.1, ease: 'power2.out' }, impact);
+        {
+          y: () => at(restY, landY, 0.62),
+          scale: () => at(restScale, landScale, 0.62),
+          duration: PLUNGE - FALL_IN,
+        },
+        FALL_IN,
+      )
+        .to(
+          row.current,
+          {
+            y: () => landY,
+            scale: () => landScale,
+            duration: LAND - PLUNGE,
+            ease: 'power2.in',
+          },
+          PLUNGE,
+        )
+        // A slow tumble, so the fall is not one rigid block.
+        .to(centrePack, { rotate: -3, duration: 0.3 }, FALL_IN)
+        .to(centrePack, { rotate: 1.8, duration: 0.25 }, 0.35)
+        .to(centrePack, { rotate: 0, duration: LAND - PLUNGE, ease: 'power2.in' }, PLUNGE)
+        // Blur bridges the fast stretch so the eye reads one moving object
+        // rather than a stack of positions, and clears on contact.
+        .to(centrePack, { filter: 'blur(5px)', duration: (LAND - PLUNGE) * 0.7 }, PLUNGE)
+        .to(centrePack, { filter: 'blur(0px)', duration: 0.05, ease: 'power2.out' }, LAND);
 
-      // --- Act 3: one becomes five ------------------------------------------
-      tl.to(rangeHead.current, { opacity: 1, y: 0, duration: 0.11 }, 0.56)
-        .to(row.current, { scale: 1, y: 0, duration: 0.22 }, 0.58)
-        .to(siblings, { x: 0, opacity: 1, scale: 1, duration: 0.26, stagger: 0.035 }, 0.58)
-        .to(leaders, { scaleY: 1, duration: 0.14, stagger: 0.03 }, 0.76)
-        .to(callouts, { opacity: 1, y: 0, duration: 0.15, stagger: 0.03 }, 0.8);
+      // The notes pass upward through the fall, one at a time, entering on
+      // alternating sides. Enter decelerating, leave accelerating: near things
+      // pass faster than far ones, and that is what gives the shot its depth.
+      const NOTE_SPAN = (PLUNGE - 0.12 - FALL_IN) / FALL_NOTES.length;
+      notes.forEach((el, i) => {
+        const at = FALL_IN + 0.04 + i * NOTE_SPAN;
+        tl.to(
+          el,
+          {
+            opacity: 1,
+            y: 0,
+            x: 0,
+            scale: 1,
+            duration: NOTE_SPAN * 0.42,
+            ease: 'power3.out',
+          },
+          at,
+        ).to(
+          el,
+          {
+            opacity: 0,
+            y: () => -travel(),
+            scale: 0.98,
+            duration: NOTE_SPAN * 0.34,
+            ease: 'power2.in',
+          },
+          at + NOTE_SPAN * 0.6,
+        );
+      });
+
+      // --- Act 3: contact ---------------------------------------------------
+      // The frame index is scrubbed on a proxy rather than a DOM property, so
+      // the canvas paints once per animation frame no matter how fast the
+      // scroll is. The sequence is offset so that its own impact frame lands on
+      // LAND, which is the whole point of the act.
+      const shot = { t: 0 };
+      const SHOT_SPAN = 0.2;
+      tl.to(splash.current, { opacity: 1, scale: 1.12, duration: 0.12 }, LAND - 0.06)
+        .to(
+          shot,
+          { t: 1, duration: SHOT_SPAN, onUpdate: () => splashApi.current?.(shot.t) },
+          LAND - SPLASH_IMPACT * SHOT_SPAN,
+        )
+        // Recoil. Fast and decelerating, the way a landing settles.
+        .to(
+          row.current,
+          { y: () => landY - window.innerHeight * 0.014, duration: 0.035, ease: 'power2.out' },
+          LAND,
+        )
+        .to(row.current, { y: () => landY, duration: 0.05, ease: 'power1.inOut' }, LAND + 0.035)
+        .to(statement.current, { opacity: 1, y: 0, duration: 0.06 }, LAND + 0.01)
+        .to(statement.current, { opacity: 0, y: -28, duration: 0.05 }, REVEAL - 0.07)
+        .to(splash.current, { opacity: 0.14, scale: 0.96, duration: 0.1 }, REVEAL - 0.08);
+
+      // --- Act 4: one becomes five ------------------------------------------
+      tl.to(rangeHead.current, { opacity: 1, y: 0, duration: 0.07 }, REVEAL - 0.02)
+        .to(row.current, { scale: 1, y: 0, duration: 0.14 }, REVEAL)
+        .to(siblings, { x: 0, opacity: 1, scale: 1, duration: 0.17, stagger: 0.022 }, REVEAL)
+        .to(leaders, { scaleY: 1, duration: 0.09, stagger: 0.02 }, REVEAL + 0.12)
+        .to(callouts, { opacity: 1, y: 0, duration: 0.1, stagger: 0.02 }, REVEAL + 0.15);
 
       return () => ScrollTrigger.removeEventListener('refreshInit', layout);
     }, wrap);
@@ -313,10 +450,14 @@ export default function OpeningSequence() {
   const maxH = compact ? MAX_H_COMPACT : MAX_H;
 
   return (
-    <div ref={wrap} className={compact ? 'relative h-[280vh]' : 'relative h-[320vh] lg:h-[380vh]'}>
+    <div ref={wrap} className={compact ? 'relative h-[440vh]' : 'relative h-[500vh] lg:h-[560vh]'}>
+      {/* Chamber markers. The nav and the rail read these to know what surface
+          they are sitting on, so `descent` has to land on the frame where the
+          stage actually turns to Carbon, not where the fall reads as over. */}
       <span id="hero" className="absolute top-0" aria-hidden />
-      <span id="splash" className="absolute top-[22%]" aria-hidden />
-      <span id="range" className="absolute top-[58%]" aria-hidden />
+      <span id="descent" className="absolute top-[11%]" aria-hidden />
+      <span id="splash" className="absolute top-[62%]" aria-hidden />
+      <span id="range" className="absolute top-[80%]" aria-hidden />
 
       <div className="sticky top-0 h-[100dvh] overflow-hidden">
         <div
@@ -403,6 +544,38 @@ export default function OpeningSequence() {
               Everything Parts-Mall Africa actually holds, and nothing it does not.
             </p>
           </div>
+        </div>
+
+        {/* The descent notes. One vertical line for all four, so the eye holds
+            its position and the copy comes to it. */}
+        {/* Above the canister on a phone, beside it on a desktop: there is no
+            room for a side column at 393px, and copy over the product is
+            worse than copy near it. */}
+        <div className="pointer-events-none absolute inset-x-0 top-[27%] z-20 md:top-[44%]">
+          {FALL_NOTES.map((note) => (
+            <div
+              key={note.label}
+              data-note
+              data-side={note.side}
+              // Not `.shell`: it is unlayered CSS, so its width:100% beats a
+              // Tailwind width utility and the note runs across the product.
+              className={
+                note.side === 'left'
+                  ? 'absolute inset-x-0 px-5 text-center md:right-auto md:left-[6vw] md:w-[min(25vw,300px)] md:px-0 md:text-left lg:left-[11vw]'
+                  : 'absolute inset-x-0 px-5 text-center md:left-auto md:right-[6vw] md:w-[min(25vw,300px)] md:px-0 md:text-right lg:right-[11vw]'
+              }
+            >
+              <p className="t-label" style={{ color: 'var(--color-zic-red)' }}>
+                {note.label}
+              </p>
+              <p
+                className="mt-2 text-[0.9375rem] leading-[1.55] md:mt-3 md:text-[1.125rem] md:leading-[1.5]"
+                style={{ color: 'var(--color-eng-white)' }}
+              >
+                {note.text}
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* Splash, behind the packs, on the same baseline. `screen` drops the

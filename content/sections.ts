@@ -21,6 +21,7 @@ export interface SectionMeta {
 
 export const SECTIONS: SectionMeta[] = [
   { id: 'hero', label: 'Hero', film: 2, dark: false },
+  { id: 'descent', label: 'The Descent', film: 3, dark: true },
   { id: 'splash', label: 'The Splash', film: 6, dark: true },
   { id: 'range', label: 'The Five', film: 8, dark: true },
   { id: 'proof', label: 'Proof', film: 2, dark: true },
