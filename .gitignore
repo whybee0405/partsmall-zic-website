@@ -39,3 +39,6 @@ pnpm-debug.log*
 # working scratch, not part of the deliverable
 scratch/
 tmp/
+
+# built output
+public/plates/*.orig.*

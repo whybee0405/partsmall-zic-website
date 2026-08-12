@@ -157,9 +157,9 @@ export const PRODUCTS: Product[] = [
     },
     warning:
       'API CG-4 is an older diesel category. Do not recommend it for a DPF or SCR equipped diesel unless the manufacturer specification explicitly permits it.',
-    image: '/products/zic-x3000-15w40-20l.png',
+    image: '/products/zic-x3000-15w40-6l.png',
     imageNote:
-      'UNRESOLVED. The only official X3000 renders are 20 L and 1 L; no 6 L render exists on any SK ZIC channel. Do not ship a 20 L drum image against a 6 L SKU. Parts-Mall must supply a 6 L pack shot.',
+      'PLACEHOLDER ART. The file at this path is a genuine SK ZIC X3000 render but it is the 20W-50 4 L Pakistan-market pack, not the SA 15W-40 6 L. No official 6 L render exists on any SK ZIC channel. It holds the composition only. Parts-Mall must supply a 6 L pack shot before launch.',
   },
   {
     id: 'atf-multi',

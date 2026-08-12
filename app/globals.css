@@ -1,0 +1,274 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   SK ZIC South Africa — token layer
+   Mirrors the `ZIC` variable collection in Figma (VariableCollectionId:178:3).
+   Change both together or neither. Source of truth: BRAND-DNA.md §3, §4, §6.
+   ========================================================================== */
+
+@theme {
+  /* --- Colour: energy and technology ------------------------------------ */
+  --color-zic-red: #e31e24;
+  --color-zic-red-deep: #b8181d;
+  --color-carbon: #090b0e;
+  --color-graphite: #181c21;
+  --color-deep-steel: #2a3037;
+  --color-oil-gold: #c89608;
+
+  /* --- Colour: engineering surfaces ------------------------------------- */
+  --color-eng-white: #f7f7f5;
+  --color-pure-white: #ffffff;
+  --color-fluid-grey: #e8e9e7;
+  --color-metal-grey: #a9adb2;
+  --color-steel-text: #626c76;
+  --color-hairline: #d6d9db;
+
+  /* --- Colour: Parts-Mall Africa (distribution chapter only) ------------ */
+  --color-pma-navy: #122a57;
+
+  /* --- Type ------------------------------------------------------------- */
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-roboto-mono), ui-monospace, monospace;
+
+  /* --- Spacing scale (BRAND-DNA §6) ------------------------------------- */
+  --spacing-gutter: 2rem;
+  --spacing-margin-mobile: 1.25rem;
+  --spacing-margin-tablet: 2.5rem;
+  --spacing-margin-desktop: 5rem;
+
+  /* --- Radii ------------------------------------------------------------ */
+  --radius-button: 4px;
+  --radius-card: 8px;
+  --radius-container: 12px;
+
+  /* --- Breakpoints ------------------------------------------------------ */
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+}
+
+:root {
+  /* Motion. Never ease-in. Exponential ease-out per DESIGN.md. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  --dur-press: 140ms;
+  --dur-label: 180ms;
+  --dur-disclose: 240ms;
+  --dur-enter: 260ms;
+
+  /* Content measures. Centred type must never become a wall. */
+  --measure-headline: 1280px;
+  --measure-body: 820px;
+  --measure-lead: 600px;
+  --content-max: 1440px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  min-width: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-eng-white);
+  color: var(--color-carbon);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Lenis owns the scroll. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Typography primitives
+   ========================================================================== */
+
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.94;
+}
+
+.t-h1 {
+  font-size: clamp(2.75rem, 7.2vw, 6.5rem);
+  line-height: 0.92;
+}
+
+.t-h2 {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+.t-h3 {
+  font-size: clamp(1.375rem, 2vw, 1.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.t-lead {
+  font-size: clamp(1rem, 1.4vw, 1.1875rem);
+  line-height: 1.68;
+}
+
+/* Technical: SAE grades, API/ACEA, OEM approvals, chapter stamps, all data. */
+.t-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.t-stamp {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.t-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Light type on dark chambers needs more air (BRAND-DNA §4). */
+.chamber-dark .t-lead,
+.chamber-dark p {
+  line-height: 1.73;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+.shell {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--spacing-margin-mobile);
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding-inline: var(--spacing-margin-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    padding-inline: var(--spacing-margin-desktop);
+  }
+}
+
+/* Everything composes on the centre axis. */
+.stack-centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Parallax planes
+   Transformed by a single rAF loop in lib/parallax.ts. Never animate layout.
+   ========================================================================== */
+
+[data-plane] {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ==========================================================================
+   Controls
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding-inline: 1.75rem;
+  border-radius: var(--radius-button);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    background-color var(--dur-press) ease,
+    border-color var(--dur-press) ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--color-zic-red);
+  color: var(--color-pure-white);
+}
+
+.btn-secondary {
+  border: 1px solid currentColor;
+  background: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--color-zic-red-deep);
+  }
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-zic-red);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Reduced motion
+   Planes collapse to speed 1.0, the hero un-pins, reveals render resolved.
+   Opacity and colour transitions stay: they aid comprehension.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-plane] {
+    transform: none !important;
+    will-change: auto;
+  }
+}
