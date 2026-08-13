@@ -108,11 +108,11 @@ const SPLASH_IMPACT = 0.04;
 
 /**
  * Height fraction of a splash frame at which the oil surface sits — here, the
- * trough the two wings sweep out of. The frames are aligned to the canister's
- * foot on this line, so the product stands in the oil at every viewport
- * instead of floating above it.
+ * point of the V the two sheets rise out of, which is near the bottom of the
+ * frame. The frames are aligned to the canister's foot on this line, so the
+ * product stands in the oil at every viewport instead of floating above it.
  */
-const SPLASH_SURFACE = 0.55;
+const SPLASH_SURFACE = 0.9;
 
 const CENTRE_INDEX = 2;
 const MAX_H = 26; // vh, the centre pack, wide
@@ -610,15 +610,19 @@ export default function OpeningSequence() {
             // happens off screen, where the viewport edge is doing the cropping
             // rather than a visible seam in the middle of the stage.
             bottom: '-9%',
-            width: 'min(112vw, 1280px)',
+            // Sized so the sheets rise to about the canister's shoulder rather
+            // than out of the top of the stage. A phone needs proportionally
+            // more of its width to reach the same height, since the frame is
+            // 16:9 whatever it is shown on.
+            width: compact ? '104vw' : 'min(62vw, 980px)',
             mixBlendMode: 'screen',
-            // Screen makes the footage's black vanish, but its backlight still
-            // stops dead at the box edge, and the wings run past that edge in
-            // the last third of the clip. The mask reaches full transparency
-            // exactly at the edge, so the wings dissolve at their tips instead
-            // of being cut off square.
-            maskImage: 'radial-gradient(54% 58% at 50% 52%, #000 28%, transparent 97%)',
-            WebkitMaskImage: 'radial-gradient(54% 58% at 50% 52%, #000 28%, transparent 97%)',
+            // The sheets climb out through the top of their own frame, so the
+            // mask reaches full transparency well before the box top: they
+            // dissolve as they rise, the way spray does, instead of ending on
+            // a horizontal cut. It is solid around the canister, where the oil
+            // has to look like oil.
+            maskImage: 'radial-gradient(62% 62% at 50% 72%, #000 30%, transparent 94%)',
+            WebkitMaskImage: 'radial-gradient(62% 62% at 50% 72%, #000 30%, transparent 94%)',
           }}
         >
           <SplashFrames
