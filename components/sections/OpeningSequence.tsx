@@ -97,17 +97,22 @@ const FALL_NOTES = [
 ] as const;
 
 /** Frames in /public/splash, sampled every third frame of the source footage. */
-const SPLASH_FRAMES = 39;
-
-/** Sequence position of the impact, used to land the canister's dip on it. */
-const SPLASH_IMPACT = 0.16;
+const SPLASH_FRAMES = 40;
 
 /**
- * Height fraction of a splash frame at which the oil surface sits. The frames
- * are aligned to the canister's foot on this line, so the product stands in
- * the oil at every viewport instead of floating above it.
+ * Sequence position of the impact, used to land the canister's dip on it. The
+ * lateral footage breaks on its first frame rather than dropping a bead first,
+ * so contact is effectively the start of the clip.
  */
-const SPLASH_SURFACE = 0.67;
+const SPLASH_IMPACT = 0.04;
+
+/**
+ * Height fraction of a splash frame at which the oil surface sits — here, the
+ * trough the two wings sweep out of. The frames are aligned to the canister's
+ * foot on this line, so the product stands in the oil at every viewport
+ * instead of floating above it.
+ */
+const SPLASH_SURFACE = 0.55;
 
 const CENTRE_INDEX = 2;
 const MAX_H = 26; // vh, the centre pack, wide
@@ -404,12 +409,14 @@ export default function OpeningSequence() {
       // the canvas paints once per animation frame no matter how fast the
       // scroll is. The sequence is offset so that its own impact frame lands on
       // LAND, which is the whole point of the act.
+      // The sequence is capped short of its last frames: by then the wings have
+      // grown past the stage and read as a field of oil rather than a splash.
       const shot = { t: 0 };
-      const SHOT_SPAN = 0.2;
-      tl.to(splash.current, { opacity: 1, scale: 1.12, duration: 0.12 }, LAND - 0.06)
+      const SHOT_SPAN = REVEAL - 0.03 - LAND;
+      tl.to(splash.current, { opacity: 1, scale: 1.1, duration: 0.04 }, LAND - 0.025)
         .to(
           shot,
-          { t: 1, duration: SHOT_SPAN, onUpdate: () => splashApi.current?.(shot.t) },
+          { t: 0.78, duration: SHOT_SPAN, onUpdate: () => splashApi.current?.(shot.t) },
           LAND - SPLASH_IMPACT * SHOT_SPAN,
         )
         // Recoil. Fast and decelerating, the way a landing settles.
@@ -421,14 +428,27 @@ export default function OpeningSequence() {
         .to(row.current, { y: () => landY, duration: 0.05, ease: 'power1.inOut' }, LAND + 0.035)
         .to(statement.current, { opacity: 1, y: 0, duration: 0.06 }, LAND + 0.01)
         .to(statement.current, { opacity: 0, y: -28, duration: 0.05 }, REVEAL - 0.07)
-        .to(splash.current, { opacity: 0.14, scale: 0.96, duration: 0.1 }, REVEAL - 0.08);
+        // Down to a trace, not a wash: at this size a lingering 14% reads as a
+        // muddy field behind the line-up rather than as oil settling.
+        .to(splash.current, { opacity: 0.06, scale: 0.98, duration: 0.06 }, REVEAL - 0.03);
 
       // --- Act 4: one becomes five ------------------------------------------
+      // Stagger extends a tween's end by stagger x (n - 1), so these are placed
+      // to finish on 1.0 rather than past it. See the note below on why the
+      // timeline's total duration has to be exactly 1.
       tl.to(rangeHead.current, { opacity: 1, y: 0, duration: 0.07 }, REVEAL - 0.02)
-        .to(row.current, { scale: 1, y: 0, duration: 0.14 }, REVEAL)
-        .to(siblings, { x: 0, opacity: 1, scale: 1, duration: 0.17, stagger: 0.022 }, REVEAL)
-        .to(leaders, { scaleY: 1, duration: 0.09, stagger: 0.02 }, REVEAL + 0.12)
-        .to(callouts, { opacity: 1, y: 0, duration: 0.1, stagger: 0.02 }, REVEAL + 0.15);
+        .to(row.current, { scale: 1, y: 0, duration: 0.13 }, REVEAL)
+        .to(siblings, { x: 0, opacity: 1, scale: 1, duration: 0.13, stagger: 0.02 }, REVEAL)
+        .to(leaders, { scaleY: 1, duration: 0.06, stagger: 0.015 }, REVEAL + 0.08)
+        .to(callouts, { opacity: 1, y: 0, duration: 0.04, stagger: 0.012 }, REVEAL + 0.11);
+
+      // ScrollTrigger maps the scroll range onto the timeline's *duration*, not
+      // onto 1. These beats are written as fractions, so a timeline that ends at
+      // 1.05 compresses every one of them by five percent, and the error
+      // compounds toward the end: the splash was firing a twentieth of the page
+      // early while the hero beats still looked right. An empty set at 1 pins
+      // the duration so a beat number means what it says.
+      tl.set({}, {}, 1);
 
       return () => ScrollTrigger.removeEventListener('refreshInit', layout);
     }, wrap);
@@ -585,27 +605,29 @@ export default function OpeningSequence() {
           aria-hidden
           className="pointer-events-none absolute left-1/2 z-0 -translate-x-1/2"
           style={{
-            // Hung low and wide so the crown erupts around the canister's foot
-            // and its rim clears the pack on both sides. The box runs off the
-            // bottom of the stage on purpose; the column below the crown is
-            // the part worth hiding.
+            // The wings run past the edges of their own frame in the last third
+            // of the clip, so the box is wider than the viewport: the cut then
+            // happens off screen, where the viewport edge is doing the cropping
+            // rather than a visible seam in the middle of the stage.
             bottom: '-9%',
-            width: 'min(132vw, 1220px)',
+            width: 'min(112vw, 1280px)',
             mixBlendMode: 'screen',
-            // The footage is a rectangle of black with oil in the middle of it.
-            // Screen makes the black vanish, but the warm floor and backlight
-            // still stop dead at the box edge, so the box is masked out.
-            maskImage: 'radial-gradient(78% 46% at 50% 40%, #000 44%, transparent 92%)',
-            WebkitMaskImage: 'radial-gradient(78% 46% at 50% 40%, #000 44%, transparent 92%)',
+            // Screen makes the footage's black vanish, but its backlight still
+            // stops dead at the box edge, and the wings run past that edge in
+            // the last third of the clip. The mask reaches full transparency
+            // exactly at the edge, so the wings dissolve at their tips instead
+            // of being cut off square.
+            maskImage: 'radial-gradient(54% 58% at 50% 52%, #000 28%, transparent 97%)',
+            WebkitMaskImage: 'radial-gradient(54% 58% at 50% 52%, #000 28%, transparent 97%)',
           }}
         >
           <SplashFrames
             api={splashApi}
             count={SPLASH_FRAMES}
             dir="/splash"
-            poster="/splash/f-20.webp"
-            width={900}
-            height={506}
+            poster="/splash/f-24.webp"
+            width={880}
+            height={495}
           />
         </div>
 
