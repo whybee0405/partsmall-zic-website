@@ -625,12 +625,13 @@ export default function OpeningSequence() {
             width: compact ? '104vw' : 'min(62vw, 980px)',
             mixBlendMode: 'screen',
             // The sheets climb out through the top of their own frame, so the
-            // mask reaches full transparency well before the box top: they
-            // dissolve as they rise, the way spray does, instead of ending on
-            // a horizontal cut. It is solid around the canister, where the oil
-            // has to look like oil.
-            maskImage: 'radial-gradient(62% 62% at 50% 72%, #000 30%, transparent 94%)',
-            WebkitMaskImage: 'radial-gradient(62% 62% at 50% 72%, #000 30%, transparent 94%)',
+            // mask reaches full transparency before the box top: they dissolve
+            // as they rise, the way spray does, instead of ending on a
+            // horizontal cut. The solid core is wide, though. A tight one put
+            // most of the oil inside the falloff, which read as a vignette laid
+            // over the splash rather than as an edge being hidden.
+            maskImage: 'radial-gradient(78% 70% at 50% 76%, #000 58%, transparent 99%)',
+            WebkitMaskImage: 'radial-gradient(78% 70% at 50% 76%, #000 58%, transparent 99%)',
           }}
         >
           <SplashFrames
