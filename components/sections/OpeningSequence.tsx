@@ -96,8 +96,12 @@ const FALL_NOTES = [
   },
 ] as const;
 
-/** Frames in /public/splash, sampled every third frame of the source footage. */
-const SPLASH_FRAMES = 40;
+/**
+ * Frames in /public/splash: the rise, then the collapse, cut together as one
+ * sequence. The rise footage holds its peak to the last frame and never falls,
+ * so the second half is a continuation generated from that peak frame.
+ */
+const SPLASH_FRAMES = 48;
 
 /**
  * Sequence position of the impact, used to land the canister's dip on it. The
@@ -409,14 +413,16 @@ export default function OpeningSequence() {
       // the canvas paints once per animation frame no matter how fast the
       // scroll is. The sequence is offset so that its own impact frame lands on
       // LAND, which is the whole point of the act.
-      // The sequence is capped short of its last frames: by then the wings have
-      // grown past the stage and read as a field of oil rather than a splash.
+      // The sequence runs all the way to the end of the stage, straight through
+      // the reveal. Freezing it at the reveal left the oil standing in a held
+      // pose behind the line-up, which is the one thing a splash must not do:
+      // it has to be still falling while attention moves to the products.
       const shot = { t: 0 };
-      const SHOT_SPAN = REVEAL - 0.03 - LAND;
+      const SHOT_SPAN = 0.99 - LAND;
       tl.to(splash.current, { opacity: 1, scale: 1.1, duration: 0.04 }, LAND - 0.025)
         .to(
           shot,
-          { t: 0.78, duration: SHOT_SPAN, onUpdate: () => splashApi.current?.(shot.t) },
+          { t: 1, duration: SHOT_SPAN, onUpdate: () => splashApi.current?.(shot.t) },
           LAND - SPLASH_IMPACT * SHOT_SPAN,
         )
         // Recoil. Fast and decelerating, the way a landing settles.
@@ -428,9 +434,11 @@ export default function OpeningSequence() {
         .to(row.current, { y: () => landY, duration: 0.05, ease: 'power1.inOut' }, LAND + 0.035)
         .to(statement.current, { opacity: 1, y: 0, duration: 0.06 }, LAND + 0.01)
         .to(statement.current, { opacity: 0, y: -28, duration: 0.05 }, REVEAL - 0.07)
-        // Down to a trace, not a wash: at this size a lingering 14% reads as a
-        // muddy field behind the line-up rather than as oil settling.
-        .to(splash.current, { opacity: 0.06, scale: 0.98, duration: 0.06 }, REVEAL - 0.03);
+        // Two stages, not one cut. It gives up most of its presence as the
+        // line-up arrives and then keeps subsiding underneath it, so the oil
+        // is dying away rather than being switched off.
+        .to(splash.current, { opacity: 0.38, duration: 0.09 }, REVEAL - 0.05)
+        .to(splash.current, { opacity: 0.05, scale: 0.97, duration: 0.16 }, REVEAL + 0.08);
 
       // --- Act 4: one becomes five ------------------------------------------
       // Stagger extends a tween's end by stagger x (n - 1), so these are placed
@@ -470,7 +478,7 @@ export default function OpeningSequence() {
   const maxH = compact ? MAX_H_COMPACT : MAX_H;
 
   return (
-    <div ref={wrap} className={compact ? 'relative h-[440vh]' : 'relative h-[500vh] lg:h-[560vh]'}>
+    <div ref={wrap} className={compact ? 'relative h-[500vh]' : 'relative h-[560vh] lg:h-[640vh]'}>
       {/* Chamber markers. The nav and the rail read these to know what surface
           they are sitting on, so `descent` has to land on the frame where the
           stage actually turns to Carbon, not where the fall reads as over. */}
@@ -629,9 +637,9 @@ export default function OpeningSequence() {
             api={splashApi}
             count={SPLASH_FRAMES}
             dir="/splash"
-            poster="/splash/f-24.webp"
-            width={880}
-            height={495}
+            poster="/splash/f-16.webp"
+            width={860}
+            height={484}
           />
         </div>
 
