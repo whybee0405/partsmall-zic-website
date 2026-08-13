@@ -30,9 +30,6 @@ export const PROOF_CELLS: ProofCell[] = [
   },
 ];
 
-export const PROOF_SOURCE_LINE =
-  'SOURCES: SK ENMOVE  ·  SK ZIC GLOBAL  ·  PARTS-MALL AFRICA';
-
 /** YUBASE production capacity, Ch.02. */
 export const YUBASE_CAPACITY =
   'ULSAN 48,600 b/d   ·   ILBOC CARTAGENA 19,300 b/d   ·   PATRASK DUMAI 12,500 b/d';

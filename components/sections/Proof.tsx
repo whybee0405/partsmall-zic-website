@@ -1,4 +1,4 @@
-import { PROOF_CELLS, PROOF_SOURCE_LINE } from '@/content/proof';
+import { PROOF_CELLS } from '@/content/proof';
 
 /**
  * 04 — Proof manifest.
@@ -43,10 +43,6 @@ export default function Proof() {
             </li>
           ))}
         </ul>
-
-        <p className="t-label mt-12" style={{ color: 'var(--color-steel-text)' }}>
-          {PROOF_SOURCE_LINE}
-        </p>
       </div>
     </section>
   );
