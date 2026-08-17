@@ -35,7 +35,7 @@ export const SECTIONS: SectionMeta[] = [
   { id: 'footer', label: 'Footer', film: 0, dark: true },
 ];
 
-/** Nav anchors, desktop only. */
+/** Nav anchors. Desktop shows these inline; below `lg` they live in the mobile sheet. */
 export const NAV_LINKS = [
   { href: '#inside', label: 'Technology' },
   { href: '#products', label: 'Products' },
