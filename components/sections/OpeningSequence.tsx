@@ -532,7 +532,11 @@ export default function OpeningSequence() {
             </p>
           </div>
 
-          <div ref={statement} className="absolute inset-x-0 top-0 flex flex-col items-center">
+          <div
+            ref={statement}
+            className="absolute inset-x-0 top-0 flex flex-col items-center"
+            style={{ opacity: 0, transform: 'translateY(26px)' }}
+          >
             <p className="t-stamp" style={{ color: 'var(--color-steel-text)' }}>
               The transition
             </p>
@@ -555,7 +559,11 @@ export default function OpeningSequence() {
             </p>
           </div>
 
-          <div ref={rangeHead} className="absolute inset-x-0 top-0 flex flex-col items-center">
+          <div
+            ref={rangeHead}
+            className="absolute inset-x-0 top-0 flex flex-col items-center"
+            style={{ opacity: 0, transform: 'translateY(26px)' }}
+          >
             <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
               The South African range · Five products · Seven pack sizes
             </p>
@@ -592,6 +600,10 @@ export default function OpeningSequence() {
                   ? 'absolute inset-x-0 px-5 text-center md:right-auto md:left-[6vw] md:w-[min(25vw,300px)] md:px-0 md:text-left lg:left-[11vw]'
                   : 'absolute inset-x-0 px-5 text-center md:left-auto md:right-[6vw] md:w-[min(25vw,300px)] md:px-0 md:text-right lg:right-[11vw]'
               }
+              // Hidden by default so all four notes don't render superimposed,
+              // full opacity, before the mount effect below runs `gsap.set`
+              // with their real (viewport-dependent) offsets.
+              style={{ opacity: 0 }}
             >
               <p className="t-label" style={{ color: 'var(--color-zic-red)' }}>
                 {note.label}
@@ -613,6 +625,10 @@ export default function OpeningSequence() {
           aria-hidden
           className="pointer-events-none absolute left-1/2 z-0 -translate-x-1/2"
           style={{
+            // Hidden until the mount effect's `gsap.set` runs — otherwise the
+            // splash frame's poster image renders at full opacity, behind
+            // the hero text, on first paint.
+            opacity: 0,
             // The wings run past the edges of their own frame in the last third
             // of the clip, so the box is wider than the viewport: the cut then
             // happens off screen, where the viewport edge is doing the cropping
@@ -660,7 +676,15 @@ export default function OpeningSequence() {
                 key={product.id}
                 data-cell
                 className="flex min-w-0 flex-1 flex-col items-center md:w-[15%] md:min-w-[118px] md:flex-none"
-                style={{ zIndex: slot.z }}
+                style={{
+                  zIndex: slot.z,
+                  // The resting state is the centre pack alone; the other four
+                  // stay hidden until the reveal. Without this default they
+                  // render in their final side-by-side layout, opacity 1, on
+                  // first paint, before `gsap.set` (which also applies their
+                  // measured x-offset) has run.
+                  ...(isCentre ? null : { opacity: 0 }),
+                }}
               >
                 {/* Fixed slot so the arc never shifts the callout line. */}
                 <div
@@ -688,10 +712,19 @@ export default function OpeningSequence() {
                     width: 1,
                     height: isCentre ? (compact ? 18 : 30) : compact ? 13 : 22,
                     background: isCentre ? 'var(--color-zic-red)' : 'var(--color-deep-steel)',
+                    // Collapsed until `gsap.set` runs, matching its `scaleY: 0`
+                    // initial state — otherwise every leader line renders at
+                    // full height on first paint.
+                    transform: 'scaleY(0)',
+                    transformOrigin: '50% 0%',
                   }}
                 />
 
-                <div data-callout className="mt-2 w-full px-0.5 text-center md:mt-3 md:px-1">
+                <div
+                  data-callout
+                  className="mt-2 w-full px-0.5 text-center md:mt-3 md:px-1"
+                  style={{ opacity: 0, transform: 'translateY(12px)' }}
+                >
                   <p
                     className="t-display text-[0.625rem] font-semibold leading-tight tracking-[-0.02em] md:text-[0.8125rem] lg:text-[0.9375rem]"
                     style={{ color: ENG_WHITE }}
