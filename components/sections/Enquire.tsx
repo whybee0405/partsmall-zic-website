@@ -1,8 +1,9 @@
 'use client';
 
-import { useId } from 'react';
+import { useId, useState, type FocusEvent, type FormEvent, type ReactNode } from 'react';
 import { ENQUIRY_REGIONS, ENQUIRY_INTERESTS } from '@/content/branches';
 import { PRIMARY_CTA } from '@/content/cta';
+import { validateEnquiry, validateField, isEnquiryField, type EnquiryErrors } from '@/lib/enquiry';
 
 /**
  * 11 — Enquire. The close.
@@ -13,12 +14,16 @@ import { PRIMARY_CTA } from '@/content/cta';
  * Design: docs/design-snapshots/sections/s11-enquire.png
  */
 
+type FieldElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 function Field({
   label,
   name,
   type = 'text',
   required,
   helper,
+  error,
+  onBlur,
   children,
 }: {
   label: string;
@@ -26,12 +31,15 @@ function Field({
   type?: string;
   required?: boolean;
   helper?: string;
-  children?: React.ReactNode;
+  error?: string;
+  onBlur?: (event: FocusEvent<FieldElement>) => void;
+  children?: ReactNode;
 }) {
   const id = useId();
+  const errorId = `${id}-error`;
   const style = {
     background: 'color-mix(in oklab, var(--color-graphite) 60%, transparent)',
-    border: '1px solid var(--color-deep-steel)',
+    border: `1px solid ${error ? 'var(--color-zic-red)' : 'var(--color-deep-steel)'}`,
     color: 'var(--color-eng-white)',
   } as const;
 
@@ -42,17 +50,36 @@ function Field({
         {required && ' *'}
       </label>
       {children ? (
-        <select id={id} name={name} required={required} className="mt-2 h-13 w-full rounded-[4px] px-4" style={style}>
+        <select
+          id={id}
+          name={name}
+          required={required}
+          onBlur={onBlur}
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
+          className="mt-2 h-13 w-full rounded-[4px] px-4"
+          style={style}
+        >
           {children}
         </select>
       ) : type === 'textarea' ? (
-        <textarea id={id} name={name} rows={4} className="mt-2 w-full rounded-[4px] px-4 py-3" style={style} />
+        <textarea
+          id={id}
+          name={name}
+          rows={4}
+          onBlur={onBlur}
+          className="mt-2 w-full rounded-[4px] px-4 py-3"
+          style={style}
+        />
       ) : (
         <input
           id={id}
           name={name}
           type={type}
           required={required}
+          onBlur={onBlur}
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
           inputMode={type === 'tel' ? 'tel' : type === 'email' ? 'email' : undefined}
           autoComplete={
             type === 'tel' ? 'tel' : type === 'email' ? 'email' : name === 'name' ? 'name' : 'off'
@@ -61,16 +88,67 @@ function Field({
           style={style}
         />
       )}
-      {helper && (
+      {error ? (
+        <p id={errorId} className="mt-2 text-[0.75rem]" style={{ color: 'var(--color-zic-red)' }}>
+          {error}
+        </p>
+      ) : helper ? (
         <p className="mt-2 text-[0.75rem]" style={{ color: 'var(--color-steel-text)' }}>
           {helper}
         </p>
-      )}
+      ) : null}
     </div>
   );
 }
 
 export default function Enquire() {
+  const [errors, setErrors] = useState<EnquiryErrors>({});
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  function handleBlur(event: FocusEvent<FieldElement>) {
+    const { name, value } = event.target;
+    if (!isEnquiryField(name)) return;
+    const message = validateField(name, value);
+    setErrors((prev) => {
+      if (!message) {
+        if (!(name in prev)) return prev;
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      }
+      return { ...prev, [name]: message };
+    });
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+
+    const fieldErrors = validateEnquiry(data);
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      const firstInvalidName = Object.keys(fieldErrors)[0];
+      form.querySelector<HTMLElement>(`[name="${firstInvalidName}"]`)?.focus();
+      return;
+    }
+
+    setErrors({});
+    setStatus('submitting');
+    try {
+      const response = await fetch('/api/enquire', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Request failed');
+      setStatus('success');
+      form.reset();
+    } catch {
+      setStatus('error');
+    }
+  }
+
   return (
     <section
       id="enquire"
@@ -102,56 +180,103 @@ export default function Enquire() {
           will point you at the right ZIC product and the nearest branch that has it.
         </p>
 
-        <form
-          className="mt-12 grid w-full max-w-[680px] grid-cols-1 gap-6 sm:grid-cols-2"
-          action="/api/enquire"
-          method="post"
-        >
-          <Field label="Name" name="name" required />
-          <Field label="Business or workshop" name="business" />
-          <Field label="Phone" name="phone" type="tel" required />
-          <Field label="Email" name="email" type="email" required />
-
-          <Field label="Province" name="province" required>
-            <option value="">Select…</option>
-            {ENQUIRY_REGIONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </Field>
-
-          <Field label="I’m asking about" name="interest" required>
-            <option value="">Select…</option>
-            {ENQUIRY_INTERESTS.map((i) => (
-              <option key={i} value={i}>
-                {i}
-              </option>
-            ))}
-          </Field>
-
-          <div className="sm:col-span-2">
-            <Field
-              label="Vehicle or specification"
-              name="vehicle"
-              helper="e.g. “2019 Hyundai Creta 1.6” or “ACEA C3”"
-            />
-          </div>
-
-          <div className="sm:col-span-2">
-            <Field label="Message" name="message" type="textarea" />
-          </div>
-
-          <div className="sm:col-span-2 flex flex-col items-center">
-            <button type="submit" className="btn btn-primary !min-h-[60px] !px-12 !text-[1.0625rem]">
-              {PRIMARY_CTA.label}
-            </button>
-            <p className="mt-6 text-[0.8125rem]" style={{ color: 'var(--color-steel-text)' }}>
-              We reply within one business day. Your details are not shared outside Parts-Mall
-              Africa.
+        {status === 'success' ? (
+          <div className="mt-12 max-w-[560px] text-center">
+            <p className="t-lead" style={{ color: 'var(--color-eng-white)' }}>
+              Thanks — that&rsquo;s with us now. We reply within one business day.
             </p>
           </div>
-        </form>
+        ) : (
+          <form
+            noValidate
+            onSubmit={handleSubmit}
+            className="mt-12 grid w-full max-w-[680px] grid-cols-1 gap-6 sm:grid-cols-2"
+          >
+            <Field label="Name" name="name" required error={errors.name} onBlur={handleBlur} />
+            <Field label="Business or workshop" name="business" />
+            <Field
+              label="Phone"
+              name="phone"
+              type="tel"
+              required
+              error={errors.phone}
+              onBlur={handleBlur}
+            />
+            <Field
+              label="Email"
+              name="email"
+              type="email"
+              required
+              error={errors.email}
+              onBlur={handleBlur}
+            />
+
+            <Field
+              label="Province"
+              name="province"
+              required
+              error={errors.province}
+              onBlur={handleBlur}
+            >
+              <option value="">Select…</option>
+              {ENQUIRY_REGIONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </Field>
+
+            <Field
+              label="I’m asking about"
+              name="interest"
+              required
+              error={errors.interest}
+              onBlur={handleBlur}
+            >
+              <option value="">Select…</option>
+              {ENQUIRY_INTERESTS.map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </Field>
+
+            <div className="sm:col-span-2">
+              <Field
+                label="Vehicle or specification"
+                name="vehicle"
+                helper="e.g. “2019 Hyundai Creta 1.6” or “ACEA C3”"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <Field label="Message" name="message" type="textarea" />
+            </div>
+
+            {status === 'error' && (
+              <div className="sm:col-span-2">
+                <p className="text-[0.875rem]" style={{ color: 'var(--color-zic-red)' }}>
+                  Something went wrong sending that. Please try again, or email us directly.
+                </p>
+              </div>
+            )}
+
+            <div className="sm:col-span-2 flex flex-col items-center">
+              <button
+                type="submit"
+                disabled={status === 'submitting'}
+                className="btn btn-primary !min-h-[60px] !px-12 !text-[1.0625rem]"
+                style={status === 'submitting' ? { opacity: 0.7, cursor: 'wait' } : undefined}
+              >
+                {status === 'submitting' ? 'Sending…' : PRIMARY_CTA.label}
+              </button>
+              <p className="mt-6 text-[0.8125rem]" style={{ color: 'var(--color-steel-text)' }}>
+                We reply within one business day. Your details are not shared outside Parts-Mall
+                Africa.
+              </p>
+            </div>
+          </form>
+        )}
       </div>
     </section>
   );
