@@ -30,6 +30,14 @@ export const PROOF_CELLS: ProofCell[] = [
   },
 ];
 
-/** YUBASE production capacity, Ch.02. */
-export const YUBASE_CAPACITY =
-  'ULSAN 48,600 b/d   ·   ILBOC CARTAGENA 19,300 b/d   ·   PATRASK DUMAI 12,500 b/d';
+export interface CapacityCell {
+  amount: string;
+  site: string;
+}
+
+/** YUBASE production capacity, Ch.02. Source: docs/RESEARCH.md §1.2. */
+export const YUBASE_CAPACITY: CapacityCell[] = [
+  { amount: '48,600 b/d', site: 'Ulsan' },
+  { amount: '19,300 b/d', site: 'ILBOC · Cartagena' },
+  { amount: '12,500 b/d', site: 'PatraSK · Dumai' },
+];
