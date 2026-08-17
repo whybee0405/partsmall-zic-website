@@ -18,7 +18,10 @@ import { Stamp } from '@/components/ui';
  * it is drawn rather than asserted.
  *
  * The chart is a genuine data visualisation, which is why it is allowed to be
- * an SVG on a page that otherwise bans drawn graphics.
+ * an SVG on a page that otherwise bans drawn graphics. The stops grid is
+ * already responsive (2 columns below `md`, 4 above), so unlike Ch.01 this
+ * section needs no separate mobile layout — the same pin and the same scrub
+ * timeline run at every width down to the height floor below.
  *
  * Design: docs/design-snapshots/sections/s07-ch03-vhvi.png
  */
@@ -37,8 +40,17 @@ const CONV_PATH = 'M 0 8 C 320 90 640 168 1280 232';
 
 export default function Vhvi() {
   const [reduced, setReduced] = useState(false);
-  const [compact, setCompact] = useState(false);
+  // Disables the animation entirely: a landscape phone is too short for the
+  // pinned stage to fit the chart and the stops without clipping. Unlike
+  // Ch.01, there is no separate narrow-width layout — the stops grid is
+  // already responsive CSS, so width alone never forces the static fallback.
+  const [tooShort, setTooShort] = useState(false);
+  // See Inside.tsx for why the GSAP effect is withheld until this is true:
+  // GSAP's `pin` restructures the DOM, and mounting it on a stale first
+  // render that's about to flip to the static branch crashes on teardown.
+  const [ready, setReady] = useState(false);
   const wrap = useRef<HTMLElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const zicPath = useRef<SVGPathElement>(null);
   const convPath = useRef<SVGPathElement>(null);
   const head = useRef<SVGLineElement>(null);
@@ -46,32 +58,43 @@ export default function Vhvi() {
 
   useEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const narrow = window.matchMedia('(max-width: 767px)');
+    const shortQuery = window.matchMedia('(max-height: 560px)');
     const sync = () => {
       setReduced(motion.matches);
-      setCompact(narrow.matches);
+      setTooShort(shortQuery.matches);
+      setReady(true);
     };
     sync();
     motion.addEventListener('change', sync);
-    narrow.addEventListener('change', sync);
+    shortQuery.addEventListener('change', sync);
     return () => {
       motion.removeEventListener('change', sync);
-      narrow.removeEventListener('change', sync);
+      shortQuery.removeEventListener('change', sync);
     };
   }, []);
 
   useEffect(() => {
-    if (reduced || compact || prefersReducedMotion() || !wrap.current) return;
+    if (!ready || reduced || tooShort || prefersReducedMotion() || !wrap.current || !stage.current) {
+      return;
+    }
     registerGsap();
 
     const ctx = gsap.context(() => {
       const stops = gsap.utils.toArray<HTMLElement>('[data-stop]');
 
+      // Pinning via GSAP (not CSS `position: sticky`), matching Ch.01: sticky
+      // against a fixed container height releases as soon as
+      // (containerHeight − stageHeight) of scroll has passed — for a 100dvh
+      // stage in a 300vh section that is 67% of the way through, so the
+      // last stop below was already firing while the section scrolled away
+      // unpinned. Distance matches the static `h-[260vh] md:h-[300vh]`
+      // fallback below, so there is no jump if this effect is slow to mount.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: wrap.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: () => `+=${Math.round(window.innerHeight * (window.innerWidth >= 768 ? 2 : 1.6))}`,
+          pin: stage.current,
           scrub: 0.5,
           invalidateOnRefresh: true,
         },
@@ -102,10 +125,20 @@ export default function Vhvi() {
           tl.to(el, { opacity: 0.4, duration: 0.06 }, STOPS[i + 1].at - 0.04);
         }
       });
+
+      // The stop positions above are authored as fractions of 1, but the
+      // tweens' natural total (curve draws end at 0.85, the last stop's
+      // fade-in tween ends at ~1.02) doesn't land on exactly 1. Rescaling to
+      // an explicit duration of 1 timeScales every child proportionally, so
+      // scroll-progress 0–1 lines up with the fractions as authored instead
+      // of drifting a couple of percent by the end.
+      tl.duration(1);
     }, wrap);
 
     return () => ctx.revert();
-  }, [reduced, compact]);
+  }, [ready, reduced, tooShort]);
+
+  const staticLayout = reduced || tooShort;
 
   const Chart = (
     <figure className="mt-12 w-full">
@@ -168,7 +201,7 @@ export default function Vhvi() {
   const Stops = (
     <ul className="mt-10 grid w-full grid-cols-2 gap-6 text-left md:grid-cols-4">
       {STOPS.map((s, i) => (
-        <li key={s.temp} data-stop style={{ opacity: reduced || compact ? 1 : i === 0 ? 1 : 0.4 }}>
+        <li key={s.temp} data-stop style={{ opacity: staticLayout ? 1 : i === 0 ? 1 : 0.4 }}>
           <p
             className="t-mono text-[0.9375rem] font-semibold"
             style={{ color: i === 0 ? 'var(--color-zic-red)' : 'var(--color-eng-white)' }}
@@ -240,7 +273,7 @@ export default function Vhvi() {
     </>
   );
 
-  if (reduced || compact) {
+  if (staticLayout) {
     return (
       <section
         id="vhvi"
@@ -256,7 +289,8 @@ export default function Vhvi() {
   return (
     <section id="vhvi" ref={wrap} className="chamber-dark relative h-[260vh] md:h-[300vh]">
       <div
-        className="sticky top-0 flex h-[100dvh] items-center overflow-hidden pt-[72px]"
+        ref={stage}
+        className="relative flex h-[100dvh] items-center overflow-hidden pt-[72px]"
         style={{ background: 'var(--color-carbon)' }}
       >
         {Backdrop}
