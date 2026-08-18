@@ -71,6 +71,15 @@
   --measure-body: 820px;
   --measure-lead: 600px;
   --content-max: 1440px;
+
+  /* Fixed nav. Single source of truth so the nav itself, the mobile progress
+     bar under it, and every section that reserves space beneath both stay
+     in lockstep — one number changes here, not in four files. Clearance
+     adds a full --spacing-gutter of breathing room, not just enough to
+     clear the bar, so content never reads as touching it. */
+  --nav-height: 72px;
+  --nav-bar-height: 5px;
+  --nav-clearance: calc(var(--nav-height) + var(--nav-bar-height) + var(--spacing-gutter));
 }
 
 /* ==========================================================================
@@ -94,6 +103,83 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Cursor
+   A fine-pointer enhancement, mounted only after the Cursor client component
+   has confirmed motion is allowed. The ring inverts against every chamber;
+   the red dot remains the active ZIC flow mark.
+   ========================================================================== */
+
+html.has-custom-cursor body {
+  cursor: none;
+}
+
+html.has-custom-cursor :where(input, textarea) {
+  cursor: text;
+}
+
+html.has-custom-cursor select {
+  cursor: pointer;
+}
+
+html.has-custom-cursor button:disabled {
+  cursor: wait;
+}
+
+.zic-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  pointer-events: none;
+  contain: layout style size;
+  opacity: 1;
+  transition: opacity 120ms ease;
+}
+
+.zic-cursor::before {
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-pure-white);
+  border-radius: 50%;
+  content: '';
+  mix-blend-mode: difference;
+  transform: translateZ(0);
+  transition: transform var(--dur-label) var(--ease-out);
+}
+
+.zic-cursor-inner::before {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-zic-red);
+  content: '';
+  transform: translateZ(0);
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.zic-cursor.-hover::before {
+  transform: scale(1.5) translateZ(0);
+}
+
+.zic-cursor.-sticky::before {
+  transform: scale(1.5) translateZ(0);
+}
+
+.zic-cursor.-active .zic-cursor-inner::before {
+  transform: scale(0.72) translateZ(0);
+}
+
+.zic-cursor.-hidden {
+  opacity: 0;
 }
 
 /* Lenis owns the scroll. */
@@ -203,10 +289,11 @@ html.lenis body {
   text-align: center;
 }
 
-/* Anchor targets must clear the 72px fixed nav, or a jump to #products lands
-   the chapter stamp underneath it. */
+/* Anchor targets must clear the fixed nav (plus the mobile progress bar
+   under it) with room to spare, or a jump to #products lands the chapter
+   stamp underneath them. */
 :where(section, footer)[id] {
-  scroll-margin-top: 88px;
+  scroll-margin-top: var(--nav-clearance);
 }
 
 /* ==========================================================================
@@ -283,5 +370,36 @@ html.lenis body {
   [data-plane] {
     transform: none !important;
     will-change: auto;
+  }
+}
+
+/* ==========================================================================
+   Scroll cue
+   The hero's idle "scroll down" chevron. Loops on transform/opacity only, so
+   the global reduced-motion block above collapses it to one static frame for
+   free — no separate motion-safe gate needed here.
+   ========================================================================== */
+
+@keyframes scroll-cue-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+
+/* Back-to-top's mirror of the cue above: bobs up instead of down. Same
+   duration and easing on purpose, so the two read as one motif. */
+@keyframes back-to-top-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
   }
 }

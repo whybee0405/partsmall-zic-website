@@ -71,7 +71,7 @@ export const PRODUCTS: Product[] = [
       'Pour Point': '−42 °C',
       'HTHS @150°C': '3.3 cP',
     },
-    image: '/products/zic-x7-5w30-4l.png',
+    image: '/products/ZIC X7 5W30 4L.png',
     imageNote:
       'Official SK ZIC 4 L render. The printed label on this pack run reads API SN PLUS / ILSAC GF-5; the current published specification is API SP / ILSAC GF-6. Copy follows the specification, not the pack art. Confirm with Parts-Mall which pack run is landing in SA.',
   },
@@ -103,7 +103,7 @@ export const PRODUCTS: Product[] = [
       'Flash Point': '230 °C',
       'Pour Point': '−42 °C',
     },
-    image: '/products/zic-x5-10w30-1l.png',
+    image: '/products/ZIC X5 10W30 1L.png',
     imageNote: 'Official SK ZIC 1 L render, upscaled. A 4 L render was not available from an official source.',
   },
   {
@@ -132,7 +132,7 @@ export const PRODUCTS: Product[] = [
     ],
     warning:
       'Formulated for compatible diesel engines without DPF, CPF or SCR requirements. Do not recommend it for a modern diesel that requires a Low SAPS oil.',
-    image: '/products/zic-x7-diesel-5w30-6l.png',
+    image: '/products/ZIC X7 Diesel 5W-30 6L.png',
   },
   {
     id: 'x3000-15w40',
@@ -159,9 +159,7 @@ export const PRODUCTS: Product[] = [
     },
     warning:
       'API CG-4 is an older diesel category. Do not recommend it for a DPF or SCR equipped diesel unless the manufacturer specification explicitly permits it.',
-    image: '/products/zic-x3000-15w40-6l.png',
-    imageNote:
-      'PLACEHOLDER ART. The file at this path is a genuine SK ZIC X3000 render but it is the 20W-50 4 L Pakistan-market pack, not the SA 15W-40 6 L. No official 6 L render exists on any SK ZIC channel. It holds the composition only. Parts-Mall must supply a 6 L pack shot before launch.',
+    image: '/products/ZIC X3000 15W-40 6L.png',
   },
   {
     id: 'atf-multi',
@@ -186,7 +184,7 @@ export const PRODUCTS: Product[] = [
     ],
     warning:
       '“Multi” does not mean suitable for every automatic transmission. Always check the ATF specification your transmission actually requires before filling.',
-    image: '/products/zic-atf-multi-1l.png',
+    image: '/products/ZIC ATF Multi 1L.png',
     imageNote: 'Official SK ZIC 1 L render. Korean domestic label artwork; confirm the SA label variant.',
   },
 ];

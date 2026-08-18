@@ -40,4 +40,5 @@ export const NAV_LINKS = [
   { href: '#inside', label: 'Technology' },
   { href: '#products', label: 'Products' },
   { href: '#distribution', label: 'Availability' },
+  { href: 'https://www.parts-mall.co.za', label: 'Parts Mall', external: true },
 ] as const;

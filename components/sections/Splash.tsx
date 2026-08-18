@@ -58,7 +58,7 @@ export default function Splash() {
             className="absolute bottom-[26%] left-1/2 -translate-x-1/2 md:bottom-[28%]"
           >
             <Image
-              src="/products/zic-x7-5w30-4l.png"
+              src="/products/ZIC X7 5W30 4L.png"
               alt="ZIC X7 5W-30 rising from an oil crown splash"
               width={502}
               height={699}

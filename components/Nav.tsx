@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { NAV_LINKS, SECTIONS } from '@/content/sections';
 import { PRIMARY_CTA } from '@/content/cta';
@@ -12,8 +13,10 @@ import { PRIMARY_CTA } from '@/content/cta';
  * dark chambers: a light bar sitting on Carbon Black is the single most visible
  * way to break the illusion that the page is one continuous surface.
  *
- * The slogan is locked beneath the wordmark so "Dynamics in Flow" travels with
- * the mark and is never replaced by campaign copy (BRAND-DNA §1).
+ * The wordmark is the actual SK ZIC logo lockup (public/brand): a light-ink
+ * file for light chambers, a white-ink file for dark chambers. Only the
+ * light-ink file carries a baked-in tagline, so the dark state renders the
+ * mark alone.
  *
  * Below `lg` the link list collapses into a hamburger-triggered sheet: the
  * product table is 9.8 screens down on a phone and the nav is otherwise the
@@ -75,7 +78,6 @@ export default function Nav() {
 
   const surface = dark ? 'var(--color-carbon)' : 'var(--color-eng-white)';
   const ink = dark ? 'var(--color-eng-white)' : 'var(--color-carbon)';
-  const inkMuted = dark ? 'var(--color-metal-grey)' : 'var(--color-steel-text)';
   const line = dark ? 'var(--color-deep-steel)' : 'var(--color-hairline)';
 
   return (
@@ -89,37 +91,58 @@ export default function Nav() {
           'background 320ms var(--ease-out), border-color 320ms var(--ease-out), color 320ms var(--ease-out)',
       }}
     >
-      <nav className="shell flex h-[72px] items-center justify-between">
-        <Link href="#hero" className="leading-none" onClick={() => setOpen(false)}>
-          <span
-            className="t-display block text-[1.375rem] tracking-[-0.04em] lg:text-[1.625rem]"
-            style={{ color: ink, transition: 'color 320ms var(--ease-out)' }}
-          >
-            SK ZIC
-          </span>
-          <span
-            className="t-mono mt-1 block text-[0.5625rem] tracking-[0.2em]"
-            style={{ color: inkMuted, transition: 'color 320ms var(--ease-out)' }}
-          >
-            DYNAMICS IN FLOW
-          </span>
+      <nav className="shell flex h-[var(--nav-height)] items-center justify-between">
+        <Link href="/" className="block leading-none" onClick={() => setOpen(false)}>
+          <Image
+            src={dark ? '/brand/zic-logo-on-dark.png' : '/brand/zic-logo-on-light.png'}
+            alt="SK ZIC"
+            width={800}
+            height={220}
+            priority
+            className="h-9 w-auto lg:h-11"
+          />
         </Link>
 
         <ul className="hidden items-center gap-10 lg:flex">
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                className="text-[0.875rem] font-medium"
-                style={{
-                  color: dark ? 'var(--color-metal-grey)' : 'var(--color-deep-steel)',
-                  transition: 'color 320ms var(--ease-out)',
-                }}
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_LINKS.map((l) => {
+            const external = 'external' in l && l.external;
+            const linkStyle = {
+              color: dark ? 'var(--color-metal-grey)' : 'var(--color-deep-steel)',
+              transition: 'color 320ms var(--ease-out)',
+            };
+            // The underline reads as a flow path filling in — a small echo of
+            // the oil-flow motif, not just a generic hover state.
+            const linkClassName =
+              'group relative inline-block py-2 text-[0.875rem] font-medium';
+            const underline = (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-[1.5px] origin-left scale-x-0 transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-x-100"
+                style={{ background: 'var(--color-zic-red)' }}
+              />
+            );
+            return (
+              <li key={l.href}>
+                {external ? (
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={linkClassName}
+                    style={linkStyle}
+                  >
+                    {l.label}
+                    {underline}
+                  </a>
+                ) : (
+                  <Link href={l.href} className={linkClassName} style={linkStyle}>
+                    {l.label}
+                    {underline}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-3">
@@ -189,18 +212,36 @@ export default function Nav() {
         }}
       >
         <ul className="shell flex flex-col py-2">
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="t-display block py-4 text-[1.375rem] tracking-[-0.02em]"
-                style={{ color: ink, borderTop: `1px solid ${line}` }}
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_LINKS.map((l) => {
+            const external = 'external' in l && l.external;
+            const itemStyle = { color: ink, borderTop: `1px solid ${line}` };
+            const itemClassName = 't-display block py-4 text-[1.375rem] tracking-[-0.02em]';
+            return (
+              <li key={l.href}>
+                {external ? (
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className={itemClassName}
+                    style={itemStyle}
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className={itemClassName}
+                    style={itemStyle}
+                  >
+                    {l.label}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </header>

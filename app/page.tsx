@@ -1,5 +1,7 @@
 import Nav from '@/components/Nav';
+import Cursor from '@/components/Cursor';
 import FilmRail from '@/components/FilmRail';
+import BackToTop from '@/components/BackToTop';
 import OpeningSequence from '@/components/sections/OpeningSequence';
 import Proof from '@/components/sections/Proof';
 import Inside from '@/components/sections/Inside';
@@ -14,8 +16,10 @@ import Footer from '@/components/sections/Footer';
 export default function Page() {
   return (
     <>
+      <Cursor />
       <Nav />
       <FilmRail />
+      <BackToTop />
       <main id="main">
         {/* Opening sequence: one becomes five, pinned and scrubbed */}
         <OpeningSequence />

@@ -62,7 +62,7 @@ export default function Transmission() {
           }}
         >
           <Image
-            src="/products/zic-atf-multi-1l.png"
+            src="/products/ZIC ATF Multi 1L.png"
             alt="ZIC ATF MULTI fully synthetic automatic transmission fluid, one litre"
             width={337}
             height={708}

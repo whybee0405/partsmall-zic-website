@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from '@/lib/scroll';
 import { PRODUCTS } from '@/content/products';
@@ -134,13 +134,20 @@ export default function OpeningSequence() {
   const ghost = useRef<HTMLSpanElement>(null);
   const heroType = useRef<HTMLDivElement>(null);
   const heroFoot = useRef<HTMLDivElement>(null);
+  const ctaRow = useRef<HTMLDivElement>(null);
   const statement = useRef<HTMLDivElement>(null);
   const rangeHead = useRef<HTMLDivElement>(null);
   const splash = useRef<HTMLDivElement>(null);
   const splashApi = useRef<SplashApi | null>(null);
   const row = useRef<HTMLUListElement>(null);
 
-  useEffect(() => {
+  // Layout effect, not a plain effect: it only flips `ready` from false to
+  // true, but a plain effect fires after the browser's first paint, so that
+  // first paint would show the pre-GSAP layout (unscaled product) before
+  // snapping to the real one a frame later. Running synchronously pre-paint
+  // — together with the measurement effect below, also a layout effect —
+  // means both resolve before anything is shown, so there is nothing to pop.
+  useLayoutEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const narrow = window.matchMedia('(max-width: 767px)');
     const sync = () => {
@@ -157,7 +164,12 @@ export default function OpeningSequence() {
     };
   }, []);
 
-  useEffect(() => {
+  // Layout effect: `layout()` below calls `fitBand()` and `gsap.set`s the
+  // product's real rest scale synchronously. A plain effect would let the
+  // browser paint the unscaled product first, then jump to the computed
+  // size — the "starts small, pops big" flash. Pairs with the layout effect
+  // above so both resolve before the first real paint.
+  useLayoutEffect(() => {
     if (!ready || reduced || prefersReducedMotion() || !wrap.current) return;
     registerGsap();
 
@@ -202,9 +214,13 @@ export default function OpeningSequence() {
       // CTAs, up to a ceiling, and never enters either.
       // Clearances scale with height: 34px reads as air at 1080 and as waste at
       // 720, where every pixel belongs to the product.
-      const gapAbove = () => (compact ? 22 : gsap.utils.clamp(22, 40, innerHeight * 0.038));
-      const gapBelow = () => (compact ? 18 : gsap.utils.clamp(20, 34, innerHeight * 0.032));
-      const MAX_SCALE = compact ? 2 : 1.7;
+      // Compact clearances trimmed from their original 22/18: the hero heading
+      // now starts lower to clear the fixed nav (--nav-clearance), which ate
+      // into gapAbove's headroom from the top. Trimming both here recovers
+      // that band height for the product rather than letting it shrink.
+      const gapAbove = () => (compact ? 14 : gsap.utils.clamp(16, 30, innerHeight * 0.028));
+      const gapBelow = () => (compact ? 14 : gsap.utils.clamp(14, 24, innerHeight * 0.022));
+      const MAX_SCALE = compact ? 2.2 : 1.9;
 
       /**
        * The descent.
@@ -235,7 +251,11 @@ export default function OpeningSequence() {
       const fitBand = () => {
         const rowEl = row.current;
         const type = heroType.current;
-        const foot = heroFoot.current;
+        // The real floor constraint is the CTA row, not the whole hero
+        // footer — heroFoot also holds the scroll cue now, and that
+        // decorative chrome sitting below the buttons should never eat into
+        // the product's band just because it shares the same wrapper.
+        const foot = ctaRow.current;
         const centre = packs[CENTRE_INDEX]?.querySelector('img');
         if (!rowEl || !type || !foot || !centre) return;
 
@@ -370,9 +390,20 @@ export default function OpeningSequence() {
           PLUNGE,
         )
         // A slow tumble, so the fall is not one rigid block.
-        .to(centrePack, { rotate: -3, duration: 0.3 }, FALL_IN)
-        .to(centrePack, { rotate: 1.8, duration: 0.25 }, 0.35)
-        .to(centrePack, { rotate: 0, duration: LAND - PLUNGE, ease: 'power2.in' }, PLUNGE)
+        .to(centrePack, { rotate: -4, duration: 0.3 }, FALL_IN)
+        .to(centrePack, { rotate: 1.6, duration: 0.15 }, 0.35)
+        // The last beat before contact throws the bottle hard off balance,
+        // as if the fall itself is what unbalances it, then the impact
+        // snaps it back upright with a springy overshoot rather than a
+        // clean stop — that recoil is what reads as contact. Given a long,
+        // gentle run-up rather than a snap, so the tilt itself, not just
+        // the recovery, reads as motion.
+        .to(centrePack, { rotate: 45, duration: LAND - 0.5, ease: 'power1.inOut' }, 0.5)
+        .to(
+          centrePack,
+          { rotate: 0, duration: REVEAL - LAND, ease: 'elastic.out(1, 0.55)' },
+          LAND,
+        )
         // Blur bridges the fast stretch so the eye reads one moving object
         // rather than a stack of positions, and clears on contact.
         .to(centrePack, { filter: 'blur(5px)', duration: (LAND - PLUNGE) * 0.7 }, PLUNGE)
@@ -509,8 +540,14 @@ export default function OpeningSequence() {
           ZIC
         </span>
 
-        {/* Text zone. The three states cross-fade in one place, clear of the nav. */}
-        <div className="shell absolute inset-x-0 top-[13%] z-30 flex flex-col items-center text-center md:top-[14%] short:top-[11%]">
+        {/* Text zone. The three states cross-fade in one place, clear of the
+            nav. The percentage offsets alone were a fraction of viewport
+            height, so on a short phone viewport (or once the mobile progress
+            bar sits under the nav too) the percentage could resolve to less
+            than the nav's actual pixel height, sinking the stamp line behind
+            it. max() keeps the percentage look on tall viewports while
+            guaranteeing it never resolves below --nav-clearance. */}
+        <div className="shell absolute inset-x-0 top-[max(13%,var(--nav-clearance))] z-30 flex flex-col items-center text-center md:top-[max(14%,var(--nav-clearance))] short:top-[max(11%,var(--nav-clearance))]">
           <div ref={heroType} className="flex flex-col items-center">
             <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
               SK ZIC · Distributed across Southern Africa by Parts-Mall Africa
@@ -760,15 +797,12 @@ export default function OpeningSequence() {
           ref={heroFoot}
           className="absolute inset-x-0 bottom-[5%] z-30 flex flex-col items-center short:bottom-[4%]"
         >
-          <p
-            className="t-mono hidden text-[0.6875rem] tracking-[0.1em] md:block short:md:hidden"
-            style={{ color: 'var(--color-steel-text)' }}
-          >
-            ZIC X7 · 5W-30 · FULLY SYNTHETIC · 4 L
-          </p>
           {/* sm:w-auto matters: dropping the max-width without it leaves a
               full-bleed row that packs both buttons against the left edge. */}
-          <div className="flex w-full max-w-[320px] flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:gap-4 md:mt-5 short:md:mt-0">
+          <div
+            ref={ctaRow}
+            className="flex w-full max-w-[320px] flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:gap-4"
+          >
             <Cta href={PRIMARY_CTA.href} external={PRIMARY_CTA.external}>
               {PRIMARY_CTA.label}
             </Cta>

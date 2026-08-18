@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { BRANCH_FINDER } from '@/content/cta';
 
@@ -28,15 +29,13 @@ export default function Footer() {
       <div className="shell stack-centre">
         <div className="w-full" style={{ height: 1, background: 'var(--color-deep-steel)' }} />
 
-        <p
-          className="t-display mt-12 text-[1.75rem] tracking-[-0.04em]"
-          style={{ color: 'var(--color-eng-white)' }}
-        >
-          SK ZIC
-        </p>
-        <p className="t-mono mt-2 text-[0.625rem] tracking-[0.2em]" style={{ color: 'var(--color-steel-text)' }}>
-          DYNAMICS IN FLOW
-        </p>
+        <Image
+          src="/brand/zic-logo-on-dark.png"
+          alt="SK ZIC"
+          width={800}
+          height={220}
+          className="mt-12 h-9 w-auto"
+        />
 
         <ul className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-3">
           {RESOURCES.map((r) => (

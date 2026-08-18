@@ -290,7 +290,7 @@ export default function Vhvi() {
     <section id="vhvi" ref={wrap} className="chamber-dark relative h-[260vh] md:h-[300vh]">
       <div
         ref={stage}
-        className="relative flex h-[100dvh] items-center overflow-hidden pt-[72px]"
+        className="relative flex h-[100dvh] items-center overflow-hidden pt-[var(--nav-clearance)]"
         style={{ background: 'var(--color-carbon)' }}
       >
         {Backdrop}

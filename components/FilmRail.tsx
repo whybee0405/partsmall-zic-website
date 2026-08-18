@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
 import { SECTIONS } from '@/content/sections';
 
 /**
@@ -19,9 +20,11 @@ import { SECTIONS } from '@/content/sections';
  * Mobile:  3px top progress bar, no ticks.
  */
 export default function FilmRail() {
-  const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
-  const raf = useRef(0);
+  const mobileFill = useRef<HTMLDivElement>(null);
+  const desktopFill = useRef<HTMLDivElement>(null);
+  const bounds = useRef<{ top: number; height: number }[]>([]);
+  const lastActive = useRef(0);
 
   useEffect(() => {
     const measure = () =>
@@ -32,43 +35,47 @@ export default function FilmRail() {
         return { top: r.top + window.scrollY, height: r.height };
       });
 
-    let bounds = measure();
+    bounds.current = measure();
 
-    const read = () => {
+    // Written straight to the fill elements' transform on GSAP's ticker —
+    // the same loop that drives Lenis — every frame, rather than through
+    // React state plus a CSS width/height transition. That round trip (and
+    // the layout cost of animating width/height at all) is what read as
+    // stutter against a scroll that is otherwise smoothed to the frame.
+    const tick = () => {
       const doc = document.documentElement;
       const max = doc.scrollHeight - window.innerHeight;
       const y = window.scrollY;
-      setProgress(max > 0 ? Math.min(1, Math.max(0, y / max)) : 0);
+      const progress = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
+
+      if (mobileFill.current) mobileFill.current.style.transform = `scaleX(${progress})`;
+      if (desktopFill.current) desktopFill.current.style.transform = `scaleY(${progress})`;
 
       const probe = y + window.innerHeight * 0.4;
       let idx = 0;
-      for (let i = 0; i < bounds.length; i++) {
-        if (probe >= bounds[i].top) idx = i;
+      for (let i = 0; i < bounds.current.length; i++) {
+        if (probe >= bounds.current[i].top) idx = i;
       }
-      setActive(idx);
-    };
-
-    const onScroll = () => {
-      cancelAnimationFrame(raf.current);
-      raf.current = requestAnimationFrame(read);
+      if (idx !== lastActive.current) {
+        lastActive.current = idx;
+        setActive(idx);
+      }
     };
 
     let resizeTimer: ReturnType<typeof setTimeout>;
     const onResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        bounds = measure();
-        read();
+        bounds.current = measure();
       }, 120);
     };
 
-    read();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    tick();
+    gsap.ticker.add(tick);
     window.addEventListener('resize', onResize, { passive: true });
     return () => {
-      cancelAnimationFrame(raf.current);
+      gsap.ticker.remove(tick);
       clearTimeout(resizeTimer);
-      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
   }, []);
@@ -82,19 +89,25 @@ export default function FilmRail() {
 
   return (
     <>
-      {/* Mobile: top progress bar */}
+      {/* Mobile: top progress bar, sitting just under the 72px nav rather
+          than over it. z-30 keeps it under the nav's z-40, so the mobile
+          sheet's near-opaque background (which occupies this same strip
+          while open) still paints over it instead of the bar cutting a red
+          line across the open menu. */}
       <div
         aria-hidden
-        className="fixed inset-x-0 top-0 z-50 lg:hidden"
-        style={{ height: 5 }}
+        className="fixed inset-x-0 top-[var(--nav-height)] z-30 lg:hidden"
+        style={{ height: 'var(--nav-bar-height)' }}
       >
         <div style={{ height: 1, background: hairline }} />
         <div
+          ref={mobileFill}
           style={{
             height: 3,
-            width: `${progress * 100}%`,
+            width: '100%',
             background: 'var(--color-zic-red)',
-            transition: 'width 90ms linear',
+            transform: 'scaleX(0)',
+            transformOrigin: '0 0',
           }}
         />
         <div style={{ height: 1, background: hairline }} />
@@ -119,14 +132,17 @@ export default function FilmRail() {
             }}
           >
             <div
+              ref={desktopFill}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: `${progress * 100}%`,
+                height: '100%',
                 background: 'var(--color-zic-red)',
-                transition: 'height 90ms linear, opacity 300ms var(--ease-out)',
+                transform: 'scaleY(0)',
+                transformOrigin: '0 0',
+                transition: 'opacity 300ms var(--ease-out)',
                 opacity: current.film === 0 ? 0 : 1,
               }}
             />

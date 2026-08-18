@@ -55,6 +55,14 @@ const TITLE_ACTIVE = '#f7f7f5'; // var(--color-eng-white)
 const TITLE_DIM = '#a9adb2'; // var(--color-metal-grey)
 const TICK_ACTIVE = '#e31e24'; // var(--color-zic-red)
 const TICK_DIM = '#2a3037'; // var(--color-deep-steel)
+// Metal-grey, not steel-text: this track sits on the carbon chamber, and
+// steel-text fails the 4.5:1 contrast floor there (DESIGN.md).
+const READOUT_DIM = '#a9adb2';
+// The unselected states recede as a group, not just their title, so the
+// active one reads as picked out rather than merely differently coloured.
+const COL_DIM = 0.4;
+const TICK_GLOW = '0 0 10px 2px rgba(227,30,36,0.55)';
+const TICK_NO_GLOW = '0 0 0 rgba(227,30,36,0)';
 
 export default function Inside() {
   const [reduced, setReduced] = useState(false);
@@ -144,8 +152,14 @@ export default function Inside() {
         defaults: { ease: 'none' },
       });
 
-      gsap.set(ticks[0], { backgroundColor: TICK_ACTIVE });
-      gsap.set(ticks.slice(1), { backgroundColor: TICK_DIM });
+      const setTick = (el: gsap.TweenTarget, active: boolean) =>
+        gsap.set(el, {
+          backgroundColor: active ? TICK_ACTIVE : TICK_DIM,
+          scaleY: active ? 2.5 : 1,
+          boxShadow: active ? TICK_GLOW : TICK_NO_GLOW,
+        });
+      setTick(ticks[0], true);
+      setTick(ticks.slice(1), false);
       gsap.set(frames[0], { opacity: 1 });
       gsap.set(frames.slice(1), { opacity: 0 });
 
@@ -192,26 +206,57 @@ export default function Inside() {
           .to(panels[1], { opacity: 0, y: -16, duration: FADE }, SWITCH_2 - FADE / 2)
           .to(panels[2], { opacity: 1, y: 0, duration: FADE }, SWITCH_2 - FADE / 2);
 
-        tl.set(ticks[0], { backgroundColor: TICK_DIM }, SWITCH_1)
-          .set(ticks[1], { backgroundColor: TICK_ACTIVE }, SWITCH_1)
-          .set(ticks[1], { backgroundColor: TICK_DIM }, SWITCH_2)
-          .set(ticks[2], { backgroundColor: TICK_ACTIVE }, SWITCH_2);
+        // Timeline setters are reversible, so the rail remains truthful
+        // when the visitor scrubs back through a state.
+        tl.set(ticks[0], { backgroundColor: TICK_DIM, scaleY: 1, boxShadow: TICK_NO_GLOW }, SWITCH_1)
+          .set(ticks[1], { backgroundColor: TICK_ACTIVE, scaleY: 2.5, boxShadow: TICK_GLOW }, SWITCH_1)
+          .set(ticks[1], { backgroundColor: TICK_DIM, scaleY: 1, boxShadow: TICK_NO_GLOW }, SWITCH_2)
+          .set(ticks[2], { backgroundColor: TICK_ACTIVE, scaleY: 2.5, boxShadow: TICK_GLOW }, SWITCH_2);
       } else {
         const titles = gsap.utils.toArray<HTMLElement>('[data-state-title]');
-        gsap.set(titles[0], { color: TITLE_ACTIVE });
-        gsap.set(titles.slice(1), { color: TITLE_DIM });
+        const nums = gsap.utils.toArray<HTMLElement>('[data-state-num]');
+        const readouts = gsap.utils.toArray<HTMLElement>('[data-state-readout]');
+        const cols = gsap.utils.toArray<HTMLElement>('[data-state-col]');
+
+        const setTitle = (el: gsap.TweenTarget, active: boolean) =>
+          gsap.set(el, {
+            color: active ? TITLE_ACTIVE : TITLE_DIM,
+            fontWeight: active ? 800 : 600,
+            scale: active ? 1.06 : 1,
+          });
+        const setNum = (el: gsap.TweenTarget, active: boolean) =>
+          gsap.set(el, { color: active ? TICK_ACTIVE : TITLE_DIM, fontWeight: active ? 600 : 500 });
+        const setReadout = (el: gsap.TweenTarget, active: boolean) =>
+          gsap.set(el, { color: active ? TICK_ACTIVE : READOUT_DIM });
+
+        setTitle(titles[0], true);
+        setTitle(titles.slice(1), false);
+        setNum(nums[0], true);
+        setNum(nums.slice(1), false);
+        setReadout(readouts[0], true);
+        setReadout(readouts.slice(1), false);
+        gsap.set(cols[0], { opacity: 1 });
+        gsap.set(cols.slice(1), { opacity: COL_DIM });
 
         // Which state reads as "active" flips as its frame transition
         // completes — a clean cut timed to the motion, not to an
-        // arbitrary thirds boundary.
-        tl.set(ticks[0], { backgroundColor: TICK_DIM }, SWITCH_1)
-          .set(ticks[1], { backgroundColor: TICK_ACTIVE }, SWITCH_1)
-          .set(titles[0], { color: TITLE_DIM }, SWITCH_1)
-          .set(titles[1], { color: TITLE_ACTIVE }, SWITCH_1)
-          .set(ticks[1], { backgroundColor: TICK_DIM }, SWITCH_2)
-          .set(ticks[2], { backgroundColor: TICK_ACTIVE }, SWITCH_2)
-          .set(titles[1], { color: TITLE_DIM }, SWITCH_2)
-          .set(titles[2], { color: TITLE_ACTIVE }, SWITCH_2);
+        // arbitrary thirds boundary. These are timeline setters, rather
+        // than callbacks, so ScrollTrigger restores the prior state when a
+        // reader scrubs back through either boundary.
+        const switchTo = (i: number, at: number) => {
+          tl.set(ticks[i - 1], { backgroundColor: TICK_DIM, scaleY: 1, boxShadow: TICK_NO_GLOW }, at)
+            .set(ticks[i], { backgroundColor: TICK_ACTIVE, scaleY: 2.5, boxShadow: TICK_GLOW }, at)
+            .set(titles[i - 1], { color: TITLE_DIM, fontWeight: 600, scale: 1 }, at)
+            .set(titles[i], { color: TITLE_ACTIVE, fontWeight: 800, scale: 1.06 }, at)
+            .set(nums[i - 1], { color: TITLE_DIM, fontWeight: 500 }, at)
+            .set(nums[i], { color: TICK_ACTIVE, fontWeight: 600 }, at)
+            .set(readouts[i - 1], { color: READOUT_DIM }, at)
+            .set(readouts[i], { color: TICK_ACTIVE }, at)
+            .set(cols[i - 1], { opacity: COL_DIM }, at)
+            .set(cols[i], { opacity: 1 }, at);
+        };
+        switchTo(1, SWITCH_1);
+        switchTo(2, SWITCH_2);
       }
     }, wrap);
 
@@ -287,20 +332,35 @@ export default function Inside() {
   ) : (
     <ul className="grid w-full grid-cols-3 gap-6 md:gap-10">
       {STATES.map((s, i) => (
-        <li key={s.n} className="text-center">
-          <p className="t-label" style={{ color: 'var(--color-steel-text)' }}>
+        <li
+          key={s.n}
+          data-state-col
+          className="text-center"
+          style={{ opacity: i === 0 ? 1 : COL_DIM }}
+        >
+          <p
+            data-state-num
+            className="t-label"
+            style={{ color: i === 0 ? 'var(--color-zic-red)' : 'var(--color-metal-grey)', fontWeight: i === 0 ? 600 : 500 }}
+          >
             {s.n} / 03
           </p>
           <h3
             data-state-title
             className="t-display mt-2 text-[1.25rem] tracking-[-0.02em] md:text-[1.5rem]"
-            style={{ color: i === 0 ? 'var(--color-eng-white)' : 'var(--color-metal-grey)' }}
+            style={{
+              color: i === 0 ? 'var(--color-eng-white)' : 'var(--color-metal-grey)',
+              fontWeight: i === 0 ? 800 : 600,
+              transform: i === 0 ? 'scale(1.06)' : 'scale(1)',
+              transformOrigin: 'center',
+            }}
           >
             {s.title}
           </h3>
           <p
+            data-state-readout
             className="t-mono mt-2 text-[0.75rem] tracking-[0.08em]"
-            style={{ color: 'var(--color-zic-red)' }}
+            style={{ color: i === 0 ? 'var(--color-zic-red)' : 'var(--color-metal-grey)' }}
           >
             {s.readout}
           </p>
@@ -318,7 +378,7 @@ export default function Inside() {
   const Stage = (
     <div
       ref={stage}
-      className="relative flex h-[100dvh] flex-col items-center justify-between overflow-hidden pb-[6vh] pt-[calc(72px+6vh)]"
+      className="relative flex h-[100dvh] flex-col items-center justify-between overflow-hidden pb-[6vh] pt-[calc(var(--nav-clearance)+6vh)]"
     >
       {/* Full-bleed macro, cross-fading between the three states. The film
           sits on the horizontal centre line. */}
@@ -354,15 +414,18 @@ export default function Inside() {
 
       {/* State track */}
       <div className="shell relative flex w-full flex-col items-center text-center">
-        <div className="mb-6 flex gap-2" aria-hidden>
+        <div className="mb-6 flex items-center gap-2" aria-hidden>
           {STATES.map((s, i) => (
             <span
               key={s.n}
               data-state-tick
               style={{
                 width: 34,
-                height: 2,
-                backgroundColor: i === 0 ? '#e31e24' : '#2a3037',
+                height: 3,
+                backgroundColor: i === 0 ? TICK_ACTIVE : TICK_DIM,
+                transformOrigin: 'center',
+                transform: i === 0 ? 'scaleY(2.5)' : 'scaleY(1)',
+                boxShadow: i === 0 ? TICK_GLOW : TICK_NO_GLOW,
               }}
             />
           ))}
