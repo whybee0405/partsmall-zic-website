@@ -233,10 +233,13 @@ is `dark: false`.
 Run: `npm run typecheck`
 Expected: exits 0
 
-- [ ] **Step 3: Run lint**
+- [ ] **Step 3: Skip lint (documented gap, not this task's to fix)**
 
-Run: `npm run lint`
-Expected: exits 0, no warnings/errors on `components/sections/WhyZic.tsx`
+`npm run lint` is not usable non-interactively in this repo: there is no ESLint config file
+anywhere in the project (checked, confirmed pre-existing — not caused by this worktree), so
+`next lint` opens an interactive "How would you like to configure ESLint?" wizard and hangs.
+This is a pre-existing repository gap, out of scope for this feature. Do not run `npm run lint`
+and do not create an ESLint config as a side effect of this task.
 
 - [ ] **Step 4: Commit**
 
@@ -427,10 +430,10 @@ state and out of scope for this plan.)
 
 **Files:** none (verification only)
 
-- [ ] **Step 1: Run lint across the whole project**
+- [ ] **Step 1: Skip lint (documented gap, not this task's to fix)**
 
-Run: `npm run lint`
-Expected: exits 0
+Same pre-existing gap as Task 2 Step 3: no ESLint config exists in this repo, so `npm run
+lint` hangs on an interactive prompt rather than running. Not in scope for this feature.
 
 - [ ] **Step 2: Run typecheck across the whole project**
 
