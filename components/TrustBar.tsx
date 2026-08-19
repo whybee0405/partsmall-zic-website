@@ -96,11 +96,12 @@ export default function TrustBar() {
           row ~73px) that it left up to ~57px of dead air after the
           narrower icons before their label started — wasted space, not
           alignment. Hugging the icon to its own label instead keeps every
-          row dense; the icons still share one left edge (items-start on
-          the column), which is what actually read as "a list" to begin
-          with. sm: and up is unchanged — a single row once there's width
-          for one line per item. */}
-      <div className="shell flex w-full flex-col items-start justify-center gap-y-2 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:py-3">
+          row dense; items-center then centres each of those now-compact
+          rows as a block, matching the page's centred axis instead of
+          pinning everything to the left padding edge. sm: and up is
+          unchanged — a single row once there's width for one line per
+          item. */}
+      <div className="shell flex w-full flex-col items-center justify-center gap-y-2 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:py-3">
         {/* SK ZIC's own standing, not the distributor's — leads, since it's
             the strongest and most directly on-brand of the three. */}
         <a href={KBPI.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
