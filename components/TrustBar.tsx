@@ -89,39 +89,50 @@ export default function TrustBar() {
         pointerEvents: visible ? 'auto' : 'none',
       }}
     >
-      {/* flex-col below sm: three items of very different natural widths
-          (measured ~298px / ~187px / ~335px at 375px). items-center block-
-          centered each independently, so each row still started at its own
-          unrelated left edge (20px / 39px / 94px) even though the wrap-line
-          alignment within each row was correct — a screenshot check showed
-          this still read as ragged, not "a list". items-start makes all
-          three rows share one left edge instead. sm: and up restores
-          items-center, since that axis is vertical once flex-row kicks in
-          and centering the icon against its own text there is correct. */}
+      {/* flex-col below sm. Sharing a left edge (items-start) wasn't enough
+          on its own: the three icons have very different natural widths
+          (numeral ~23px, RMI logo ~53px, star row ~73px), so even with a
+          shared left edge the *text* after each icon still started at three
+          different x positions — the actual thing a "list" needs to line up.
+          Each row below is its own [80px_1fr] grid on mobile (80px comfortably
+          fits the widest icon, and is a step on BRAND-DNA's spacing scale),
+          so every label starts at the same x regardless of its icon's width.
+          sm: and up drops back to the original flex row — that layout
+          already read cleanly once there's room for one line per item. */}
       <div className="shell flex w-full flex-col items-start justify-center gap-y-2 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:py-3">
         {/* SK ZIC's own standing, not the distributor's — leads, since it's
             the strongest and most directly on-brand of the three. */}
-        <a href={KBPI.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+        <a
+          href={KBPI.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="grid w-full grid-cols-[80px_1fr] items-center gap-x-2 sm:flex sm:w-auto sm:gap-2"
+        >
           <span
-            className="t-display text-[1.25rem] leading-none tracking-[-0.02em] sm:text-[1.375rem]"
+            className="justify-self-start t-display text-[1.25rem] leading-none tracking-[-0.02em] sm:text-[1.375rem]"
             style={{ color: 'var(--color-zic-red)' }}
           >
             {KBPI.years}
           </span>
-          <span className="t-label whitespace-nowrap text-left" style={{ color: 'var(--color-steel-text)' }}>
+          {/* No whitespace-nowrap: fine at its old width, but the fixed
+              80px icon column leaves this row less room, and this label's
+              scrollWidth (266px) turned out to exceed its box (247px) at
+              375px viewport — an inches-from-clipping overflow, same class
+              of bug as the rating label. Let it wrap like that one does. */}
+          <span className="t-label text-left" style={{ color: 'var(--color-steel-text)' }}>
             Years &middot; <span style={{ color: 'var(--color-carbon)' }}>{KBPI.index} No.1</span>
           </span>
         </a>
 
         <div aria-hidden className="hidden h-4 w-px sm:block" style={{ background: 'var(--color-hairline)' }} />
 
-        <div className="flex items-center gap-2">
+        <div className="grid w-full grid-cols-[80px_1fr] items-center gap-x-2 sm:flex sm:w-auto sm:gap-2">
           <Image
             src="/brand/RMI%20Approved%20Logo%20-%20160x60px.png"
             alt="RMI Approved"
             width={160}
             height={60}
-            className="h-5 w-auto sm:h-6"
+            className="justify-self-start h-5 w-auto sm:h-6"
           />
           <span className="t-label whitespace-nowrap" style={{ color: 'var(--color-steel-text)' }}>
             Approved supplier
@@ -132,12 +143,21 @@ export default function TrustBar() {
 
         {/* This one is about the distributor's service, not the oil, so the
             entity is named rather than left implicit in the link target. */}
-        <a href={GOOGLE_RATING.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-          <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
+        <a
+          href={GOOGLE_RATING.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="grid w-full grid-cols-[80px_1fr] items-center gap-x-2 sm:flex sm:w-auto sm:gap-2"
+        >
+          <span className="justify-self-start">
+            <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
+          </span>
           {/* No whitespace-nowrap here (unlike the other two items): this is
               the longest of the three labels, and on narrow viewports an
               unbreakable run overflowed past the viewport edge and got
-              hard-clipped by body's overflow-x: hidden rather than wrapping. */}
+              hard-clipped by body's overflow-x: hidden rather than wrapping.
+              If it wraps, the grid column above keeps line two aligned with
+              line one instead of drifting to a different x. */}
           <span className="t-label" style={{ color: 'var(--color-carbon)' }}>
             {GOOGLE_RATING.score}
             <span style={{ color: 'var(--color-steel-text)' }}>
