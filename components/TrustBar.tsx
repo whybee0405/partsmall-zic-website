@@ -89,60 +89,48 @@ export default function TrustBar() {
         pointerEvents: visible ? 'auto' : 'none',
       }}
     >
-      {/* flex-col below sm. Sharing a left edge (items-start) wasn't enough
-          on its own: the three icons have very different natural widths
-          (numeral ~23px, RMI logo ~53px, star row ~73px), so even with a
-          shared left edge the *text* after each icon still started at three
-          different x positions — the actual thing a "list" needs to line up.
-          Each row below is its own [80px_1fr] grid on mobile (80px comfortably
-          fits the widest icon, and is a step on BRAND-DNA's spacing scale),
-          so every label starts at the same x regardless of its icon's width.
-          sm: and up drops back to the original flex row — that layout
-          already read cleanly once there's room for one line per item. */}
+      {/* flex-col below sm, each item its own tight icon+label row (flex,
+          gap-2) rather than a shared fixed-width icon column. A shared
+          80px column made every label start at the same x, but the icons
+          are so different in width (numeral ~23px, RMI logo ~53px, star
+          row ~73px) that it left up to ~57px of dead air after the
+          narrower icons before their label started — wasted space, not
+          alignment. Hugging the icon to its own label instead keeps every
+          row dense; the icons still share one left edge (items-start on
+          the column), which is what actually read as "a list" to begin
+          with. sm: and up is unchanged — a single row once there's width
+          for one line per item. */}
       <div className="shell flex w-full flex-col items-start justify-center gap-y-2 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:py-3">
         {/* SK ZIC's own standing, not the distributor's — leads, since it's
             the strongest and most directly on-brand of the three. */}
-        <a
-          href={KBPI.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="grid w-full grid-cols-[80px_1fr] items-center gap-x-2 sm:flex sm:w-auto sm:gap-2"
-        >
+        <a href={KBPI.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
           <span
-            className="justify-self-start t-display text-[1.25rem] leading-none tracking-[-0.02em] sm:text-[1.375rem]"
+            className="t-display text-[1.25rem] leading-none tracking-[-0.02em] sm:text-[1.375rem]"
             style={{ color: 'var(--color-zic-red)' }}
           >
             {KBPI.years}
           </span>
-          {/* fontSize inline, not a text-[9px] class: .t-label's own
-              font-size (0.625rem = 10px) sits later in the compiled
-              stylesheet than Tailwind's utility layer here, so a same-
-              specificity class-based override silently lost — confirmed by
-              checking the computed style, still 10px. Inline style always
-              wins. At 10px, this is the one label of the three that didn't
-              fit its 247px column on one line (needed 266px) — wanted as a
-              single line like the other two rows, not wrapped. 9px closes
-              that with ~7px to spare; applied to all three labels below,
-              not just this one, so the list still reads as one consistent
-              size. Still no whitespace-nowrap: if it's ever a hair short
-              again (zoom, a font substitution), wrapping is the graceful
-              fallback, not a hard clip. */}
-          <span className="t-label text-left" style={{ color: 'var(--color-steel-text)', fontSize: '9px' }}>
+          {/* No whitespace-nowrap: without the fixed icon column eating
+              width, this row has plenty of room, but if it's ever a hair
+              short (a narrower phone, a font substitution) wrapping is the
+              graceful outcome, not a hard clip against body's
+              overflow-x: hidden. */}
+          <span className="t-label text-left" style={{ color: 'var(--color-steel-text)' }}>
             Years &middot; <span style={{ color: 'var(--color-carbon)' }}>{KBPI.index} No.1</span>
           </span>
         </a>
 
         <div aria-hidden className="hidden h-4 w-px sm:block" style={{ background: 'var(--color-hairline)' }} />
 
-        <div className="grid w-full grid-cols-[80px_1fr] items-center gap-x-2 sm:flex sm:w-auto sm:gap-2">
+        <div className="flex items-center gap-2">
           <Image
             src="/brand/RMI%20Approved%20Logo%20-%20160x60px.png"
             alt="RMI Approved"
             width={160}
             height={60}
-            className="justify-self-start h-5 w-auto sm:h-6"
+            className="h-5 w-auto sm:h-6"
           />
-          <span className="t-label whitespace-nowrap" style={{ color: 'var(--color-steel-text)', fontSize: '9px' }}>
+          <span className="t-label whitespace-nowrap" style={{ color: 'var(--color-steel-text)' }}>
             Approved supplier
           </span>
         </div>
@@ -151,22 +139,12 @@ export default function TrustBar() {
 
         {/* This one is about the distributor's service, not the oil, so the
             entity is named rather than left implicit in the link target. */}
-        <a
-          href={GOOGLE_RATING.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="grid w-full grid-cols-[80px_1fr] items-center gap-x-2 sm:flex sm:w-auto sm:gap-2"
-        >
-          <span className="justify-self-start">
-            <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
-          </span>
+        <a href={GOOGLE_RATING.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+          <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
           {/* Entity name (Parts-Mall Africa) dropped: not needed here, and
               this trust strip has three items competing for a compact
-              mobile row already. No whitespace-nowrap regardless — this
-              class of label has overflowed before at other lengths, and the
-              grid column keeps a wrapped second line aligned if it ever
-              does again. */}
-          <span className="t-label" style={{ color: 'var(--color-carbon)', fontSize: '9px' }}>
+              mobile row already. */}
+          <span className="t-label" style={{ color: 'var(--color-carbon)' }}>
             {GOOGLE_RATING.score}
             <span style={{ color: 'var(--color-steel-text)' }}>
               {' '}
