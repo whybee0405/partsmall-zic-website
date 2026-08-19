@@ -5,6 +5,7 @@ import BackToTop from '@/components/BackToTop';
 import TrustBar from '@/components/TrustBar';
 import OpeningSequence from '@/components/sections/OpeningSequence';
 import Proof from '@/components/sections/Proof';
+import WhyZic from '@/components/sections/WhyZic';
 import Inside from '@/components/sections/Inside';
 import Yubase from '@/components/sections/Yubase';
 import Vhvi from '@/components/sections/Vhvi';
@@ -66,6 +67,7 @@ export default function Page() {
         {/* Opening sequence: one becomes five, pinned and scrubbed */}
         <OpeningSequence />
         <Proof />
+        <WhyZic />
 
         {/* Chapters 01-06 */}
         <Inside />

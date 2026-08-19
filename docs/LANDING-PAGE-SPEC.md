@@ -50,8 +50,8 @@ Every button on the page consumes this. The ecommerce swap is a one-line change.
 
 ## 2. Page architecture
 
-Twelve sections. **Everything is centre-aligned.** One dominant idea per fold. Chambers alternate
-light and dark so that darkness always earns its place.
+Thirteen sections. **Everything is centre-aligned.** One dominant idea per fold. Chambers
+alternate light and dark so that darkness always earns its place.
 
 > **Layout note.** An earlier draft used asymmetric, left-aligned composition. That was overruled:
 > the page is now centre-aligned throughout, on a symmetrical axis. Depth and hierarchy come from
@@ -67,6 +67,7 @@ light and dark so that darkness always earns its place.
 | 02 | **The Splash** | Carbon | 6px |
 | 03 | **The Five — range reveal** | Carbon | 8px |
 | 04 | Proof manifest | Carbon | 2px |
+| 04a | Why ZIC — 10 benefits, plain language | Engineering White | 2px |
 | 05 | Ch.01 — What is happening inside? | Carbon | 8px |
 | 06 | Ch.02 — Performance begins with the base | Engineering White | 6px |
 | 07 | Ch.03 — Stable under change | Carbon | 3px → 7px |
