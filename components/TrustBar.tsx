@@ -14,8 +14,14 @@ const STAR_PATH =
  */
 function StarRow({ rating, outOf }: { rating: number; outOf: number }) {
   const pct = Math.max(0, Math.min(1, rating / outOf)) * 100;
+  // w-max: without an explicit width, this row (a block-level flex
+  // container) stretches to fill its parent's width. That's invisible for
+  // the base row, but the red overlay row's parent is deliberately narrowed
+  // to `pct%` to create the clip window — without w-max, the row itself
+  // shrank to match, so flexbox squeezed all five stars narrower instead of
+  // the overlay's overflow:hidden cleanly clipping a full-size row.
   const stars = (color: string) => (
-    <div className="flex gap-[2px]">
+    <div className="flex w-max gap-[2px]">
       {Array.from({ length: outOf }).map((_, i) => (
         <svg key={i} viewBox="0 0 24 24" width="13" height="13">
           <path d={STAR_PATH} fill={color} />
@@ -119,7 +125,11 @@ export default function TrustBar() {
             entity is named rather than left implicit in the link target. */}
         <a href={GOOGLE_RATING.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
           <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
-          <span className="t-label whitespace-nowrap" style={{ color: 'var(--color-carbon)' }}>
+          {/* No whitespace-nowrap here (unlike the other two items): this is
+              the longest of the three labels, and on narrow viewports an
+              unbreakable run overflowed past the viewport edge and got
+              hard-clipped by body's overflow-x: hidden rather than wrapping. */}
+          <span className="t-label" style={{ color: 'var(--color-carbon)' }}>
             {GOOGLE_RATING.score}
             <span style={{ color: 'var(--color-steel-text)' }}>
               {' '}
