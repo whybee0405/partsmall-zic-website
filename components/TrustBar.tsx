@@ -89,7 +89,16 @@ export default function TrustBar() {
         pointerEvents: visible ? 'auto' : 'none',
       }}
     >
-      <div className="shell flex w-full flex-wrap items-center justify-center gap-x-7 gap-y-2 py-2.5 text-center sm:gap-x-8 sm:py-3">
+      {/* flex-col below sm: three items of very different natural widths,
+          each independently centered by justify-center + flex-wrap, landed
+          at unrelated left edges (measured: 39px / 94px / 20px at 375px)
+          rather than reading as a list — and text-center made the third
+          item's wrapped second line centre under the first instead of
+          reading as a paragraph. A column stack with items-center (not
+          text-center) fixes both: each row is centred as one block, and any
+          wrapped text lines left-align to each other. sm: and up keeps the
+          original single-row layout, which already read cleanly. */}
+      <div className="shell flex w-full flex-col items-center justify-center gap-y-2 py-2.5 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:py-3">
         {/* SK ZIC's own standing, not the distributor's — leads, since it's
             the strongest and most directly on-brand of the three. */}
         <a href={KBPI.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
