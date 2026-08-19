@@ -8,7 +8,7 @@
 /* ==========================================================================
    SK ZIC South Africa — token layer
    Mirrors the `ZIC` variable collection in Figma (VariableCollectionId:178:3).
-   Change both together or neither. Source of truth: BRAND-DNA.md §3, §4, §6.
+   Change both together or neither. Source of truth: docs/BRAND-DNA.md §3, §4, §6.
    ========================================================================== */
 
 @theme {
@@ -57,7 +57,7 @@
 }
 
 :root {
-  /* Motion. Never ease-in. Exponential ease-out per DESIGN.md. */
+  /* Motion. Never ease-in. Exponential ease-out per docs/DESIGN.md. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
@@ -79,7 +79,19 @@
      clear the bar, so content never reads as touching it. */
   --nav-height: 72px;
   --nav-bar-height: 5px;
-  --nav-clearance: calc(var(--nav-height) + var(--nav-bar-height) + var(--spacing-gutter));
+  /* TrustBar's own rendered height, measured — it wraps to more lines on a
+     narrow viewport (see the max-width: 767px override below), so this is
+     not a guess: change TrustBar's layout, re-measure, update this. */
+  --trust-bar-height: 55px;
+  --nav-clearance: calc(
+    var(--nav-height) + var(--nav-bar-height) + var(--trust-bar-height) + var(--spacing-gutter)
+  );
+}
+
+@media (max-width: 767px) {
+  :root {
+    --trust-bar-height: 96px;
+  }
 }
 
 /* ==========================================================================
@@ -108,12 +120,18 @@ body {
 /* ==========================================================================
    Cursor
    A fine-pointer enhancement, mounted only after the Cursor client component
-   has confirmed motion is allowed. The ring inverts against every chamber;
-   the red dot remains the active ZIC flow mark.
+   has confirmed motion is allowed. A precision ring stretches in the
+   direction of travel, switching between light and dark chambers by surface.
    ========================================================================== */
 
 html.has-custom-cursor body {
   cursor: none;
+}
+
+/* Components may set `cursor: pointer` directly, so override interactive
+   controls explicitly once the custom cursor is active. */
+html.has-custom-cursor :where(a, button:not(:disabled), [role='tab']) {
+  cursor: none !important;
 }
 
 html.has-custom-cursor :where(input, textarea) {
@@ -145,12 +163,15 @@ html.has-custom-cursor button:disabled {
   left: -16px;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--color-pure-white);
+  border: 1px solid var(--color-carbon);
   border-radius: 50%;
   content: '';
-  mix-blend-mode: difference;
   transform: translateZ(0);
   transition: transform var(--dur-label) var(--ease-out);
+}
+
+.zic-cursor.-on-dark::before {
+  border-color: var(--color-pure-white);
 }
 
 .zic-cursor-inner::before {
@@ -171,7 +192,7 @@ html.has-custom-cursor button:disabled {
 }
 
 .zic-cursor.-sticky::before {
-  transform: scale(1.5) translateZ(0);
+  transform: scale(1.7) translateZ(0);
 }
 
 .zic-cursor.-active .zic-cursor-inner::before {
@@ -180,6 +201,32 @@ html.has-custom-cursor button:disabled {
 
 .zic-cursor.-hidden {
   opacity: 0;
+}
+
+.zic-cursor-ripple {
+  position: fixed;
+  z-index: 299;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 1px solid var(--color-oil-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.5);
+  will-change: transform, opacity;
+  animation: zic-cursor-ripple 620ms var(--ease-out) var(--ripple-delay) forwards;
+}
+
+@keyframes zic-cursor-ripple {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(6);
+  }
 }
 
 /* Lenis owns the scroll. */
@@ -349,6 +396,70 @@ html.lenis body {
 :where(a, button, input, select, textarea):focus-visible {
   outline: 2px solid var(--color-zic-red);
   outline-offset: 2px;
+}
+
+/* Supporting pages: legal, access, contact and product reference material. */
+.support-copy > * + * {
+  margin-top: 1rem;
+}
+
+.support-copy p,
+.support-copy li {
+  max-width: 72ch;
+}
+
+.support-copy ul,
+.support-copy ol {
+  padding-left: 1.25rem;
+}
+
+.support-copy ul {
+  list-style: square;
+}
+
+.support-copy ol {
+  list-style: decimal;
+}
+
+.support-copy li + li {
+  margin-top: 0.625rem;
+}
+
+.support-copy a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.support-copy strong {
+  color: var(--color-carbon);
+  font-weight: 600;
+}
+
+.chamber-dark .support-copy strong {
+  color: var(--color-eng-white);
+}
+
+/* Desktop product shelf. CSS hover/focus keeps the fixed shelf attached to
+   its trigger even while the pointer crosses from the nav row into the shelf. */
+.product-shelf {
+  clip-path: inset(0 0 100% 0);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, -6px, 0);
+  transition:
+    clip-path 240ms var(--ease-out),
+    opacity 180ms ease,
+    transform 240ms var(--ease-out);
+}
+
+.nav-products:hover .product-shelf,
+.nav-products:focus-within .product-shelf,
+.product-shelf[data-open='true'] {
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
 }
 
 /* ==========================================================================

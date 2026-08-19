@@ -1,7 +1,7 @@
 # SK ZIC South Africa — Landing Page Specification
 
 Companion documents: `BRAND-DNA.md` (identity), `PRODUCT.md` (brief and register),
-`DESIGN.md` (tokens, components, motion), `docs/RESEARCH.md` (facts and product intelligence).
+`DESIGN.md` (tokens, components, motion), `RESEARCH.md` (facts and product intelligence).
 
 ---
 
@@ -174,10 +174,11 @@ as a device rather than a decoration.
 
 Carbon Black. The payoff.
 
-Stamp: `THE SOUTH AFRICAN RANGE · FIVE PRODUCTS · SEVEN PACK SIZES`
+Stamp: `FIVE PRODUCTS · SEVEN PACK SIZES`
 
-H2, centred, 88px: **Five jobs.**
-Sub: *Everything Parts-Mall Africa actually holds, and nothing it does not.*
+H2, centred, 88px: **The South African range.**
+Sub: *The SK ZIC line-up Parts-Mall Africa imports today, matched to the specifications this
+market runs.*
 
 The four other products emerge from **behind the centre canister** and translate outward to their
 positions on a shallow arc, 70ms stagger, outermost last. All five share a common baseline on a
@@ -223,7 +224,7 @@ global supply.            since its 1995 launch.   Southern African         Part
                                                    countries.
 ```
 
-Sources for every claim live in `docs/RESEARCH.md §1.2` and `§2.2`.
+Sources for every claim live in `RESEARCH.md §1.2` and `§2.2`.
 
 ---
 

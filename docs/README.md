@@ -45,12 +45,13 @@ Read in this order.
 | File | What it is |
 |---|---|
 | `BRAND-DNA.md` | **Authoritative.** SK ZIC identity system v2.0. Colour, type, the 12 visual principles, the claim taxonomy. |
-| `docs/ZIC_South_Africa_Product_Master.md` | **Authoritative for availability.** The confirmed SA assortment from Parts-Mall Africa. |
+| `ZIC_South_Africa_Product_Master.md` | **Authoritative for availability.** The confirmed SA assortment from Parts-Mall Africa. |
 | `PRODUCT.md` | The brief. Users, tone, anti-references, strategic principles. |
 | `DESIGN.md` | Tokens, components, motion, bans. |
-| `docs/LANDING-PAGE-SPEC.md` | Section-by-section build spec, motion inventory, responsive behaviour, build order. |
-| `docs/RESEARCH.md` | Research dossier. Every claim sourced; unverified ones flagged. |
-| `docs/design-snapshots/` | Approved design baseline, rendered from Figma. |
+| `LANDING-PAGE-SPEC.md` | Section-by-section build spec, motion inventory, responsive behaviour, build order. |
+| `RESEARCH.md` | Research dossier. Every claim sourced; unverified ones flagged. |
+| `GA4-DEPLOYMENT-SETUP.md` | Future GA4, cookie consent, privacy, deployment, and verification checklist. GA4 is currently disabled. |
+| `design-snapshots/` | Approved design baseline, rendered from Figma. |
 
 **Figma:** [SK ZIC — Landing Page](https://www.figma.com/design/0S6E56v08klREoNwS06ry8) · page `node-id=178-2`
 
@@ -86,13 +87,13 @@ Carried from `BRAND-DNA.md`. Getting these wrong is a warranty claim, not a desi
    must not imply a particulate-filter diesel is covered.
 5. **Red is active, never decorative.** Flow, CTAs, active states, proof. Never a large fill.
 6. **No em dashes in copy.**
-7. **Never AI-upscale product packaging.** It fabricates label text. See `docs/RESEARCH.md §4.8`.
+7. **Never AI-upscale product packaging.** It fabricates label text. See `RESEARCH.md §4.8`.
 
 ---
 
 ## Open items before launch
 
-Tracked in full at `docs/LANDING-PAGE-SPEC.md §9`.
+Tracked in full at `LANDING-PAGE-SPEC.md §9`.
 
 - ❗ **ZIC X3000 6 L pack shot** — no official render exists. Currently a flagged placeholder.
 - ❗ **X3000 API category** — the Parts-Mall master says CG-4, SK ZIC's catalogue and the pack say CF-4.

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { PRODUCTS, FAMILIES } from '@/content/products';
 import { Stamp, Notice, ClaimChip } from '@/components/ui';
 
@@ -37,16 +38,9 @@ export default function Products() {
           className="t-lead mt-6"
           style={{ maxWidth: 'var(--measure-lead)', color: 'var(--color-deep-steel)' }}
         >
-          Five products. Seven pack sizes. Everything Parts-Mall Africa actually holds, and nothing
-          it does not.
+          Five products. Seven pack sizes. The SK ZIC line-up Parts-Mall Africa imports today,
+          matched to the specifications this market runs.
         </p>
-
-        <div className="mt-10 w-full">
-          <Notice label="[ The rule ]">
-            Start with the specification your vehicle manufacturer requires. Then match the ZIC
-            product. Never the other way round, and never by viscosity alone.
-          </Notice>
-        </div>
 
         {/* Family filter */}
         <div className="mt-10 flex flex-wrap justify-center gap-2.5" role="tablist" aria-label="Product family">
@@ -78,9 +72,10 @@ export default function Products() {
         {/* Table */}
         <div className="mt-12 w-full text-left">
           <div
-            className="hidden md:grid md:grid-cols-[1.4fr_0.8fr_1.9fr_1.6fr_auto] md:gap-6 md:pb-3"
+            className="hidden md:grid md:grid-cols-[4.5rem_1.4fr_0.8fr_1.9fr_1.6fr_auto] md:gap-6 md:pb-3"
             style={{ borderBottom: '1px solid var(--color-carbon)' }}
           >
+            <span aria-hidden />
             {['Product', 'Pack sizes', 'Specification', 'Who it’s for', ''].map((h) => (
               <span key={h} className="t-label" style={{ color: 'var(--color-steel-text)' }}>
                 {h}
@@ -104,9 +99,22 @@ export default function Products() {
                     onClick={() => setOpen(isOpen ? null : p.id)}
                     aria-expanded={isOpen}
                     aria-controls={`panel-${p.id}`}
-                    className="grid w-full grid-cols-1 gap-2 px-4 py-6 text-left md:grid-cols-[1.4fr_0.8fr_1.9fr_1.6fr_auto] md:items-start md:gap-6"
+                    className="grid w-full grid-cols-[4rem_1fr] gap-x-4 gap-y-2 px-4 py-6 text-left md:grid-cols-[4.5rem_1.4fr_0.8fr_1.9fr_1.6fr_auto] md:items-start md:gap-6"
                   >
-                    <span>
+                    <span
+                      className="relative flex h-20 w-16 items-end justify-center overflow-hidden rounded-[4px] border md:h-24 md:w-[4.5rem]"
+                      style={{ background: 'var(--color-fluid-grey)', borderColor: 'var(--color-hairline)' }}
+                    >
+                      <Image
+                        src={p.image}
+                        alt={`${p.name} ${p.grade} pack`}
+                        fill
+                        sizes="(min-width: 768px) 72px, 64px"
+                        className="object-contain p-1.5"
+                      />
+                    </span>
+
+                    <span className="self-center">
                       <span
                         className="t-display block text-[1.25rem] font-semibold tracking-[-0.02em]"
                         style={{ color: 'var(--color-carbon)' }}
@@ -118,19 +126,19 @@ export default function Products() {
                       </span>
                     </span>
 
-                    <span className="t-mono text-[0.8125rem] font-semibold tracking-[0.04em]">
+                    <span className="t-mono col-span-2 mt-2 text-[0.8125rem] font-semibold tracking-[0.04em] md:col-auto md:mt-0">
                       {p.packSizes.join(' · ')}
                     </span>
 
-                    <span className="t-mono text-[0.75rem] leading-[1.65]" style={{ color: 'var(--color-deep-steel)' }}>
+                    <span className="t-mono col-span-2 text-[0.75rem] leading-[1.65] md:col-auto" style={{ color: 'var(--color-deep-steel)' }}>
                       {p.specification.length ? p.specification.join('\n') : p.oilType}
                     </span>
 
-                    <span className="text-[0.875rem] leading-[1.58]" style={{ color: 'var(--color-steel-text)' }}>
+                    <span className="col-span-2 text-[0.875rem] leading-[1.58] md:col-auto" style={{ color: 'var(--color-steel-text)' }}>
                       {p.whoItsFor}
                     </span>
 
-                    <span className="t-mono hidden text-[1.125rem] md:block" style={{ color: 'var(--color-steel-text)' }}>
+                    <span className="t-mono col-span-2 hidden text-[1.125rem] md:col-auto md:block" style={{ color: 'var(--color-steel-text)' }}>
                       {isOpen ? '−' : '+'}
                     </span>
                   </button>
@@ -180,6 +188,13 @@ export default function Products() {
                             {p.warning}
                           </p>
                         )}
+
+                        <a
+                          href={`/products/${p.id}`}
+                          className="btn btn-primary mt-7 !min-h-[44px] !px-5 text-[0.8125rem]"
+                        >
+                          View product details
+                        </a>
                       </div>
                     </div>
                   </div>

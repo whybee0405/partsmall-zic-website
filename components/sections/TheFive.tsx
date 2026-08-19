@@ -47,18 +47,19 @@ export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
 
       <div className="shell stack-centre relative">
         <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
-          The South African range · Five products · Seven pack sizes
+          Five products · Seven pack sizes
         </p>
 
         <h2 className="t-display t-h2 mt-6" style={{ color: 'var(--color-eng-white)' }}>
-          Five jobs.
+          The South African range.
         </h2>
 
         <p
           className="t-lead mt-6"
           style={{ maxWidth: 'var(--measure-lead)', color: 'var(--color-metal-grey)' }}
         >
-          Everything Parts-Mall Africa actually holds, and nothing it does not.
+          The SK ZIC line-up Parts-Mall Africa imports today, matched to the specifications this
+          market runs.
         </p>
 
         <ul className="mt-16 grid w-full grid-cols-2 gap-x-4 gap-y-12 md:mt-20 md:grid-cols-5 md:items-end md:gap-x-6">

@@ -5,7 +5,7 @@
  * the oil film in cross-section, so its thickness tracks what the chapter is
  * about. Thin at boundary lubrication, thick at fluid film.
  *
- * Spec: DESIGN.md "Signature device — The Film Rail".
+ * Spec: docs/DESIGN.md "Signature device — The Film Rail".
  */
 
 export interface SectionMeta {
@@ -31,6 +31,7 @@ export const SECTIONS: SectionMeta[] = [
   { id: 'products', label: 'Find your ZIC', film: 4, dark: false, tick: '04' },
   { id: 'transmission', label: '“Multi” does not mean any', film: 4, dark: true, tick: '05' },
   { id: 'distribution', label: 'Where to get it', film: 4, dark: true, tick: '06' },
+  { id: 'faq', label: 'Quick answers', film: 2, dark: false, tick: '07' },
   { id: 'enquire', label: 'Enquire', film: 4, dark: true },
   { id: 'footer', label: 'Footer', film: 0, dark: true },
 ];
@@ -40,5 +41,6 @@ export const NAV_LINKS = [
   { href: '#inside', label: 'Technology' },
   { href: '#products', label: 'Products' },
   { href: '#distribution', label: 'Availability' },
+  { href: 'https://www.skzic.com/eng/index.do', label: 'ZIC Korea', external: true },
   { href: 'https://www.parts-mall.co.za', label: 'Parts Mall', external: true },
 ] as const;

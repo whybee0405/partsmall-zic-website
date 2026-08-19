@@ -104,17 +104,28 @@ export default function Yubase() {
 
       {/* Full-bleed band, breaking the shell on purpose. Static — the motion
           budget for this chapter belongs to the numbers below, not to
-          decoration. */}
-      <div className="relative mt-16 h-[280px] w-full md:h-[360px]">
+          decoration. Metal Grey hairlines top and bottom read the band as an
+          instrumented panel — the same bearing-surface device as the Film
+          Rail — rather than a stock photo dropped between two chambers. */}
+      <div
+        aria-hidden
+        className="mt-16 w-full"
+        style={{ height: 1, background: 'var(--color-metal-grey)' }}
+      />
+      <div className="relative h-[280px] w-full md:h-[360px]">
         <Image
           src="/plates/oil-vortex.jpg"
           alt="Amber motor oil turning in a slow vortex, lit against carbon black"
           fill
           sizes="100vw"
-          data-plane="0"
           className="object-cover"
         />
       </div>
+      <div
+        aria-hidden
+        className="w-full"
+        style={{ height: 1, background: 'var(--color-metal-grey)' }}
+      />
 
       <div className="shell stack-centre pb-24 lg:pb-28">
         <div className="mt-16 w-full" style={{ height: 1, background: 'var(--color-hairline)' }} />

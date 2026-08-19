@@ -271,8 +271,11 @@ export default function Enquire() {
                 {status === 'submitting' ? 'Sending…' : PRIMARY_CTA.label}
               </button>
               <p className="mt-6 text-[0.8125rem]" style={{ color: 'var(--color-steel-text)' }}>
-                We reply within one business day. Your details are not shared outside Parts-Mall
-                Africa.
+                We reply within one business day. See our{' '}
+                <a href="/privacy" className="underline underline-offset-4">
+                  Privacy Notice
+                </a>{' '}
+                for how Parts-Mall Africa uses your details.
               </p>
             </div>
           </form>

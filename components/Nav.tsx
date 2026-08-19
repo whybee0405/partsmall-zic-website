@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { NAV_LINKS, SECTIONS } from '@/content/sections';
 import { PRIMARY_CTA } from '@/content/cta';
+import { PRODUCTS } from '@/content/products';
 
 /**
  * Fixed nav.
@@ -26,6 +27,8 @@ export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [dark, setDark] = useState(false);
   const [open, setOpen] = useState(false);
+  const [productShelfOpen, setProductShelfOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
 
   useEffect(() => {
     const ids = SECTIONS.map((s) => s.id);
@@ -61,17 +64,25 @@ export default function Nav() {
     };
   }, []);
 
-  // Close on Escape, and don't leave the page scrollable-behind-the-sheet.
+  // Close either navigation layer on Escape.
   useEffect(() => {
-    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        setProductShelfOpen(false);
+        setMobileProductsOpen(false);
+      }
     };
     window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Don't leave the page scrollable behind the mobile sheet.
+  useEffect(() => {
+    if (!open) return;
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
     return () => {
-      window.removeEventListener('keydown', onKey);
       document.documentElement.style.overflow = prevOverflow;
     };
   }, [open]);
@@ -103,7 +114,7 @@ export default function Nav() {
           />
         </Link>
 
-        <ul className="hidden items-center gap-10 lg:flex">
+        <ul className="hidden items-center gap-6 lg:flex xl:gap-10">
           {NAV_LINKS.map((l) => {
             const external = 'external' in l && l.external;
             const linkStyle = {
@@ -121,6 +132,106 @@ export default function Nav() {
                 style={{ background: 'var(--color-zic-red)' }}
               />
             );
+
+            if (l.label === 'Products') {
+              return (
+                <li
+                  key={l.href}
+                  className="nav-products group/products"
+                  onMouseEnter={() => setProductShelfOpen(true)}
+                  onMouseLeave={() => setProductShelfOpen(false)}
+                  onFocusCapture={() => setProductShelfOpen(true)}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                      setProductShelfOpen(false);
+                    }
+                  }}
+                >
+                  <Link
+                    href={l.href}
+                    className={`${linkClassName} inline-flex items-center gap-1.5`}
+                    style={linkStyle}
+                    aria-haspopup="true"
+                    aria-expanded={productShelfOpen}
+                  >
+                    {l.label}
+                    <span
+                      aria-hidden
+                      className="t-mono text-[0.625rem]"
+                      style={{
+                        transform: productShelfOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 180ms var(--ease-out)',
+                      }}
+                    >
+                      ↓
+                    </span>
+                    {underline}
+                  </Link>
+
+                  <div
+                    className="product-shelf fixed inset-x-0 top-[var(--nav-height)] border-y"
+                    data-open={productShelfOpen}
+                    data-product-shelf
+                    style={{
+                      background: `color-mix(in oklab, ${surface} 98%, transparent)`,
+                      borderColor: line,
+                    }}
+                  >
+                    <div className="shell py-5">
+                      <div className="mb-4 flex items-center justify-between">
+                        <p className="t-label" style={{ color: dark ? 'var(--color-metal-grey)' : 'var(--color-steel-text)' }}>
+                          South African range / 05 products
+                        </p>
+                        <Link
+                          href="#products"
+                          onClick={() => setProductShelfOpen(false)}
+                          className="text-[0.75rem] underline underline-offset-4"
+                          style={{ color: ink }}
+                        >
+                          Compare the range
+                        </Link>
+                      </div>
+                      <ul className="grid grid-cols-5" style={{ borderBlock: `1px solid ${line}` }}>
+                        {PRODUCTS.map((product, index) => (
+                          <li key={product.id} style={{ borderLeft: index === 0 ? undefined : `1px solid ${line}` }}>
+                            <Link
+                              href={`/products/${product.id}`}
+                              onClick={() => setProductShelfOpen(false)}
+                              className="group/product flex min-h-[116px] items-center gap-3 px-3 py-4 xl:px-5"
+                            >
+                              <span
+                                className="relative h-[82px] w-[52px] shrink-0 overflow-hidden rounded-[4px]"
+                                style={{ background: 'var(--color-fluid-grey)' }}
+                              >
+                                <Image
+                                  src={product.image}
+                                  alt=""
+                                  fill
+                                  sizes="52px"
+                                  className="object-contain p-1"
+                                />
+                              </span>
+                              <span>
+                                <span className="t-label block" style={{ color: 'var(--color-zic-red)' }}>
+                                  {product.family}
+                                </span>
+                                <span className="t-display mt-1 block text-[0.9375rem] font-semibold leading-tight tracking-[-0.02em]" style={{ color: ink }}>
+                                  {product.name}
+                                </span>
+                                <span className="t-mono mt-1 block text-[0.6875rem]" style={{ color: dark ? 'var(--color-metal-grey)' : 'var(--color-steel-text)' }}>
+                                  {product.grade}
+                                </span>
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              );
+            }
+
             return (
               <li key={l.href}>
                 {external ? (
@@ -160,34 +271,44 @@ export default function Nav() {
             aria-expanded={open}
             aria-controls="mobile-nav-sheet"
             aria-label={open ? 'Close menu' : 'Open menu'}
-            onClick={() => setOpen((v) => !v)}
-            className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px] lg:hidden"
+            onClick={() => {
+              setOpen((value) => {
+                if (value) setMobileProductsOpen(false);
+                return !value;
+              });
+            }}
+            className="relative h-11 w-11 shrink-0 lg:hidden"
           >
             <span
               aria-hidden
-              className="block h-[2px] w-6"
+              className="absolute left-1/2 top-1/2 block h-[2px] w-6"
               style={{
                 background: ink,
                 transition: 'transform 220ms var(--ease-out), opacity 220ms var(--ease-out)',
-                transform: open ? 'translateY(3.5px) rotate(45deg)' : 'none',
+                transform: open
+                  ? 'translate(-50%, -50%) rotate(45deg)'
+                  : 'translate(-50%, calc(-50% - 7px))',
               }}
             />
             <span
               aria-hidden
-              className="block h-[2px] w-6"
+              className="absolute left-1/2 top-1/2 block h-[2px] w-6"
               style={{
                 background: ink,
                 transition: 'transform 220ms var(--ease-out), opacity 220ms var(--ease-out)',
+                transform: 'translate(-50%, -50%)',
                 opacity: open ? 0 : 1,
               }}
             />
             <span
               aria-hidden
-              className="block h-[2px] w-6"
+              className="absolute left-1/2 top-1/2 block h-[2px] w-6"
               style={{
                 background: ink,
                 transition: 'transform 220ms var(--ease-out), opacity 220ms var(--ease-out)',
-                transform: open ? 'translateY(-3.5px) rotate(-45deg)' : 'none',
+                transform: open
+                  ? 'translate(-50%, -50%) rotate(-45deg)'
+                  : 'translate(-50%, calc(-50% + 7px))',
               }}
             />
           </button>
@@ -202,12 +323,13 @@ export default function Nav() {
         aria-modal="true"
         aria-label="Site navigation"
         inert={!open}
-        className="overflow-hidden lg:hidden"
+        className="lg:hidden"
         style={{
           background: `color-mix(in oklab, ${surface} 97%, transparent)`,
           backdropFilter: 'blur(10px)',
           borderBottom: open ? `1px solid ${line}` : 'none',
-          maxHeight: open ? 400 : 0,
+          maxHeight: open ? 'calc(100dvh - var(--nav-height))' : 0,
+          overflowY: open ? 'auto' : 'hidden',
           transition: 'max-height 280ms var(--ease-out), border-color 280ms var(--ease-out)',
         }}
       >
@@ -216,6 +338,77 @@ export default function Nav() {
             const external = 'external' in l && l.external;
             const itemStyle = { color: ink, borderTop: `1px solid ${line}` };
             const itemClassName = 't-display block py-4 text-[1.375rem] tracking-[-0.02em]';
+
+            if (l.label === 'Products') {
+              return (
+                <li key={l.href} style={{ borderTop: `1px solid ${line}` }}>
+                  <button
+                    type="button"
+                    aria-expanded={mobileProductsOpen}
+                    onClick={() => setMobileProductsOpen((value) => !value)}
+                    className="t-display flex w-full items-center justify-between py-4 text-left text-[1.375rem] tracking-[-0.02em]"
+                    style={{ color: ink }}
+                  >
+                    Products
+                    <span
+                      aria-hidden
+                      className="t-mono text-[1rem]"
+                      style={{
+                        transform: mobileProductsOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                        transition: 'transform 180ms var(--ease-out)',
+                      }}
+                    >
+                      +
+                    </span>
+                  </button>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateRows: mobileProductsOpen ? '1fr' : '0fr',
+                      opacity: mobileProductsOpen ? 1 : 0,
+                      transition: 'grid-template-rows 240ms var(--ease-out), opacity 180ms ease',
+                    }}
+                  >
+                    <div className="overflow-hidden">
+                      <ul className="pb-4">
+                        <li>
+                          <Link
+                            href="#products"
+                            onClick={() => {
+                              setOpen(false);
+                              setMobileProductsOpen(false);
+                            }}
+                            className="t-mono block py-2 text-[0.75rem]"
+                            style={{ color: 'var(--color-zic-red)' }}
+                          >
+                            Compare the range
+                          </Link>
+                        </li>
+                        {PRODUCTS.map((product) => (
+                          <li key={product.id}>
+                            <Link
+                              href={`/products/${product.id}`}
+                              onClick={() => {
+                                setOpen(false);
+                                setMobileProductsOpen(false);
+                              }}
+                              className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem]"
+                              style={{ color: ink }}
+                            >
+                              <span>{product.name}</span>
+                              <span className="t-mono text-[0.6875rem]" style={{ color: dark ? 'var(--color-metal-grey)' : 'var(--color-steel-text)' }}>
+                                {product.grade}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              );
+            }
+
             return (
               <li key={l.href}>
                 {external ? (

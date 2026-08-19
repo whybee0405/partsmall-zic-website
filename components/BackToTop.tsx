@@ -56,7 +56,7 @@ export default function BackToTop() {
 
   return (
     <div
-      className="fixed z-40"
+      className="fixed z-40 hidden lg:block"
       style={{
         right: 'max(1.25rem, env(safe-area-inset-right))',
         top: '50%',

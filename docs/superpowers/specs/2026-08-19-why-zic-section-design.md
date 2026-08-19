@@ -4,7 +4,7 @@
 
 Comparing the current site against SK ZIC's official "Why ZIC? — 10 Benefits" page
 (`skzic.com/eng/ibuilder.do?menu_idx=150`) surfaced a real content gap: the ten benefits already
-exist in `BRAND-DNA.md` §9, transcribed with the correct copy guardrails, but were never turned
+exist in `../../BRAND-DNA.md` §9, transcribed with the correct copy guardrails, but were never turned
 into an actual section on the page.
 
 The current section order (`app/page.tsx`) is Hero → Splash → The Five → Proof → Inside → Yubase
@@ -19,13 +19,13 @@ official 10 Benefits page provides, and it is what this design adds.
 - Give the page a benefit-first bridge between the authority claims (Proof) and the mechanism
   deep-dive (Inside/Yubase/Vhvi), so a visitor gets "why this matters to you" before "how it
   works."
-- Reuse the official ZIC 10 Benefits content (`BRAND-DNA.md` §9) rewritten in plain,
+- Reuse the official ZIC 10 Benefits content (`../../BRAND-DNA.md` §9) rewritten in plain,
   non-technical language, respecting the guardrails already noted there: never override OEM
   service intervals, no absolute lifespan guarantees, no unsupported fuel-economy or horsepower
   figures, no product-specific approval claims transferred to the whole range.
 - Add light South African localisation (cold-start, heat/load, stop-start driving) on a few of
   the ten items, consistent with how the rest of the page localises context without changing
-  the ZIC identity (`BRAND-DNA.md` §2, "Localise Context, Not Identity").
+  the ZIC identity (`../../BRAND-DNA.md` §2, "Localise Context, Not Identity").
 - Ship using existing conventions and components only — no new design system, no new asset
   generation (icons), no new motion primitive.
 
@@ -34,7 +34,7 @@ official 10 Benefits page provides, and it is what this design adds.
 - Not a chapter in the numbered Ch.01–06 technical sequence. It does not get a Film Rail tick,
   a `Stamp` component, or a nav link, matching how the existing Proof manifest is also
   unnumbered.
-- Not replacing or shortening Inside/Yubase/Vhvi. Per `BRAND-DNA.md` rule 4 ("Technology
+- Not replacing or shortening Inside/Yubase/Vhvi. Per `../../BRAND-DNA.md` rule 4 ("Technology
   Creates Authority"), the technical depth is a differentiator and stays as-is — this section
   is additive, a sequencing fix, not a rewrite of the technical chapters.
 - No custom icons per benefit. Considered and rejected in favor of a numbered-grid style
@@ -87,8 +87,8 @@ export const WHY_ZIC: WhyZicCell[] = [
 ];
 ```
 
-Source: `BRAND-DNA.md` §9 (official 10 Benefits, already transcribed with guardrail notes), plus
-the SA localisation lens in `docs/RESEARCH.md` §3 for items 05, 06, and 09.
+Source: `../../BRAND-DNA.md` §9 (official 10 Benefits, already transcribed with guardrail notes), plus
+the SA localisation lens in `../../RESEARCH.md` §3 for items 05, 06, and 09.
 
 ## Component
 

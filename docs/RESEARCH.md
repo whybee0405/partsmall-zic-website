@@ -33,9 +33,12 @@ These are the ones that survive scrutiny and carry weight with a workshop owner:
 - **Group III production capacity**: ~48,600 b/d at Ulsan, plus ~19,300 b/d through ILBOC
   (Repsol JV, Spain) and ~12,500 b/d through PatraSK (Pertamina JV, Indonesia).
 - **ZIC has been Korea's No.1 engine oil brand since its 1995 launch** — 30 years as of 2025.
-- **Korea Brand Power Index No.1** — a 23-consecutive-year run was reported publicly; a
-  25-year figure appears in 2023 material. Use the conservative framing "No.1 in the Korea
-  Brand Power Index for over two decades" rather than a specific count. **[VERIFY EXACT COUNT]**
+- **Korea Brand Power Index (K-BPI) No.1** — the count has moved as older material aged out (23
+  years reported in 2021, 25 in 2023 material); the official site currently states **"ZIC, No.1
+  in Korea Brand Power Index for 28 Consecutive Years,"** confirmed directly from
+  skzic.com/eng/index.do on 2026-08-19. Use this exact figure, not the older 23/25-year ones,
+  and re-verify against the same page before reusing it much past this date — the count moves
+  every year the streak continues.
 - ZIC is sold in **60+ countries**. Published network lists confirm Asia, the Middle East,
   Europe, the Americas and Oceania; the official network page names only **Ethiopia and Libya**
   in Africa, which is precisely why Parts-Mall Africa's role matters as the Southern African
@@ -336,6 +339,7 @@ Non-negotiable, and worth restating because they are the things most easily got 
 ## 6. Sources
 
 - [SK ZIC official product catalogue](https://www.skzic.com/eng/productmanage/info/product/list.do?menu_idx=170) — all product specifications, 89 product records retrieved
+- [SK ZIC official homepage](https://www.skzic.com/eng/index.do) — current K-BPI consecutive-year claim, retrieved 2026-08-19
 - [SK ZIC global network](https://m.skzic.com/eng/ibuilder.do?per_menu_idx=128&tabCnt=9&menu_idx=129)
 - [SK Enmove — Lubricants](https://www.skenmove.com/business/lubricants)
 - [SK Enmove — Base Oil](https://www.skenmove.com/business/base_oil)

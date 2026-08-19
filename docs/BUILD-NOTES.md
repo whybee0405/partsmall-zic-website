@@ -1,6 +1,6 @@
 # Build notes
 
-State of the code as of 2026-08-12. Read alongside `docs/LANDING-PAGE-SPEC.md`.
+State of the code as of 2026-08-12. Read alongside `LANDING-PAGE-SPEC.md`.
 
 ## Running it
 
@@ -122,7 +122,7 @@ for anyway. First load went 214 kB → 172 kB.
 
 ## Known content issues
 
-Carried from `docs/LANDING-PAGE-SPEC.md §9`. These are content blockers, not
+Carried from `LANDING-PAGE-SPEC.md §9`. These are content blockers, not
 code ones.
 
 - ❗ `public/products/zic-x3000-15w40-6l.png` is **placeholder art**: a genuine

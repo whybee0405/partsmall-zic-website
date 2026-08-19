@@ -1,9 +1,11 @@
 /**
  * Authority claims. Every one is sourced in docs/RESEARCH.md §1.2 and §2.2.
  *
- * Do not add a claim here without a source. Do not sharpen the wording of an
- * existing one: the Brand Power Index figure in particular is deliberately
- * vague because published counts disagree (23 vs 25 consecutive years).
+ * Do not add a claim here without a source. The Brand Power Index figure
+ * moves every year the streak continues — it is pinned to the exact wording
+ * of skzic.com/eng/index.do as retrieved on 2026-08-19; re-verify against
+ * that page before reusing it much past this date rather than assuming the
+ * number still holds.
  */
 
 export interface ProofCell {
@@ -18,7 +20,7 @@ export const PROOF_CELLS: ProofCell[] = [
   },
   {
     label: '[ HERITAGE ]',
-    value: 'Korea’s No.1 engine oil brand every year since its 1995 launch.',
+    value: 'No.1 in the Korea Brand Power Index for 28 consecutive years.',
   },
   {
     label: '[ NETWORK ]',

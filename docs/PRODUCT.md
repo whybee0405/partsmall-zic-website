@@ -44,7 +44,7 @@ Parts-Mall Africa is the **local distribution and access layer, not the visual p
 The page is dressed as ZIC. Parts-Mall appears as the endorsement and the answer to "where do
 I get it", in its own navy, in one chapter and the footer. It does not colonise the hero.
 
-Full identity system: `BRAND-DNA.md`. Product and market research: `docs/RESEARCH.md`.
+Full identity system: `BRAND-DNA.md`. Product and market research: `RESEARCH.md`.
 
 ## Tone
 

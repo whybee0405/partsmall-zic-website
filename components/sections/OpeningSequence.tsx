@@ -390,20 +390,9 @@ export default function OpeningSequence() {
           PLUNGE,
         )
         // A slow tumble, so the fall is not one rigid block.
-        .to(centrePack, { rotate: -4, duration: 0.3 }, FALL_IN)
-        .to(centrePack, { rotate: 1.6, duration: 0.15 }, 0.35)
-        // The last beat before contact throws the bottle hard off balance,
-        // as if the fall itself is what unbalances it, then the impact
-        // snaps it back upright with a springy overshoot rather than a
-        // clean stop — that recoil is what reads as contact. Given a long,
-        // gentle run-up rather than a snap, so the tilt itself, not just
-        // the recovery, reads as motion.
-        .to(centrePack, { rotate: 45, duration: LAND - 0.5, ease: 'power1.inOut' }, 0.5)
-        .to(
-          centrePack,
-          { rotate: 0, duration: REVEAL - LAND, ease: 'elastic.out(1, 0.55)' },
-          LAND,
-        )
+        .to(centrePack, { rotate: -3, duration: 0.3 }, FALL_IN)
+        .to(centrePack, { rotate: 1.8, duration: 0.25 }, 0.35)
+        .to(centrePack, { rotate: 0, duration: LAND - PLUNGE, ease: 'power2.in' }, PLUNGE)
         // Blur bridges the fast stretch so the eye reads one moving object
         // rather than a stack of positions, and clears on contact.
         .to(centrePack, { filter: 'blur(5px)', duration: (LAND - PLUNGE) * 0.7 }, PLUNGE)
@@ -602,19 +591,20 @@ export default function OpeningSequence() {
             style={{ opacity: 0, transform: 'translateY(26px)' }}
           >
             <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
-              The South African range · Five products · Seven pack sizes
+              Five products · Seven pack sizes
             </p>
             <h2
               className="t-display mt-5 short:mt-3"
               style={{ fontSize: HEAD_SIZE, lineHeight: 0.98, color: ENG_WHITE }}
             >
-              Five jobs.
+              The South African range.
             </h2>
             <p
               className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 720, color: 'var(--color-metal-grey)' }}
             >
-              Everything Parts-Mall Africa actually holds, and nothing it does not.
+              The SK ZIC line-up Parts-Mall Africa imports today, matched to the specifications
+              this market runs.
             </p>
           </div>
         </div>

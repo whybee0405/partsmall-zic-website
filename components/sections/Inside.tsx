@@ -56,7 +56,7 @@ const TITLE_DIM = '#a9adb2'; // var(--color-metal-grey)
 const TICK_ACTIVE = '#e31e24'; // var(--color-zic-red)
 const TICK_DIM = '#2a3037'; // var(--color-deep-steel)
 // Metal-grey, not steel-text: this track sits on the carbon chamber, and
-// steel-text fails the 4.5:1 contrast floor there (DESIGN.md).
+// steel-text fails the 4.5:1 contrast floor there (docs/DESIGN.md).
 const READOUT_DIM = '#a9adb2';
 // The unselected states recede as a group, not just their title, so the
 // active one reads as picked out rather than merely differently coloured.
