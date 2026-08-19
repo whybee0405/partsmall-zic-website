@@ -25,6 +25,7 @@ export const SECTIONS: SectionMeta[] = [
   { id: 'splash', label: 'The Splash', film: 6, dark: true },
   { id: 'range', label: 'The Five', film: 8, dark: true },
   { id: 'proof', label: 'Proof', film: 2, dark: true },
+  { id: 'why-zic', label: 'Why ZIC', film: 2, dark: false },
   { id: 'inside', label: 'What is happening inside?', film: 8, dark: true, tick: '01' },
   { id: 'yubase', label: 'Performance begins with the base', film: 6, dark: false, tick: '02' },
   { id: 'vhvi', label: 'Stable under change', film: 3, dark: true, tick: '03' },
