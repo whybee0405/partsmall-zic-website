@@ -115,10 +115,15 @@ Imports `WHY_ZIC` from `content/why-zic.ts` and the existing `Rule` component fr
 
 ## Motion
 
-Reuses the existing `whileInView` Framer Motion convention used for section-enter reveals
-elsewhere on the page (`once: true`, ~260ms), applied to the grid as a whole or with a small
-per-row stagger consistent with existing patterns. No new motion primitive, no GSAP/ScrollTrigger
-involvement — this section has no pinning or scrubbing, unlike Inside/Vhvi.
+None. `framer-motion` is named in `LANDING-PAGE-SPEC.md`'s stack table but is not actually an
+installed dependency (checked `package.json`) and is not used anywhere in `components/sections/`
+today. The codebase's real conventions are: GSAP `ScrollTrigger` count-ups for sections with
+numeric data worth animating (`Yubase.tsx`, `Distribution.tsx`), and plain static rendering for
+sections without it. `Proof.tsx` — the closest structural analog to Why ZIC, a plain manifest
+grid with no numeric data — has no `useEffect`, no GSAP import, and no scroll-triggered reveal
+at all. Why ZIC follows that same precedent exactly: no motion, no new dependency, no
+`lib/scroll` import. This also keeps it a plain server component (no `'use client'` directive
+needed), unlike Yubase/Distribution/Inside/Vhvi/OpeningSequence, which all require it for GSAP.
 
 ## Responsive behaviour
 
@@ -137,8 +142,8 @@ lg:grid-cols-4`) and `Yubase.tsx` (`grid-cols-1 sm:grid-cols-3`).
 - Contrast: title/body colours checked against Engineering White must clear 4.5:1, per the
   existing accessibility rule applied to every other light chamber on the page.
 - No new interactive elements, so no new focus-management or keyboard-navigation surface.
-- Respects `prefers-reduced-motion: reduce` via the same global Framer Motion convention as
-  other section-enter reveals (opacity/colour only, no translate/scale).
+- No motion to gate: the section renders fully in place on load, so
+  `prefers-reduced-motion` has nothing to affect here (see Motion section above).
 
 ## Testing
 
@@ -150,5 +155,4 @@ Manual verification (no automated visual test coverage on this page today):
 - Confirm chamber alternation reads correctly scrolling from Proof (dark) through Why ZIC
   (light) into Inside (dark).
 - Confirm contrast of title/body text against Engineering White.
-- Confirm the section is inert under `prefers-reduced-motion: reduce` (content visible, no
-  motion) and reads correctly with text scaled to 200%.
+- Confirm the section reads correctly with text scaled to 200%.
