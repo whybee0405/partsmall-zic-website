@@ -114,12 +114,20 @@ export default function TrustBar() {
           >
             {KBPI.years}
           </span>
-          {/* No whitespace-nowrap: fine at its old width, but the fixed
-              80px icon column leaves this row less room, and this label's
-              scrollWidth (266px) turned out to exceed its box (247px) at
-              375px viewport — an inches-from-clipping overflow, same class
-              of bug as the rating label. Let it wrap like that one does. */}
-          <span className="t-label text-left" style={{ color: 'var(--color-steel-text)' }}>
+          {/* fontSize inline, not a text-[9px] class: .t-label's own
+              font-size (0.625rem = 10px) sits later in the compiled
+              stylesheet than Tailwind's utility layer here, so a same-
+              specificity class-based override silently lost — confirmed by
+              checking the computed style, still 10px. Inline style always
+              wins. At 10px, this is the one label of the three that didn't
+              fit its 247px column on one line (needed 266px) — wanted as a
+              single line like the other two rows, not wrapped. 9px closes
+              that with ~7px to spare; applied to all three labels below,
+              not just this one, so the list still reads as one consistent
+              size. Still no whitespace-nowrap: if it's ever a hair short
+              again (zoom, a font substitution), wrapping is the graceful
+              fallback, not a hard clip. */}
+          <span className="t-label text-left" style={{ color: 'var(--color-steel-text)', fontSize: '9px' }}>
             Years &middot; <span style={{ color: 'var(--color-carbon)' }}>{KBPI.index} No.1</span>
           </span>
         </a>
@@ -134,7 +142,7 @@ export default function TrustBar() {
             height={60}
             className="justify-self-start h-5 w-auto sm:h-6"
           />
-          <span className="t-label whitespace-nowrap" style={{ color: 'var(--color-steel-text)' }}>
+          <span className="t-label whitespace-nowrap" style={{ color: 'var(--color-steel-text)', fontSize: '9px' }}>
             Approved supplier
           </span>
         </div>
@@ -158,7 +166,7 @@ export default function TrustBar() {
               class of label has overflowed before at other lengths, and the
               grid column keeps a wrapped second line aligned if it ever
               does again. */}
-          <span className="t-label" style={{ color: 'var(--color-carbon)' }}>
+          <span className="t-label" style={{ color: 'var(--color-carbon)', fontSize: '9px' }}>
             {GOOGLE_RATING.score}
             <span style={{ color: 'var(--color-steel-text)' }}>
               {' '}
