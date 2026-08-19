@@ -29,7 +29,6 @@ export const GOOGLE_RATING = {
   outOf: 5,
   count: '1,000+',
   source: 'Google reviews',
-  entity: 'Parts-Mall Africa',
   href: 'https://koreanautoparts.co.za/',
 } as const;
 

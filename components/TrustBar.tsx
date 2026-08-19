@@ -152,17 +152,17 @@ export default function TrustBar() {
           <span className="justify-self-start">
             <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
           </span>
-          {/* No whitespace-nowrap here (unlike the other two items): this is
-              the longest of the three labels, and on narrow viewports an
-              unbreakable run overflowed past the viewport edge and got
-              hard-clipped by body's overflow-x: hidden rather than wrapping.
-              If it wraps, the grid column above keeps line two aligned with
-              line one instead of drifting to a different x. */}
+          {/* Entity name (Parts-Mall Africa) dropped: not needed here, and
+              this trust strip has three items competing for a compact
+              mobile row already. No whitespace-nowrap regardless — this
+              class of label has overflowed before at other lengths, and the
+              grid column keeps a wrapped second line aligned if it ever
+              does again. */}
           <span className="t-label" style={{ color: 'var(--color-carbon)' }}>
             {GOOGLE_RATING.score}
             <span style={{ color: 'var(--color-steel-text)' }}>
               {' '}
-              &middot; {GOOGLE_RATING.count} reviews &middot; {GOOGLE_RATING.entity}
+              &middot; {GOOGLE_RATING.count} reviews
             </span>
           </span>
         </a>
