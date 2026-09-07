@@ -550,7 +550,7 @@ export default function OpeningSequence() {
               Starts Within.
             </h1>
             <p
-              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
+              className="mt-5 text-base leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 540, color: 'var(--color-deep-steel)' }}
             >
               The world&rsquo;s number one Group III base oil, engineered into motor oil for South
@@ -577,7 +577,7 @@ export default function OpeningSequence() {
               One engineering standard.
             </h2>
             <p
-              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
+              className="mt-5 text-base leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 560, color: 'var(--color-metal-grey)' }}
             >
               The same base oil, the same additive discipline, the same laboratory. What changes is
@@ -600,7 +600,7 @@ export default function OpeningSequence() {
               The South African range.
             </h2>
             <p
-              className="mt-5 text-[0.9375rem] leading-[1.6] md:text-[1.0625rem] short:mt-3"
+              className="mt-5 text-base leading-[1.6] md:text-[1.0625rem] short:mt-3"
               style={{ maxWidth: 720, color: 'var(--color-metal-grey)' }}
             >
               The SK ZIC line-up Parts-Mall Africa imports today, matched to the specifications
@@ -636,7 +636,7 @@ export default function OpeningSequence() {
                 {note.label}
               </p>
               <p
-                className="mt-2 text-[0.9375rem] leading-[1.55] md:mt-3 md:text-[1.125rem] md:leading-[1.5]"
+                className="mt-2 text-base leading-[1.55] md:mt-3 md:text-[1.125rem] md:leading-[1.5]"
                 style={{ color: 'var(--color-eng-white)' }}
               >
                 {note.text}

@@ -15,11 +15,20 @@ export default function Cursor() {
 
     let destroyed = false;
     let cursor: import('mouse-follower').default | undefined;
+    let stuckTarget: HTMLElement | null = null;
     const root = document.documentElement;
+
+    const releaseStick = () => {
+      if (!stuckTarget) return;
+      stuckTarget = null;
+      cursor?.removeStick();
+      cursor?.removeState('-sticky');
+    };
 
     const handleStickyEnter = (event: MouseEvent) => {
       const target = (event.target as Element | null)?.closest<HTMLElement>('.btn-primary');
       if (!target || !cursor) return;
+      stuckTarget = target;
       cursor.setStick(target);
       cursor.addState('-sticky');
     };
@@ -27,10 +36,17 @@ export default function Cursor() {
     const handleStickyLeave = (event: MouseEvent) => {
       const target = (event.target as Element | null)?.closest<HTMLElement>('.btn-primary');
       const nextTarget = event.relatedTarget as Node | null;
-      if (!target || target.contains(nextTarget) || !cursor) return;
-      cursor.removeStick();
-      cursor.removeState('-sticky');
+      if (!target || target.contains(nextTarget)) return;
+      releaseStick();
     };
+
+    // A stuck button can unmount on its own click (the cookie banner's
+    // Accept, the enquiry form's submit button navigating away) without ever
+    // firing a real mouseout — the cursor would otherwise stay stuck to
+    // wherever that element used to be until an unrelated click reset it.
+    const stickyTargetWatcher = new MutationObserver(() => {
+      if (stuckTarget && !stuckTarget.isConnected) releaseStick();
+    });
 
     const isDarkSurface = (x: number, y: number) => {
       for (const element of document.elementsFromPoint(x, y)) {
@@ -90,6 +106,7 @@ export default function Cursor() {
         document.body.addEventListener('mouseout', handleStickyLeave, { passive: true });
         document.body.addEventListener('mousemove', syncSurface, { passive: true });
         document.body.addEventListener('pointerdown', emitRipple, { passive: true });
+        stickyTargetWatcher.observe(document.body, { childList: true, subtree: true });
       },
     );
 
@@ -100,6 +117,7 @@ export default function Cursor() {
       document.body.removeEventListener('mouseout', handleStickyLeave);
       document.body.removeEventListener('mousemove', syncSurface);
       document.body.removeEventListener('pointerdown', emitRipple);
+      stickyTargetWatcher.disconnect();
       document.querySelectorAll('.zic-cursor-ripple').forEach((ripple) => ripple.remove());
       cursor?.destroy();
     };

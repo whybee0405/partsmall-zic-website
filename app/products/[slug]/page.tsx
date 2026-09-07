@@ -19,7 +19,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const { slug } = await params;
   const product = PRODUCTS.find((item) => item.id === slug);
   if (!product) return {};
-  const description = `${product.name} ${product.grade}: ${product.positioning} Specifications, pack sizes and application guidance for South Africa.`;
+  const full = `${product.name} ${product.grade}: ${product.positioning} Specifications, pack sizes and application guidance for South Africa.`;
+  const compact = `${product.name} ${product.grade}: ${product.positioning} Specifications and application guidance for South Africa.`;
+  // Meta descriptions must stay within 120-155 characters; drop "pack sizes" first if the full version runs long.
+  const description = full.length <= 155 ? full : compact;
   return {
     title: `${product.name} ${product.grade}`,
     description,
@@ -30,7 +33,14 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       url: `/products/${product.id}`,
       type: 'website',
       locale: 'en_ZA',
-      images: [{ url: product.image, alt: `${product.name} ${product.grade} product pack` }],
+      images: [
+        {
+          url: product.image,
+          width: product.imageWidth,
+          height: product.imageHeight,
+          alt: `${product.name} ${product.grade} product pack`,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
@@ -106,7 +116,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="t-mono mt-5 text-[clamp(1.2rem,2.5vw,2rem)] font-semibold" style={{ color: 'var(--color-deep-steel)' }}>{product.grade}</p>
               <p className="t-lead mt-7 max-w-[650px]">{product.positioning}</p>
               <dl className="mt-10 grid grid-cols-2 gap-px" style={{ background: 'var(--color-hairline)', border: '1px solid var(--color-hairline)' }}>
-                <div className="p-4" style={{ background: 'var(--color-pure-white)' }}><dt className="t-label" style={{ color: 'var(--color-steel-text)' }}>Oil type</dt><dd className="mt-2 text-[0.9375rem]">{product.oilType}</dd></div>
+                <div className="p-4" style={{ background: 'var(--color-pure-white)' }}><dt className="t-label" style={{ color: 'var(--color-steel-text)' }}>Oil type</dt><dd className="mt-2 text-base">{product.oilType}</dd></div>
                 <div className="p-4" style={{ background: 'var(--color-pure-white)' }}><dt className="t-label" style={{ color: 'var(--color-steel-text)' }}>Pack sizes</dt><dd className="t-mono mt-2 text-[0.875rem]">{product.packSizes.join(' · ')}</dd></div>
               </dl>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -123,14 +133,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="t-stamp" style={{ color: 'var(--color-metal-grey)' }}>SPECIFICATION / APPLICATION</p>
               <h2 className="t-display t-h2 mt-6">Check the requirement first.</h2>
               <p className="t-lead mt-7" style={{ color: 'var(--color-metal-grey)' }}>{product.whoItsFor}</p>
-              {product.warning && <p className="mt-8 rounded-[8px] border p-5 text-[0.9375rem]" style={{ borderColor: 'var(--color-zic-red)', color: 'var(--color-eng-white)' }}>{product.warning}</p>}
+              {product.warning && <p className="mt-8 rounded-[8px] border p-5 text-base" style={{ borderColor: 'var(--color-zic-red)', color: 'var(--color-eng-white)' }}>{product.warning}</p>}
             </div>
             <div>
               <p className="t-label" style={{ color: 'var(--color-metal-grey)' }}>Published specification</p>
               <p className="t-mono mt-4 text-[1.25rem] leading-relaxed">{product.specification.length ? product.specification.join(' · ') : product.oilType}</p>
               {product.claims && <ul className="mt-8 space-y-3">{product.claims.map((claim) => <li key={claim.value} className="flex flex-wrap items-center gap-3"><ClaimChip verb={claim.verb} /><span className="t-mono text-[0.8125rem]">{claim.value}</span></li>)}</ul>}
               <p className="t-label mt-12" style={{ color: 'var(--color-metal-grey)' }}>Benefits</p>
-              <ul className="mt-4 grid gap-3 sm:grid-cols-2">{product.benefits.map((benefit) => <li key={benefit} className="border-t pt-3 text-[0.9375rem]" style={{ borderColor: 'var(--color-deep-steel)', color: 'var(--color-metal-grey)' }}>{benefit}</li>)}</ul>
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">{product.benefits.map((benefit) => <li key={benefit} className="border-t pt-3 text-base" style={{ borderColor: 'var(--color-deep-steel)', color: 'var(--color-metal-grey)' }}>{benefit}</li>)}</ul>
             </div>
           </div>
         </section>
@@ -143,7 +153,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <dl className="mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: 'var(--color-hairline)', border: '1px solid var(--color-hairline)' }}>
                 {Object.entries(product.properties).map(([key, value]) => <div key={key} className="p-5" style={{ background: 'var(--color-pure-white)' }}><dt className="t-label" style={{ color: 'var(--color-steel-text)' }}>{key}</dt><dd className="t-mono mt-3 text-[0.875rem]">{value}</dd></div>)}
               </dl>
-              <p className="mt-6 max-w-[760px] text-[0.8125rem]" style={{ color: 'var(--color-steel-text)' }}>Typical properties are not sales specifications and may vary within normal manufacturing tolerances. Request the current Technical Data Sheet before making a controlled technical decision.</p>
+              <p className="mt-6 max-w-[760px] text-base" style={{ color: 'var(--color-steel-text)' }}>Typical properties are not sales specifications and may vary within normal manufacturing tolerances. Request the current Technical Data Sheet before making a controlled technical decision.</p>
             </div>
           </section>
         )}

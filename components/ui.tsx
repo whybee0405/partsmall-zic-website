@@ -85,7 +85,7 @@ export function Notice({
       <p className="t-label" style={{ color: 'var(--color-zic-red)' }}>
         {label}
       </p>
-      <p className="mt-2 text-[0.9375rem] leading-[1.55]" style={{ color: 'var(--color-deep-steel)' }}>
+      <p className="mt-2 text-base leading-[1.55]" style={{ color: 'var(--color-deep-steel)' }}>
         {children}
       </p>
     </div>

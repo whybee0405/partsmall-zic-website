@@ -103,7 +103,7 @@ export default function Nav() {
       }}
     >
       <nav className="shell flex h-[var(--nav-height)] items-center justify-between">
-        <Link href="/" className="block leading-none" onClick={() => setOpen(false)}>
+        <Link href="/" className="flex items-center py-2" onClick={() => setOpen(false)}>
           <Image
             src={dark ? '/brand/zic-logo-on-dark.png' : '/brand/zic-logo-on-light.png'}
             alt="SK ZIC"
@@ -259,7 +259,7 @@ export default function Nav() {
         <div className="flex items-center gap-3">
           <Link
             href={PRIMARY_CTA.href}
-            className="btn btn-primary !min-h-[44px] !px-5 text-[0.9375rem]"
+            className="btn btn-primary !min-h-[44px] !px-5"
             onClick={() => setOpen(false)}
           >
             {PRIMARY_CTA.label}
@@ -378,7 +378,7 @@ export default function Nav() {
                               setOpen(false);
                               setMobileProductsOpen(false);
                             }}
-                            className="t-mono block py-2 text-[0.75rem]"
+                            className="t-mono flex min-h-[44px] items-center text-base"
                             style={{ color: 'var(--color-zic-red)' }}
                           >
                             Compare the range
@@ -392,7 +392,7 @@ export default function Nav() {
                                 setOpen(false);
                                 setMobileProductsOpen(false);
                               }}
-                              className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem]"
+                              className="flex min-h-[44px] items-center justify-between gap-4 py-2 text-base"
                               style={{ color: ink }}
                             >
                               <span>{product.name}</span>

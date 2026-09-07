@@ -22,7 +22,9 @@ export default function NotFound() {
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link href="/" className="btn btn-primary">Return home</Link>
+            <Link href="/#inside" className="btn btn-secondary">Technology</Link>
             <Link href="/#products" className="btn btn-secondary">Find your ZIC</Link>
+            <Link href="/#distribution" className="btn btn-secondary">Availability</Link>
             <Link href="/contact" className="btn btn-secondary">Contact us</Link>
           </div>
         </div>

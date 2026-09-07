@@ -3,9 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Footer from '@/components/sections/Footer';
+import { COMPANY } from '@/content/company';
 import { DEFAULT_SOCIAL_IMAGE } from '@/lib/seo';
-
-export const SITE_URL = 'https://zic.parts-mall.co.za';
 
 export function pageMetadata(title: string, description: string, path: string): Metadata {
   const canonical = path === '/' ? '/' : path;
@@ -41,7 +40,7 @@ export function SupportHeader() {
       }}
     >
       <nav className="shell flex h-[var(--nav-height)] items-center justify-between" aria-label="Supporting pages">
-        <Link href="/" className="block leading-none" aria-label="SK ZIC South Africa home">
+        <Link href="/" className="flex items-center py-2" aria-label="SK ZIC South Africa home">
           <Image
             src="/brand/zic-logo-on-light.png"
             alt="SK ZIC"
@@ -54,12 +53,12 @@ export function SupportHeader() {
         <div className="flex items-center gap-3 sm:gap-6">
           <Link
             href="/#products"
-            className="hidden text-[0.875rem] font-medium sm:inline"
+            className="hidden text-base font-medium sm:inline"
             style={{ color: 'var(--color-deep-steel)' }}
           >
             Products
           </Link>
-          <Link href="/#enquire" className="btn btn-primary !min-h-[44px] !px-4 text-[0.875rem] sm:!px-5">
+          <Link href="/#enquire" className="btn btn-primary !min-h-[44px] !px-4 sm:!px-5">
             Enquire Now
           </Link>
         </div>
@@ -146,11 +145,28 @@ export function ContentSection({
 
 export function ContactBlock({ title = 'Contact Parts-Mall Africa' }: { title?: string }) {
   return (
-    <div className="mt-8 grid gap-4 border-y py-6 sm:grid-cols-2" style={{ borderColor: 'var(--color-hairline)' }}>
+    <div className="mt-8 grid gap-6 border-y py-6 sm:grid-cols-3" style={{ borderColor: 'var(--color-hairline)' }}>
       <div>
         <p className="t-label" style={{ color: 'var(--color-steel-text)' }}>Email</p>
-        <a className="mt-2 inline-block underline underline-offset-4" href="mailto:pma.sales2@parts-mall.com">
-          pma.sales2@parts-mall.com
+        <a
+          className="mt-2 inline-flex min-h-[44px] items-center underline underline-offset-4"
+          href={`mailto:${COMPANY.email}`}
+        >
+          {COMPANY.email}
+        </a>
+      </div>
+      <div>
+        <p className="t-label" style={{ color: 'var(--color-steel-text)' }}>Call or WhatsApp</p>
+        <a className="mt-2 flex min-h-[44px] items-center underline underline-offset-4" href={COMPANY.phoneHref}>
+          {COMPANY.phone}
+        </a>
+        <a
+          className="flex min-h-[44px] items-center underline underline-offset-4"
+          href={COMPANY.whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          WhatsApp {COMPANY.whatsapp}
         </a>
       </div>
       <div>

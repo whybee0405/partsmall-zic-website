@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
+import { COMPANY } from '@/content/company';
 import { PRODUCTS } from '@/content/products';
 
 export const metadata = pageMetadata(
@@ -9,7 +10,7 @@ export const metadata = pageMetadata(
 );
 
 function requestHref(product: string, document: string) {
-  return `mailto:pma.sales2@parts-mall.com?subject=${encodeURIComponent(`${product} ${document} request`)}&body=${encodeURIComponent(`Please send me the current ${document} for ${product}.`)}`;
+  return `mailto:${COMPANY.email}?subject=${encodeURIComponent(`${product} ${document} request`)}&body=${encodeURIComponent(`Please send me the current ${document} for ${product}.`)}`;
 }
 
 export default function ResourcesPage() {
@@ -40,18 +41,18 @@ export default function ResourcesPage() {
                     {product.grade} / {product.packSizes.join(' · ')}
                   </p>
                   <h2 className="t-display mt-2 text-[1.5rem] leading-tight">{product.name}</h2>
-                  <p className="mt-2 text-[0.875rem]" style={{ color: 'var(--color-steel-text)' }}>
+                  <p className="mt-2 text-base" style={{ color: 'var(--color-steel-text)' }}>
                     {product.specification.length ? product.specification.join(' · ') : product.oilType}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <a href={requestHref(`${product.name} ${product.grade}`, 'TDS')} className="btn btn-secondary !min-h-[44px] !px-4 text-[0.8125rem]">
+                  <a href={requestHref(`${product.name} ${product.grade}`, 'TDS')} className="btn btn-secondary !min-h-[44px] !px-4">
                     Request TDS
                   </a>
-                  <a href={requestHref(`${product.name} ${product.grade}`, 'SDS')} className="btn btn-secondary !min-h-[44px] !px-4 text-[0.8125rem]">
+                  <a href={requestHref(`${product.name} ${product.grade}`, 'SDS')} className="btn btn-secondary !min-h-[44px] !px-4">
                     Request SDS
                   </a>
-                  <Link href={`/products/${product.id}`} className="btn btn-primary !min-h-[44px] !px-4 text-[0.8125rem]">
+                  <Link href={`/products/${product.id}`} className="btn btn-primary !min-h-[44px] !px-4">
                     Product details
                   </Link>
                 </div>

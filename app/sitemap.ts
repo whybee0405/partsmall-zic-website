@@ -1,10 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { PRODUCTS } from '@/content/products';
+import { SITE_URL } from '@/lib/seo';
 
-const baseUrl = 'https://zic.parts-mall.co.za';
+const baseUrl = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const updated = new Date('2026-08-19T00:00:00+09:00');
+  const updated = new Date('2026-09-07T00:00:00+02:00');
   const staticPages = [
     { path: '', priority: 1, changeFrequency: 'monthly' as const },
     { path: '/resources', priority: 0.8, changeFrequency: 'monthly' as const },
@@ -23,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: page.changeFrequency,
       priority: page.priority,
       alternates: { languages: { 'en-ZA': `${baseUrl}${page.path}` } },
-      ...(page.path === '' ? { images: [`${baseUrl}/plates/oil-crown-splash.png`] } : {}),
+      ...(page.path === '' ? { images: [`${baseUrl}/plates/oil-crown-splash-og.jpg`] } : {}),
     })),
     ...PRODUCTS.map((product) => ({
       url: `${baseUrl}/products/${product.id}`,

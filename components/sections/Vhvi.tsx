@@ -254,7 +254,7 @@ export default function Vhvi() {
     <>
       <div ref={photo} aria-hidden className="absolute inset-0">
         <Image
-          src="/plates/highveld-dawn.jpg"
+          src="/plates/highveld-dawn.webp"
           alt=""
           fill
           sizes="100vw"

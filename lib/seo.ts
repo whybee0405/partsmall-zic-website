@@ -1,6 +1,9 @@
-export const SITE_URL = 'https://zic.parts-mall.co.za';
+export const SITE_URL = 'https://skzic.co.za';
 export const SITE_NAME = 'SK ZIC South Africa';
-export const DEFAULT_SOCIAL_IMAGE = '/plates/oil-crown-splash.png';
+// Dedicated OG/Twitter asset: opaque JPEG at the standard 1200x630 share
+// ratio (flattened onto Carbon black — the on-page version is transparent
+// WebP, which social crawlers shouldn't be shown directly).
+export const DEFAULT_SOCIAL_IMAGE = '/plates/oil-crown-splash-og.jpg';
 
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;

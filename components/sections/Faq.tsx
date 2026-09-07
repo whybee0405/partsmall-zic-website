@@ -23,11 +23,11 @@ export default function Faq() {
         <div className="border-t" style={{ borderColor: 'var(--color-hairline)' }}>
           {HOME_FAQS.map((item) => (
             <details key={item.question} className="group border-b py-5" style={{ borderColor: 'var(--color-hairline)' }}>
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-[1rem] font-semibold marker:content-none md:text-[1.125rem]">
+              <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-6 text-base font-semibold marker:content-none md:text-[1.125rem]">
                 <span>{item.question}</span>
                 <span aria-hidden className="t-mono text-[1.1rem] text-[var(--color-zic-red)] group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-4 max-w-[760px] pr-10 text-[0.9375rem] leading-7" style={{ color: 'var(--color-deep-steel)' }}>
+              <p className="mt-4 max-w-[760px] pr-10 text-base leading-7" style={{ color: 'var(--color-deep-steel)' }}>
                 {item.answer}
               </p>
             </details>

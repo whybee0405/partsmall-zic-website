@@ -34,7 +34,7 @@ export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
     >
       {backdrop && (
         <Image
-          src="/plates/oil-crown-splash.png"
+          src="/plates/oil-crown-splash.webp"
           alt=""
           aria-hidden
           width={1200}

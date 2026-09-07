@@ -11,7 +11,10 @@
  */
 export const PRIMARY_CTA = {
   label: 'Enquire Now',
-  href: '#enquire',
+  // Absolute path (not a bare `#enquire` hash) — StickyCta mounts this
+  // globally, including on pages that don't render the Enquire section
+  // themselves, so it has to work from anywhere, not just from "/".
+  href: '/#enquire',
   external: false,
 } as const;
 

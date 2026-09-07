@@ -1,3 +1,4 @@
+import { COMPANY } from '@/content/company';
 import { PRODUCTS } from '@/content/products';
 
 export const dynamic = 'force-static';
@@ -22,7 +23,7 @@ ${product.warning ? `- Warning: ${product.warning}\n` : ''}`;
 
 SK ZIC motor oils and fluids are distributed across South Africa and Southern Africa by Parts-Mall Africa.
 
-Distributor contact: pma.sales2@parts-mall.com
+Distributor contact: ${COMPANY.email} · ${COMPANY.phone} · WhatsApp ${COMPANY.whatsapp}
 Head office: 901 Herman Street, PZR Business Park, Meadowdale, Germiston 1401, South Africa
 
 # Product range

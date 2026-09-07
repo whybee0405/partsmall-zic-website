@@ -104,7 +104,7 @@ export default function TrustBar() {
       <div className="shell flex w-full flex-col items-center justify-center gap-y-2 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:py-3">
         {/* SK ZIC's own standing, not the distributor's — leads, since it's
             the strongest and most directly on-brand of the three. */}
-        <a href={KBPI.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+        <a href={KBPI.href} target="_blank" rel="noopener noreferrer" className="-my-3.5 flex items-center gap-2 py-3.5">
           <span
             className="t-display text-[1.25rem] leading-none tracking-[-0.02em] sm:text-[1.375rem]"
             style={{ color: 'var(--color-zic-red)' }}
@@ -140,7 +140,7 @@ export default function TrustBar() {
 
         {/* This one is about the distributor's service, not the oil, so the
             entity is named rather than left implicit in the link target. */}
-        <a href={GOOGLE_RATING.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+        <a href={GOOGLE_RATING.href} target="_blank" rel="noopener noreferrer" className="-my-3.5 flex items-center gap-2 py-3.5">
           <StarRow rating={GOOGLE_RATING.score} outOf={GOOGLE_RATING.outOf} />
           {/* Entity name (Parts-Mall Africa) dropped: not needed here, and
               this trust strip has three items competing for a compact

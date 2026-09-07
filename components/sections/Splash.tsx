@@ -44,7 +44,7 @@ export default function Splash() {
         {/* Artwork block. Splash and product overlap deliberately. */}
         <div className="relative mt-10 flex w-full items-end justify-center">
           <Image
-            src="/plates/oil-crown-splash.png"
+            src="/plates/oil-crown-splash.webp"
             alt=""
             aria-hidden
             width={1200}
@@ -58,7 +58,7 @@ export default function Splash() {
             className="absolute bottom-[26%] left-1/2 -translate-x-1/2 md:bottom-[28%]"
           >
             <Image
-              src="/products/ZIC X7 5W30 4L.png"
+              src="/products/ZIC X7 5W30 4L.webp"
               alt="ZIC X7 5W-30 rising from an oil crown splash"
               width={502}
               height={699}

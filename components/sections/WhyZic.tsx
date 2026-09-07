@@ -41,13 +41,13 @@ export default function WhyZic() {
                 {cell.id}
               </p>
               <p
-                className="mt-2 text-[0.9375rem] font-semibold"
+                className="mt-2 text-base font-semibold"
                 style={{ color: 'var(--color-carbon)' }}
               >
                 {cell.title}
               </p>
               <p
-                className="mt-2 text-[0.875rem] leading-[1.55]"
+                className="mt-2 text-base leading-[1.55]"
                 style={{ color: 'var(--color-deep-steel)' }}
               >
                 {cell.body}

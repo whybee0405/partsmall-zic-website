@@ -2,7 +2,27 @@
 
 Last reviewed: 19 August 2026
 
-## Current state
+## Status update — 7 September 2026
+
+GA4 is now installed and live with the client's real Measurement ID, using **Google's Consent Mode
+v2** (called "Advanced Consent Mode" in the original plan below): the gtag script and a
+`consent: 'default'` (denied) call load unconditionally on every page, so cookie-free measurement
+pings reach Google before any visitor makes a cookie choice. Full cookie-based tracking still only
+starts after a visitor accepts the banner.
+
+This is a deliberate departure from Basic Consent Mode as originally planned below, made at the
+site owner's explicit request, specifically so Google's own tag-installation checker (which only
+inspects the page in its default, no-interaction state) detects the tag as installed. **The "new
+privacy and legal review" this document calls for before using Advanced Consent Mode has not
+happened** — that request was answered in an engineering conversation, not by counsel. Flagging
+this explicitly rather than quietly rewriting the requirement below out of the document.
+
+The rest of this document is the original pre-launch plan, kept as a record of that plan and
+mostly still accurate (event helper shape, environment variables, banner requirements) — the one
+place it's now wrong is "Current state" immediately below, which describes the pre-launch,
+not-yet-installed state.
+
+## Current state (as originally planned — see status update above for what's actually live)
 
 Google Analytics 4 (GA4) is not installed. The site is being developed on localhost, and the
 development team does not yet have access to the client's GA4 account or Measurement ID.

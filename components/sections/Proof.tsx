@@ -35,7 +35,7 @@ export default function Proof() {
                 {cell.label}
               </p>
               <p
-                className="mt-3 text-[0.9375rem] leading-[1.55] lg:text-base"
+                className="mt-3 text-base leading-[1.55]"
                 style={{ color: 'var(--color-eng-white)' }}
               >
                 {cell.value}

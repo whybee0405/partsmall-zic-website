@@ -86,11 +86,26 @@
   --nav-clearance: calc(
     var(--nav-height) + var(--nav-bar-height) + var(--trust-bar-height) + var(--spacing-gutter)
   );
+
+  /* StickyCta's own height. Below lg only (StickyCta is lg:hidden): reserved
+     as bottom padding on body so the bar never covers a page's last content,
+     and read by CookieBanner so the two stack instead of overlapping. */
+  --sticky-cta-height: 0px;
 }
 
 @media (max-width: 767px) {
   :root {
     --trust-bar-height: 96px;
+  }
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --sticky-cta-height: 72px;
+  }
+
+  body {
+    padding-bottom: var(--sticky-cta-height);
   }
 }
 

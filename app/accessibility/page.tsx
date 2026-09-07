@@ -1,8 +1,9 @@
 import { ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
+import { COMPANY } from '@/content/company';
 
 export const metadata = pageMetadata(
   'Accessibility',
-  'Accessibility commitments, supported interaction methods and feedback contact for the SK ZIC South Africa website.',
+  'Accessibility commitments, supported interaction methods, built-in features and feedback contact for the SK ZIC South Africa website.',
   '/accessibility',
 );
 
@@ -39,7 +40,7 @@ export default function AccessibilityPage() {
 
       <ContentSection number="04 / FEEDBACK" title="Tell us where access fails" dark>
         <p>
-          If you cannot access information or complete an enquiry, email <a href="mailto:pma.sales2@parts-mall.com">pma.sales2@parts-mall.com</a>. Include the page address, what you were trying to do, and the browser or assistive technology used if you are comfortable doing so. We will provide the information in another reasonable format where possible.
+          If you cannot access information or complete an enquiry, email <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a> or call <a href={COMPANY.phoneHref}>{COMPANY.phone}</a>. Include the page address, what you were trying to do, and the browser or assistive technology used if you are comfortable doing so. We will provide the information in another reasonable format where possible.
         </p>
       </ContentSection>
     </SupportPage>

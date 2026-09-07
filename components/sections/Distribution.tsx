@@ -64,7 +64,7 @@ export default function Distribution() {
       style={{ background: 'var(--color-pma-navy)' }}
     >
       <Image
-        src="/plates/trade-counter.jpg"
+        src="/plates/trade-counter.webp"
         alt=""
         aria-hidden
         fill

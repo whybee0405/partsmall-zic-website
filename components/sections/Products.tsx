@@ -134,7 +134,7 @@ export default function Products() {
                       {p.specification.length ? p.specification.join('\n') : p.oilType}
                     </span>
 
-                    <span className="col-span-2 text-[0.875rem] leading-[1.58] md:col-auto" style={{ color: 'var(--color-steel-text)' }}>
+                    <span className="col-span-2 text-base leading-[1.58] md:col-auto" style={{ color: 'var(--color-steel-text)' }}>
                       {p.whoItsFor}
                     </span>
 
@@ -182,7 +182,7 @@ export default function Products() {
 
                         {p.warning && (
                           <p
-                            className="mt-6 text-[0.875rem] leading-[1.55]"
+                            className="mt-6 text-base leading-[1.55]"
                             style={{ color: 'var(--color-zic-red)' }}
                           >
                             {p.warning}
@@ -191,7 +191,7 @@ export default function Products() {
 
                         <a
                           href={`/products/${p.id}`}
-                          className="btn btn-primary mt-7 !min-h-[44px] !px-5 text-[0.8125rem]"
+                          className="btn btn-primary mt-7 !min-h-[44px] !px-5"
                         >
                           View product details
                         </a>

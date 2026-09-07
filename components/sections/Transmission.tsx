@@ -62,7 +62,7 @@ export default function Transmission() {
           }}
         >
           <Image
-            src="/products/ZIC ATF Multi 1L.png"
+            src="/products/ZIC ATF Multi 1L.webp"
             alt="ZIC ATF MULTI fully synthetic automatic transmission fluid, one litre"
             width={337}
             height={708}
@@ -99,7 +99,7 @@ export default function Transmission() {
               Before you fill
             </p>
             <p
-              className="mt-2 text-[0.875rem] leading-[1.6]"
+              className="mt-2 text-base leading-[1.6]"
               style={{ color: 'var(--color-metal-grey)' }}
             >
               Check the ATF specification your transmission requires. Do not substitute ATF MULTI for
@@ -121,7 +121,7 @@ export default function Transmission() {
           {BENEFITS.map((b) => (
             <li
               key={b}
-              className="text-center text-[0.9375rem]"
+              className="text-center text-base"
               style={{ color: 'var(--color-eng-white)' }}
             >
               {b}

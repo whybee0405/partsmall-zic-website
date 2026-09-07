@@ -114,7 +114,7 @@ export default function Yubase() {
       />
       <div className="relative h-[280px] w-full md:h-[360px]">
         <Image
-          src="/plates/oil-vortex.jpg"
+          src="/plates/oil-vortex.webp"
           alt="Amber motor oil turning in a slow vortex, lit against carbon black"
           fill
           sizes="100vw"

@@ -1,9 +1,11 @@
 'use client';
 
 import { useId, useState, type FocusEvent, type FormEvent, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { ENQUIRY_REGIONS, ENQUIRY_INTERESTS } from '@/content/branches';
 import { PRIMARY_CTA } from '@/content/cta';
 import { validateEnquiry, validateField, isEnquiryField, type EnquiryErrors } from '@/lib/enquiry';
+import { trackEvent } from '@/lib/analytics';
 
 /**
  * 11 — Enquire. The close.
@@ -89,11 +91,11 @@ function Field({
         />
       )}
       {error ? (
-        <p id={errorId} className="mt-2 text-[0.75rem]" style={{ color: 'var(--color-zic-red)' }}>
+        <p id={errorId} className="mt-2 text-base" style={{ color: 'var(--color-zic-red)' }}>
           {error}
         </p>
       ) : helper ? (
-        <p className="mt-2 text-[0.75rem]" style={{ color: 'var(--color-steel-text)' }}>
+        <p className="mt-2 text-base" style={{ color: 'var(--color-steel-text)' }}>
           {helper}
         </p>
       ) : null}
@@ -102,8 +104,9 @@ function Field({
 }
 
 export default function Enquire() {
+  const router = useRouter();
   const [errors, setErrors] = useState<EnquiryErrors>({});
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle');
 
   function handleBlur(event: FocusEvent<FieldElement>) {
     const { name, value } = event.target;
@@ -142,8 +145,11 @@ export default function Enquire() {
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error('Request failed');
-      setStatus('success');
-      form.reset();
+      trackEvent('generate_lead', { form: 'enquire' });
+      // Stay in 'submitting' (button disabled, "Sending…") through the
+      // navigation rather than resetting to 'idle' — avoids a flash of the
+      // blank form right before the page changes.
+      router.push('/thank-you');
     } catch {
       setStatus('error');
     }
@@ -180,18 +186,12 @@ export default function Enquire() {
           will point you at the right ZIC product and the nearest branch that has it.
         </p>
 
-        {status === 'success' ? (
-          <div className="mt-12 max-w-[560px] text-center">
-            <p className="t-lead" style={{ color: 'var(--color-eng-white)' }}>
-              Thanks — that&rsquo;s with us now. We reply within one business day.
-            </p>
-          </div>
-        ) : (
-          <form
-            noValidate
-            onSubmit={handleSubmit}
-            className="mt-12 grid w-full max-w-[680px] grid-cols-1 gap-6 sm:grid-cols-2"
-          >
+        <form
+          noValidate
+          onSubmit={handleSubmit}
+          aria-busy={status === 'submitting'}
+          className="mt-12 grid w-full max-w-[680px] grid-cols-1 gap-6 sm:grid-cols-2"
+        >
             <Field label="Name" name="name" required error={errors.name} onBlur={handleBlur} />
             <Field label="Business or workshop" name="business" />
             <Field
@@ -254,8 +254,8 @@ export default function Enquire() {
             </div>
 
             {status === 'error' && (
-              <div className="sm:col-span-2">
-                <p className="text-[0.875rem]" style={{ color: 'var(--color-zic-red)' }}>
+              <div className="sm:col-span-2" role="alert">
+                <p className="text-base" style={{ color: 'var(--color-zic-red)' }}>
                   Something went wrong sending that. Please try again, or email us directly.
                 </p>
               </div>
@@ -270,7 +270,7 @@ export default function Enquire() {
               >
                 {status === 'submitting' ? 'Sending…' : PRIMARY_CTA.label}
               </button>
-              <p className="mt-6 text-[0.8125rem]" style={{ color: 'var(--color-steel-text)' }}>
+              <p className="mt-6 text-base" style={{ color: 'var(--color-steel-text)' }}>
                 We reply within one business day. See our{' '}
                 <a href="/privacy" className="underline underline-offset-4">
                   Privacy Notice
@@ -278,8 +278,7 @@ export default function Enquire() {
                 for how Parts-Mall Africa uses your details.
               </p>
             </div>
-          </form>
-        )}
+        </form>
       </div>
     </section>
   );

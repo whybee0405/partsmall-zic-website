@@ -1,8 +1,9 @@
 import { ContactBlock, ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
+import { COMPANY } from '@/content/company';
 
 export const metadata = pageMetadata(
   'Website Terms of Use',
-  'Terms governing access to and use of the SK ZIC South Africa website operated by Parts-Mall Africa.',
+  'Terms governing access to and use of the SK ZIC South Africa website, operated by Parts-Mall Africa for South African visitors.',
   '/terms',
 );
 
@@ -12,12 +13,20 @@ export default function TermsPage() {
       stamp="LEGAL / WEBSITE USE"
       title="Terms of Use"
       intro="These terms govern use of this information and enquiry website. By using it, you agree to the terms below."
-      updated="19 AUGUST 2026"
+      updated="7 SEPTEMBER 2026"
     >
       <ContentSection number="01 / OPERATOR" title="Website operator">
         <p>
-          This website is operated by Parts-Mall Africa, the South African importer and distributor identified on the website. It presents information about selected SK ZIC products available through the Parts-Mall Africa network.
+          This website is operated by {COMPANY.legalName}, trading as {COMPANY.tradingName}, the South
+          African importer and distributor identified on the website. It presents information about
+          selected SK ZIC products available through the {COMPANY.tradingName} network.
         </p>
+        {COMPANY.registrationNumber && (
+          <p>
+            Registration number: {COMPANY.registrationNumber}
+            {COMPANY.vatNumber ? ` · VAT number: ${COMPANY.vatNumber}` : ''}
+          </p>
+        )}
         <ContactBlock title="Operating address" />
       </ContentSection>
 
@@ -76,7 +85,27 @@ export default function TermsPage() {
         </p>
       </ContentSection>
 
-      <ContentSection number="09 / CONTACT" title="Questions and updates">
+      <ContentSection number="09 / COOKIES & ANALYTICS" title="Measurement on this website">
+        <p>
+          By using this website you agree to the strictly necessary cookies described in our{' '}
+          <a href="/cookies">Cookie Notice</a>. We use Google Analytics (GA4) and, or plan to, Google
+          Search Console. GA4 runs in Google&rsquo;s Consent Mode: it sends only anonymous, cookie-free
+          measurement until you accept the cookie banner, and sets cookies only once you do. See the{' '}
+          <a href="/cookies">Cookie Notice</a> and <a href="/privacy">Privacy Notice</a> for full detail.
+        </p>
+      </ContentSection>
+
+      <ContentSection number="10 / REGION" title="Visitors outside South Africa" dark>
+        <p>
+          This website is intended primarily for visitors in South Africa and neighbouring Southern
+          African countries, including Eswatini, Botswana, Mozambique, Namibia and Zimbabwe. If you
+          access it from elsewhere, you are responsible for compliance with the law that applies where
+          you are located. Regardless of where you access it from, these terms and this website are
+          governed by the law of the Republic of South Africa, as set out in clause 08.
+        </p>
+      </ContentSection>
+
+      <ContentSection number="11 / CONTACT" title="Questions and updates">
         <p>
           We may update these terms when the website, business process or law changes. Continued use after an update is subject to the current version published here.
         </p>

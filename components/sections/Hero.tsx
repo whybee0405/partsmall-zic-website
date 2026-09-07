@@ -58,7 +58,7 @@ export default function Hero() {
         {/* Plane 2 — the product, overtakes the scroll */}
         <div data-plane="2" className="relative mt-12 lg:mt-16">
           <Image
-            src="/products/ZIC X7 5W30 4L.png"
+            src="/products/ZIC X7 5W30 4L.webp"
             alt="ZIC X7 5W-30 fully synthetic motor oil, four litre pack"
             width={502}
             height={699}

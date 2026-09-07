@@ -1,8 +1,9 @@
 import { ContactBlock, ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
+import { COMPANY } from '@/content/company';
 
 export const metadata = pageMetadata(
   'PAIA Manual',
-  'Access to information guidance and PAIA request procedure for Parts-Mall Africa.',
+  'Access to information guidance and the PAIA request procedure for records held by Parts-Mall Africa under South African law.',
   '/paia',
 );
 
@@ -55,7 +56,7 @@ export default function PaiaPage() {
           <li>Use the prescribed PAIA request form for access to a record of a private body.</li>
           <li>Identify the record clearly and explain the right you seek to exercise or protect.</li>
           <li>Provide a South African postal or email address and your preferred access format.</li>
-          <li>Send the completed request to <a href="mailto:pma.sales2@parts-mall.com?subject=PAIA%20request">pma.sales2@parts-mall.com</a> with the subject &quot;PAIA request&quot;.</li>
+          <li>Send the completed request to <a href={`mailto:${COMPANY.email}?subject=PAIA%20request`}>{COMPANY.email}</a> with the subject &quot;PAIA request&quot;.</li>
           <li>Pay a prescribed request or access fee if legally applicable and requested.</li>
         </ol>
         <p>

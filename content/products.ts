@@ -37,6 +37,8 @@ export interface Product {
   /** Rendered as a bordered notice, never as body copy. */
   warning?: string;
   image: string;
+  imageWidth: number;
+  imageHeight: number;
   imageNote?: string;
 }
 
@@ -71,7 +73,9 @@ export const PRODUCTS: Product[] = [
       'Pour Point': '−42 °C',
       'HTHS @150°C': '3.3 cP',
     },
-    image: '/products/ZIC X7 5W30 4L.png',
+    image: '/products/ZIC X7 5W30 4L.webp',
+    imageWidth: 1004,
+    imageHeight: 1398,
     imageNote:
       'Official SK ZIC 4 L render. The printed label on this pack run reads API SN PLUS / ILSAC GF-5; the current published specification is API SP / ILSAC GF-6. Copy follows the specification, not the pack art. Confirm with Parts-Mall which pack run is landing in SA.',
   },
@@ -103,7 +107,9 @@ export const PRODUCTS: Product[] = [
       'Flash Point': '230 °C',
       'Pour Point': '−42 °C',
     },
-    image: '/products/ZIC X5 10W30 1L.png',
+    image: '/products/ZIC X5 10W30 1L.webp',
+    imageWidth: 162,
+    imageHeight: 354,
     imageNote: 'Official SK ZIC 1 L render, upscaled. A 4 L render was not available from an official source.',
   },
   {
@@ -132,7 +138,9 @@ export const PRODUCTS: Product[] = [
     ],
     warning:
       'Formulated for compatible diesel engines without DPF, CPF or SCR requirements. Do not recommend it for a modern diesel that requires a Low SAPS oil.',
-    image: '/products/ZIC X7 Diesel 5W-30 6L.png',
+    image: '/products/ZIC X7 Diesel 5W-30 6L.webp',
+    imageWidth: 998,
+    imageHeight: 1390,
   },
   {
     id: 'x3000-15w40',
@@ -159,7 +167,9 @@ export const PRODUCTS: Product[] = [
     },
     warning:
       'API CG-4 is an older diesel category. Do not recommend it for a DPF or SCR equipped diesel unless the manufacturer specification explicitly permits it.',
-    image: '/products/ZIC X3000 15W-40 6L.png',
+    image: '/products/ZIC X3000 15W-40 6L.webp',
+    imageWidth: 764,
+    imageHeight: 1080,
   },
   {
     id: 'atf-multi',
@@ -184,7 +194,9 @@ export const PRODUCTS: Product[] = [
     ],
     warning:
       '“Multi” does not mean suitable for every automatic transmission. Always check the ATF specification your transmission actually requires before filling.',
-    image: '/products/ZIC ATF Multi 1L.png',
+    image: '/products/ZIC ATF Multi 1L.webp',
+    imageWidth: 674,
+    imageHeight: 1416,
     imageNote: 'Official SK ZIC 1 L render. Korean domestic label artwork; confirm the SA label variant.',
   },
 ];

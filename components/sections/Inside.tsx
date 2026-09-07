@@ -33,21 +33,21 @@ const STATES = [
     title: 'Fluid film',
     readout: 'FILM: FULL · CONTACT: NONE',
     body: 'The surfaces are completely separated. Wear is close to zero. This is where an engine spends most of its life once warm.',
-    image: '/plates/oil-film-steel.jpg',
+    image: '/plates/oil-film-steel.webp',
   },
   {
     n: '02',
     title: 'Boundary',
     readout: 'FILM: MINIMAL · CONTACT: ASPERITY',
     body: 'The film has thinned to almost nothing and the additive layer is all that is left. This is cold start, and it is where most engine wear happens.',
-    image: '/plates/oil-film-boundary.jpg',
+    image: '/plates/oil-film-boundary.webp',
   },
   {
     n: '03',
     title: 'Extreme pressure',
     readout: 'FILM: LOAD-BEARING · CONTACT: CHEMICAL',
     body: 'Under very high load the EP additives bond chemically to the metal and carry what the fluid alone cannot.',
-    image: '/plates/oil-film-bond.jpg',
+    image: '/plates/oil-film-bond.webp',
   },
 ];
 
@@ -288,7 +288,7 @@ export default function Inside() {
             {s.readout}
           </p>
           <p
-            className="mx-auto mt-4 text-[0.9375rem] leading-[1.65]"
+            className="mx-auto mt-4 text-base leading-[1.65]"
             style={{ maxWidth: 560, color: 'var(--color-metal-grey)' }}
           >
             {s.body}
@@ -321,7 +321,7 @@ export default function Inside() {
             {s.readout}
           </p>
           <p
-            className="mx-auto mt-4 text-[0.9375rem] leading-[1.65]"
+            className="mx-auto mt-4 text-base leading-[1.65]"
             style={{ maxWidth: 560, color: 'var(--color-metal-grey)' }}
           >
             {s.body}
@@ -365,7 +365,7 @@ export default function Inside() {
             {s.readout}
           </p>
           <p
-            className="mx-auto mt-4 text-[0.9375rem] leading-[1.65]"
+            className="mx-auto mt-4 text-base leading-[1.65]"
             style={{ color: 'var(--color-metal-grey)' }}
           >
             {s.body}
