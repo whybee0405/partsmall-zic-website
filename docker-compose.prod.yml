@@ -3,25 +3,21 @@ services:
     build:
       context: .
       target: runner
+      # NEXT_PUBLIC_* values are baked into the client bundle at build time.
+      # docker compose resolves these ${...} refs from .env in this same
+      # directory (its own lookup, separate from the build context /
+      # .dockerignore) and passes them through as build args — see the
+      # Dockerfile's builder stage.
+      args:
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
+        NEXT_PUBLIC_GSC_VERIFICATION: ${NEXT_PUBLIC_GSC_VERIFICATION:-}
     restart: unless-stopped
-    expose:
-      - "3000"
-
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - app
-    environment:
-      - DOMAIN=${DOMAIN:?Set DOMAIN in .env, e.g. DOMAIN=zic.parts-mall.co.za}
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-
-volumes:
-  caddy_data:
-  caddy_config:
+      - "127.0.0.1:3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
