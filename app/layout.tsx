@@ -3,7 +3,6 @@ import { Manrope, Inter, Roboto_Mono } from 'next/font/google';
 import Analytics from '@/components/Analytics';
 import CookieBanner from '@/components/CookieBanner';
 import SmoothScroll from '@/components/SmoothScroll';
-import StickyCta from '@/components/StickyCta';
 import StructuredData from '@/components/StructuredData';
 import { COMPANY } from '@/content/company';
 import { DEFAULT_SOCIAL_IMAGE, ORGANIZATION_ID, SITE_NAME, SITE_URL, WEBSITE_ID } from '@/lib/seo';
@@ -155,7 +154,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <SmoothScroll />
         {children}
-        <StickyCta />
         <CookieBanner />
         <Analytics />
       </body>

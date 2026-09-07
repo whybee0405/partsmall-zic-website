@@ -28,7 +28,7 @@ export default function CookiesPage() {
       <ContentSection number="01 / YOUR CHOICE" title="How the cookie banner works">
         <p>
           On your first visit, a banner offers two equal choices: <strong>Accept</strong> or{' '}
-          <strong>Reject non-essential</strong>. Strictly necessary storage runs either way, because the
+          <strong>Reject</strong>. Strictly necessary storage runs either way, because the
           site cannot function without it. Google Analytics runs either way too, but what it&rsquo;s
           allowed to do is different: before you choose, and if you reject, it stays cookie-free; if you
           accept, it also sets cookies to recognise you as a returning visitor. Section 03 below has the

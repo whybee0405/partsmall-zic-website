@@ -7,6 +7,8 @@ import { CONSENT_EVENT, getConsent, saveConsent, type ConsentStatus } from '@/li
 /**
  * Bottom consent bar. Accept and Reject are the same size and the same
  * visual weight on purpose — a real choice, not a default dressed up as one.
+ * Kept deliberately low-height (compact copy, tight padding) so it doesn't
+ * cover much of the page on load, especially on mobile.
  *
  * Mounted once in the root layout. Stays hidden once a decision is stored,
  * but listens for CONSENT_EVENT so the Cookie Notice page's "change your
@@ -34,36 +36,33 @@ export default function CookieBanner() {
       role="dialog"
       aria-modal="false"
       aria-label="Cookie preferences"
-      className="fixed inset-x-0 z-50 border-t"
+      className="fixed inset-x-0 bottom-0 z-50 border-t"
       style={{
-        bottom: 'var(--sticky-cta-height)',
         background: 'var(--color-carbon)',
         borderColor: 'var(--color-deep-steel)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      <div className="shell flex flex-col gap-5 py-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-        <p className="text-base leading-relaxed" style={{ color: 'var(--color-metal-grey)' }}>
-          This site uses cookies that are strictly necessary to run it, plus Google Analytics. Accept to
-          allow analytics cookies that remember you between visits. Reject to keep analytics
-          cookie-free.{' '}
+      <div className="shell flex flex-col gap-2.5 py-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6 lg:py-3.5">
+        <p className="text-xs leading-snug lg:text-sm" style={{ color: 'var(--color-metal-grey)' }}>
+          We use essential cookies, plus Google Analytics if you accept.{' '}
           <Link href="/cookies" className="underline underline-offset-4" style={{ color: 'var(--color-eng-white)' }}>
             Cookie Notice
           </Link>
         </p>
-        <div className="flex shrink-0 gap-3">
+        <div className="flex shrink-0 gap-2">
           <button
             type="button"
             onClick={() => decide('rejected')}
-            className="btn btn-secondary !min-h-[44px] flex-1 lg:flex-none"
+            className="btn btn-secondary !min-h-[40px] !px-4 !text-sm flex-1 lg:flex-none"
             style={{ color: 'var(--color-eng-white)' }}
           >
-            Reject non-essential
+            Reject
           </button>
           <button
             type="button"
             onClick={() => decide('accepted')}
-            className="btn btn-primary !min-h-[44px] flex-1 lg:flex-none"
+            className="btn btn-primary !min-h-[40px] !px-4 !text-sm flex-1 lg:flex-none"
           >
             Accept
           </button>
