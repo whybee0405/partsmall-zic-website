@@ -20,7 +20,7 @@ export const COMPANY = {
   phoneHref: 'tel:+27113921141',
 
   /** Display format. */
-  whatsapp: '+27 72 875 8042',
+  whatsapp: '+27 76 311 7593',
   /** wa.me click-to-chat link — digits only, no leading +. */
-  whatsappHref: 'https://wa.me/27728758042?text=' + encodeURIComponent("Hi, I'd like to ask about SK ZIC products."),
+  whatsappHref: 'https://wa.me/27763117593?text=' + encodeURIComponent("Hi, I'd like to ask about SK ZIC products."),
 } as const;
