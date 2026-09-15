@@ -26,7 +26,7 @@ const FOOTER_GROUPS = [
       { label: 'Technical documents', href: '/resources' },
       { label: 'Find a branch', href: BRANCH_FINDER.href, external: true },
       { label: 'Contact Parts-Mall', href: '/contact' },
-      { label: 'Become an agent', href: 'https://www.parts-mall.co.za/parts-mall-agent.asp', external: true },
+      { label: 'Become an agent', href: 'https://www.parts-mall.co.za/wholesale', external: true },
     ],
   },
   {

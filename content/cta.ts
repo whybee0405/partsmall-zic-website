@@ -26,6 +26,6 @@ export const SECONDARY_CTA = {
 
 export const BRANCH_FINDER = {
   label: 'Find your nearest branch',
-  href: 'https://www.parts-mall.co.za/partsmall-branches.asp',
+  href: 'https://www.parts-mall.co.za/branches',
   external: true,
 } as const;
