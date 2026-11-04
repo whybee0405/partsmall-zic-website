@@ -1,19 +1,29 @@
-import ManageCookiesButton from '@/components/ManageCookiesButton';
 import { ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
 
 export const metadata = pageMetadata(
   'Cookie Notice',
-  'What cookies this site uses, what Google Analytics and Search Console mean for your visit, and how to accept or reject them.',
+  'This site sets no tracking cookies. What it stores in your browser, how its own cookieless analytics work, and what Search Console means for your visit.',
   '/cookies',
 );
 
-const GA_COOKIES = [
-  { name: '_ga', provider: 'Google Analytics (GA4)', purpose: 'Distinguishes unique visitors.', duration: 'Up to 2 years' },
+const BROWSER_STORAGE = [
   {
-    name: '_ga_<container-id>',
-    provider: 'Google Analytics (GA4)',
-    purpose: 'Persists session state between page views.',
-    duration: 'Up to 2 years',
+    name: 'cloudia-session-…',
+    where: 'Session storage',
+    purpose: 'A random id for this tab, so page views in one visit can be counted as one session.',
+    duration: 'Until the tab closes',
+  },
+  {
+    name: 'cloudia-landed-…',
+    where: 'Session storage',
+    purpose: 'Marks that this tab has recorded its landing page, so campaign details are read once.',
+    duration: 'Until the tab closes',
+  },
+  {
+    name: 'cloudia-analytics-ignore',
+    where: 'Local storage',
+    purpose: 'Only set on Parts-Mall staff browsers, to leave their own visits out of the figures.',
+    duration: 'Until removed',
   },
 ];
 
@@ -22,83 +32,70 @@ export default function CookiesPage() {
     <SupportPage
       stamp="LEGAL / BROWSER STORAGE"
       title="Cookie Notice"
-      intro="A plain account of what this site stores in your browser, why, and how to accept or reject what's optional."
-      updated="7 SEPTEMBER 2026"
+      intro="A plain account of what this site stores in your browser and why. Short version: no tracking cookies."
+      updated="4 NOVEMBER 2026"
     >
-      <ContentSection number="01 / YOUR CHOICE" title="How the cookie banner works">
+      <ContentSection number="01 / IN SHORT" title="No tracking cookies">
         <p>
-          On your first visit, a banner offers two equal choices: <strong>Accept</strong> or{' '}
-          <strong>Reject</strong>. Strictly necessary storage runs either way, because the
-          site cannot function without it. Google Analytics runs either way too, but what it&rsquo;s
-          allowed to do is different: before you choose, and if you reject, it stays cookie-free; if you
-          accept, it also sets cookies to recognise you as a returning visitor. Section 03 below has the
-          detail.
+          This site does not set cookies to track you, and it does not load Google Analytics or any other
+          third-party tracker. Its visitor statistics come from analytics that run on Parts-Mall
+          Africa&rsquo;s own server and work without cookies, so there is nothing to accept or reject.
+          Section 03 explains what is measured.
         </p>
-        <p>You can change your mind at any time:</p>
-        <div className="mt-5">
-          <ManageCookiesButton />
-        </div>
       </ContentSection>
 
-      <ContentSection number="02 / STRICTLY NECESSARY" title="Used no matter what you choose" dark>
-        <ul>
-          <li>
-            <strong>skzic-cookie-consent</strong> — stored in your browser&rsquo;s local storage, not a
-            cookie sent to a server, to remember your accept/reject choice so we don&rsquo;t ask again.
-          </li>
+      <ContentSection number="02 / BROWSER STORAGE" title="What is kept in your browser" dark>
+        <p>The analytics keep a tab-lifetime id in session storage. Nothing persists across tabs or visits:</p>
+        <div className="mt-2 overflow-x-auto">
+          <div
+            className="grid min-w-[620px] grid-cols-[1.1fr_0.9fr_2fr_0.9fr] gap-px overflow-hidden rounded-[8px] text-base"
+            style={{ background: 'var(--color-hairline)', border: '1px solid var(--color-hairline)' }}
+          >
+            {['Name', 'Where', 'Purpose', 'Kept'].map((h) => (
+              <div key={h} className="p-3 font-semibold" style={{ background: 'var(--color-fluid-grey)', color: 'var(--color-carbon)' }}>
+                {h}
+              </div>
+            ))}
+            {BROWSER_STORAGE.map((item) => (
+              <div key={item.name} className="contents">
+                <div className="p-3 t-mono" style={{ background: 'var(--color-pure-white)', color: 'var(--color-carbon)' }}>{item.name}</div>
+                <div className="p-3" style={{ background: 'var(--color-pure-white)', color: 'var(--color-carbon)' }}>{item.where}</div>
+                <div className="p-3" style={{ background: 'var(--color-pure-white)', color: 'var(--color-carbon)' }}>{item.purpose}</div>
+                <div className="p-3" style={{ background: 'var(--color-pure-white)', color: 'var(--color-carbon)' }}>{item.duration}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <ul className="mt-6">
           <li>
             Hosting, network-security and delivery providers may process short-lived technical
             identifiers or request logs needed to deliver the site, prevent abuse and diagnose faults.
           </li>
           <li>
-            Fonts on this site are self-hosted at build time. Your browser never contacts Google&rsquo;s
-            font servers, so no font-related cookie or request is sent to Google when you load a page.
+            Fonts on this site are self-hosted. Your browser never contacts Google&rsquo;s font servers.
           </li>
         </ul>
-        <p>None of this is used to build an advertising profile, and none of it requires consent.</p>
       </ContentSection>
 
-      <ContentSection number="03 / ANALYTICS" title="Google Analytics (GA4)">
+      <ContentSection number="03 / ANALYTICS" title="How visits are measured">
         <p>
-          Google Analytics 4 is active on this site to understand traffic and page performance. It runs
-          in Google&rsquo;s <strong>Consent Mode</strong>, which changes what it&rsquo;s allowed to do
-          based on your choice rather than switching on or off entirely:
+          We measure how the website is used with analytics that run on our own server. We do not store
+          your IP address. To count unique visitors, your IP address and browser type are combined into a
+          one-way code that changes every day; the code is stored with the visit record, but once that day
+          has passed it cannot be linked back to you or to your visits on other days.
         </p>
-        <ul>
-          <li>
-            <strong>Before you choose, or if you reject</strong> — GA4 still sends Google a basic,
-            anonymous measurement of the visit (page views, in aggregate) with no cookie and nothing that
-            identifies your browser between visits. Google calls this a cookieless ping.
-          </li>
-          <li>
-            <strong>If you accept</strong> — GA4 additionally sets the cookies below, which let it
-            recognise you as a returning visitor and measure sessions rather than isolated page loads.
-          </li>
-        </ul>
-        <p>Cookies below are set only after you accept:</p>
-        <div className="mt-2 overflow-x-auto">
-          <div
-            className="grid min-w-[620px] grid-cols-[1fr_1fr_2fr_0.8fr] gap-px overflow-hidden rounded-[8px] text-base"
-            style={{ background: 'var(--color-hairline)', border: '1px solid var(--color-hairline)' }}
-          >
-            {['Cookie', 'Provider', 'Purpose', 'Duration'].map((h) => (
-              <div key={h} className="p-3 font-semibold" style={{ background: 'var(--color-fluid-grey)' }}>
-                {h}
-              </div>
-            ))}
-            {GA_COOKIES.map((c) => (
-              <div key={c.name} className="contents">
-                <div className="p-3 t-mono" style={{ background: 'var(--color-pure-white)' }}>{c.name}</div>
-                <div className="p-3" style={{ background: 'var(--color-pure-white)' }}>{c.provider}</div>
-                <div className="p-3" style={{ background: 'var(--color-pure-white)' }}>{c.purpose}</div>
-                <div className="p-3" style={{ background: 'var(--color-pure-white)' }}>{c.duration}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <p className="mt-4 text-base" style={{ color: 'var(--color-steel-text)' }}>
-          Cookie names and durations above are Google&rsquo;s published defaults for GA4. Per
-          Google&rsquo;s current documentation, GA4 is designed not to log or store full IP addresses.
+        <p>
+          We record the pages you view, how long you stay and how far you scroll, which links you open
+          (including WhatsApp, phone and email links), the website or campaign that referred you, your
+          device type, browser language, screen size class and page-loading performance. If you send an
+          enquiry, it is linked to the visit it came from so we can see which pages and campaigns lead to
+          enquiries.
+        </p>
+        <p>
+          If your browser sends a <strong>Do Not Track</strong> or <strong>Global Privacy Control</strong>{' '}
+          signal, nothing is recorded. The data stays on Parts-Mall Africa&rsquo;s server, is not shared
+          with third parties or used for advertising, and individual visit records are deleted after 425
+          days; only daily page totals are kept beyond that.
         </p>
       </ContentSection>
 
@@ -106,24 +103,22 @@ export default function CookiesPage() {
         <p>
           We use, or plan to use, Google Search Console to see how this site appears in Google Search —
           impressions, clicks and search terms. Search Console reads data Google already collects on its
-          own search results pages. It does not place any additional cookie in your browser when you
-          visit this site, so it is not part of the table above and is not affected by the cookie banner.
+          own search results pages. It does not place anything in your browser when you visit this site.
         </p>
       </ContentSection>
 
       <ContentSection number="05 / BROWSER CONTROLS" title="Other ways to control storage">
         <p>
-          You can also block or delete cookies and local storage through your browser settings. Blocking
-          the strictly necessary category may affect parts of the site that depend on it, such as
-          remembering that you already made a cookie choice.
+          You can clear or block session and local storage through your browser settings, or turn on Do
+          Not Track or Global Privacy Control. The site works fully either way.
         </p>
       </ContentSection>
 
       <ContentSection number="06 / CHANGES" title="If this notice changes" dark>
         <p>
-          If new non-essential cookies or tracking technology are introduced, this notice will be updated
-          before they go live, and — where the law requires it — you will be asked for a fresh choice
-          rather than having an old acceptance carried over silently.
+          If cookies, third-party tools or other tracking technology are ever introduced, this notice will
+          be updated before they go live, and where the law requires it you will be asked for your
+          consent first.
         </p>
       </ContentSection>
     </SupportPage>

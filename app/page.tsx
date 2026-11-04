@@ -16,10 +16,11 @@ import Enquire from '@/components/sections/Enquire';
 import Footer from '@/components/sections/Footer';
 import Faq from '@/components/sections/Faq';
 import StructuredData from '@/components/StructuredData';
-import { PRODUCTS } from '@/content/products';
-import { HOME_FAQS, ORGANIZATION_ID, SITE_URL, WEBSITE_ID, absoluteUrl } from '@/lib/seo';
+import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID, absoluteUrl } from '@/lib/seo';
+import { getSiteContent } from '@/lib/cms/content';
 
-export default function Page() {
+export default async function Page() {
+  const { PRODUCTS, HOME_FAQS } = await getSiteContent();
   const homeGraph = {
     '@context': 'https://schema.org',
     '@graph': [

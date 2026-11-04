@@ -3,8 +3,7 @@ import Link from 'next/link';
 import Enquire from '@/components/sections/Enquire';
 import Footer from '@/components/sections/Footer';
 import { SupportHeader, pageMetadata } from '@/components/SupportPage';
-import { COMPANY } from '@/content/company';
-import { BRANCH_FINDER } from '@/content/cta';
+import { getSiteContent } from '@/lib/cms/content';
 
 export const metadata: Metadata = pageMetadata(
   'Contact',
@@ -12,7 +11,8 @@ export const metadata: Metadata = pageMetadata(
   '/contact',
 );
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { COMPANY, BRANCH_FINDER } = await getSiteContent();
   return (
     <>
       <SupportHeader />
@@ -47,7 +47,7 @@ export default function ContactPage() {
                 WhatsApp {COMPANY.whatsapp}
               </a>
               <p className="t-label mt-6" style={{ color: 'var(--color-steel-text)' }}>Head office</p>
-              <p className="mt-2 text-base">901 Herman Street, PZR Business Park, Meadowdale, Germiston 1401</p>
+              <p className="mt-2 text-base">{COMPANY.address}</p>
               <Link
                 href={BRANCH_FINDER.href}
                 target="_blank"

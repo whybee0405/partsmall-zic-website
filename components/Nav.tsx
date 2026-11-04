@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { NAV_LINKS, SECTIONS } from '@/content/sections';
-import { PRIMARY_CTA } from '@/content/cta';
-import { PRODUCTS } from '@/content/products';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * Fixed nav.
@@ -24,6 +23,7 @@ import { PRODUCTS } from '@/content/products';
  * only way to jump straight to it.
  */
 export default function Nav() {
+  const { PRIMARY_CTA, PRODUCTS } = useSiteContent();
   const [solid, setSolid] = useState(false);
   const [dark, setDark] = useState(false);
   const [open, setOpen] = useState(false);

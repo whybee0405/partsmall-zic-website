@@ -1,5 +1,5 @@
 import { ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
-import { COMPANY } from '@/content/company';
+import { getSiteContent } from '@/lib/cms/content';
 
 export const metadata = pageMetadata(
   'Accessibility',
@@ -7,7 +7,8 @@ export const metadata = pageMetadata(
   '/accessibility',
 );
 
-export default function AccessibilityPage() {
+export default async function AccessibilityPage() {
+  const { COMPANY } = await getSiteContent();
   return (
     <SupportPage
       stamp="SERVICE / ACCESS"

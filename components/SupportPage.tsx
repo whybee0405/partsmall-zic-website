@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Footer from '@/components/sections/Footer';
-import { COMPANY } from '@/content/company';
+import { getSiteContent } from '@/lib/cms/content';
 import { DEFAULT_SOCIAL_IMAGE } from '@/lib/seo';
 
 export function pageMetadata(title: string, description: string, path: string): Metadata {
@@ -143,7 +143,8 @@ export function ContentSection({
   );
 }
 
-export function ContactBlock({ title = 'Contact Parts-Mall Africa' }: { title?: string }) {
+export async function ContactBlock({ title = 'Contact Parts-Mall Africa' }: { title?: string }) {
+  const { COMPANY } = await getSiteContent();
   return (
     <div className="mt-8 grid gap-6 border-y py-6 sm:grid-cols-3" style={{ borderColor: 'var(--color-hairline)' }}>
       <div>
@@ -171,7 +172,7 @@ export function ContactBlock({ title = 'Contact Parts-Mall Africa' }: { title?: 
       </div>
       <div>
         <p className="t-label" style={{ color: 'var(--color-steel-text)' }}>{title}</p>
-        <p className="mt-2">901 Herman Street, PZR Business Park, Meadowdale, Germiston 1401</p>
+        <p className="mt-2">{COMPANY.address}</p>
       </div>
     </div>
   );

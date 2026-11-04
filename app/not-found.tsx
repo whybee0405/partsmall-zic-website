@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <>
       <SupportHeader />
-      <main id="main" className="flex min-h-[80dvh] items-center pt-[var(--nav-height)]">
+      <main id="main" data-page-not-found className="flex min-h-[80dvh] items-center pt-[var(--nav-height)]">
         <div className="shell py-20">
           <p className="t-mono text-[clamp(4rem,16vw,12rem)] font-semibold leading-none" style={{ color: 'var(--color-hairline)' }}>404</p>
           <p className="t-stamp mt-6" style={{ color: 'var(--color-zic-red)' }}>ROUTE / NOT FOUND</p>

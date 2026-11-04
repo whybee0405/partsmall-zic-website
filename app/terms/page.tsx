@@ -1,5 +1,5 @@
 import { ContactBlock, ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
-import { COMPANY } from '@/content/company';
+import { getSiteContent } from '@/lib/cms/content';
 
 export const metadata = pageMetadata(
   'Website Terms of Use',
@@ -7,13 +7,14 @@ export const metadata = pageMetadata(
   '/terms',
 );
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const { COMPANY } = await getSiteContent();
   return (
     <SupportPage
       stamp="LEGAL / WEBSITE USE"
       title="Terms of Use"
       intro="These terms govern use of this information and enquiry website. By using it, you agree to the terms below."
-      updated="7 SEPTEMBER 2026"
+      updated="4 NOVEMBER 2026"
     >
       <ContentSection number="01 / OPERATOR" title="Website operator">
         <p>
@@ -87,11 +88,11 @@ export default function TermsPage() {
 
       <ContentSection number="09 / COOKIES & ANALYTICS" title="Measurement on this website">
         <p>
-          By using this website you agree to the strictly necessary cookies described in our{' '}
-          <a href="/cookies">Cookie Notice</a>. We use Google Analytics (GA4) and, or plan to, Google
-          Search Console. GA4 runs in Google&rsquo;s Consent Mode: it sends only anonymous, cookie-free
-          measurement until you accept the cookie banner, and sets cookies only once you do. See the{' '}
-          <a href="/cookies">Cookie Notice</a> and <a href="/privacy">Privacy Notice</a> for full detail.
+          This website sets no tracking cookies. It measures visits with cookieless analytics on
+          Parts-Mall Africa&rsquo;s own server, which do not store your IP address and record nothing
+          when your browser sends Do Not Track or Global Privacy Control. We use, or plan to use, Google
+          Search Console. See the <a href="/cookies">Cookie Notice</a> and{' '}
+          <a href="/privacy">Privacy Notice</a> for full detail.
         </p>
       </ContentSection>
 

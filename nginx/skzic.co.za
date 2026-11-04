@@ -1,0 +1,84 @@
+# skzic.co.za — installed at /etc/nginx/sites-available/skzic.co.za
+#
+#   /admin, /api/*   CloudIA CMS (127.0.0.1:8788): dashboard, content, media,
+#                    analytics events
+#   everything else  the Next.js site (127.0.0.1:3000), including /api/enquire
+#
+# The TLS lines are managed by Certbot.
+
+server {
+    server_name skzic.co.za www.skzic.co.za;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), geolocation=(), microphone=()" always;
+
+    # Set once here and inherited by every location below. A location that
+    # adds its own proxy_set_header would silently drop all of these.
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    # The CMS hashes the last hop for its form throttle and visitor counts.
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_hide_header X-Powered-By;
+
+    # CloudIA CMS dashboard.
+    location = /admin {
+        proxy_pass http://127.0.0.1:8788;
+    }
+    location /admin/ {
+        # Media uploads are up to 8 MB.
+        client_max_body_size 10m;
+        proxy_pass http://127.0.0.1:8788;
+    }
+
+    # The site's own enquiry route stays on the site (it stores the enquiry in
+    # the CMS, then emails it).
+    location = /api/enquire {
+        proxy_pass http://127.0.0.1:3000;
+    }
+
+    # Everything else under /api: content, media files, analytics events.
+    location /api/ {
+        client_max_body_size 10m;
+        proxy_pass http://127.0.0.1:8788;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+    }
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/skzic.co.za/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/skzic.co.za/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+server {
+    if ($host = www.skzic.co.za) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = skzic.co.za) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    listen [::]:80;
+    server_name skzic.co.za www.skzic.co.za;
+    return 404; # managed by Certbot
+
+
+
+
+}

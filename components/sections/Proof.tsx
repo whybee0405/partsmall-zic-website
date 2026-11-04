@@ -1,4 +1,4 @@
-import { PROOF_CELLS } from '@/content/proof';
+import { getSiteContent } from '@/lib/cms/content';
 
 /**
  * 04 — Proof manifest.
@@ -11,7 +11,8 @@ import { PROOF_CELLS } from '@/content/proof';
  *
  * Design: docs/design-snapshots/sections/s04-proof-manifest.png
  */
-export default function Proof() {
+export default async function Proof() {
+  const { PROOF_CELLS } = await getSiteContent();
   return (
     <section
       id="proof"

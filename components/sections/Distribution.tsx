@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { REGIONS, NEIGHBOURING } from '@/content/branches';
-import { PRIMARY_CTA, BRANCH_FINDER } from '@/content/cta';
 import { Stamp, Cta } from '@/components/ui';
 import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from '@/lib/scroll';
+import { useSiteContent } from '@/components/ContentProvider';
+import { numberWords } from '@/lib/words';
 
 /**
  * 10 — Ch.06. Where to get it.
@@ -24,6 +24,7 @@ import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from '@/lib/s
  * Design: docs/design-snapshots/sections/s10-ch06-distribution.png
  */
 export default function Distribution() {
+  const { PRIMARY_CTA, BRANCH_FINDER, REGIONS, NEIGHBOURING, NETWORK } = useSiteContent();
   const regions = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -83,9 +84,10 @@ export default function Distribution() {
         <Stamp dark>Ch.06 / 06 — Distribution — Parts-Mall Africa</Stamp>
 
         <h2 className="t-display t-h2 mt-6" style={{ color: 'var(--color-pure-white)' }}>
-          Forty branches.
+          {/* Live from Parts-Mall Africa's branch list. */}
+          {numberWords(NETWORK.branches)} branches.
           <br />
-          Nine provinces. Five countries.
+          {numberWords(NETWORK.provinces)} provinces. {numberWords(NETWORK.countries)} countries.
         </h2>
 
         <p

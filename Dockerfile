@@ -5,6 +5,8 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json package-lock.json ./
+# The CloudIA CMS client is vendored (see vendor/README.md).
+COPY vendor ./vendor
 RUN npm ci
 
 # --- dev: hot-reload target, source is bind-mounted at runtime ---
@@ -21,9 +23,7 @@ CMD ["npm", "run", "dev"]
 # build.args, which docker compose resolves from its own .env lookup —
 # unrelated to, and unaffected by, .dockerignore.
 FROM deps AS builder
-ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
 ARG NEXT_PUBLIC_GSC_VERIFICATION
-ENV NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
 ENV NEXT_PUBLIC_GSC_VERIFICATION=$NEXT_PUBLIC_GSC_VERIFICATION
 COPY . .
 RUN npm run build

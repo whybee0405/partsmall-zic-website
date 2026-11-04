@@ -3,12 +3,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from '@/lib/scroll';
-import { PRODUCTS } from '@/content/products';
-import { PRIMARY_CTA, SECONDARY_CTA } from '@/content/cta';
 import { Cta } from '@/components/ui';
 import Hero from '@/components/sections/Hero';
 import TheFive from '@/components/sections/TheFive';
 import SplashFrames, { type SplashApi } from '@/components/SplashFrames';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * Sections 01-03: one becomes five.
@@ -125,6 +124,7 @@ const CARBON = '#090b0e';
 const ENG_WHITE = '#f7f7f5';
 
 export default function OpeningSequence() {
+  const { PRODUCTS, PRIMARY_CTA, SECONDARY_CTA } = useSiteContent();
   const [reduced, setReduced] = useState(false);
   const [compact, setCompact] = useState(false);
   const [ready, setReady] = useState(false);

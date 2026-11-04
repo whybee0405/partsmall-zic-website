@@ -1,5 +1,5 @@
 import { ContactBlock, ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
-import { COMPANY } from '@/content/company';
+import { getSiteContent } from '@/lib/cms/content';
 
 export const metadata = pageMetadata(
   'PAIA Manual',
@@ -7,7 +7,8 @@ export const metadata = pageMetadata(
   '/paia',
 );
 
-export default function PaiaPage() {
+export default async function PaiaPage() {
+  const { COMPANY } = await getSiteContent();
   return (
     <SupportPage
       stamp="LEGAL / ACCESS TO INFORMATION"

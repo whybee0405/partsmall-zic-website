@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import CookiePreferencesLink from '@/components/CookiePreferencesLink';
-import { COMPANY } from '@/content/company';
-import { PRODUCTS } from '@/content/products';
-import { BRANCH_FINDER } from '@/content/cta';
+import { getSiteContent } from '@/lib/cms/content';
+import type { Cta, Product } from '@/lib/cms/types';
 
-const FOOTER_GROUPS = [
+type FooterLink = { label: string; href: string; external?: boolean };
+
+const footerGroups = (PRODUCTS: Product[], BRANCH_FINDER: Cta): { title: string; links: FooterLink[] }[] => [
   {
     title: 'Explore',
     links: [
@@ -39,7 +39,7 @@ const FOOTER_GROUPS = [
       { label: 'Accessibility', href: '/accessibility' },
     ],
   },
-] as const;
+];
 
 /** Same "flow path filling in" hover underline as the top nav (components/Nav.tsx) — one motion language. */
 function HoverLine() {
@@ -52,7 +52,9 @@ function HoverLine() {
   );
 }
 
-export default function Footer() {
+export default async function Footer() {
+  const { COMPANY, PRODUCTS, BRANCH_FINDER } = await getSiteContent();
+  const FOOTER_GROUPS = footerGroups(PRODUCTS, BRANCH_FINDER);
   return (
     <footer id="footer" className="chamber-dark py-16" style={{ background: 'var(--color-graphite)' }}>
       <div className="shell">
@@ -64,7 +66,7 @@ export default function Footer() {
             </p>
             <p className="t-label mt-8" style={{ color: 'var(--color-steel-text)' }}>Head office</p>
             <p className="mt-2 max-w-[360px] text-base" style={{ color: 'var(--color-metal-grey)' }}>
-              901 Herman Street, PZR Business Park, Meadowdale, Germiston 1401
+              {COMPANY.address}
             </p>
             <a
               href={`mailto:${COMPANY.email}`}
@@ -137,7 +139,6 @@ export default function Footer() {
         <div className="mt-10 flex flex-col gap-3 border-t pt-7 text-[0.6875rem] sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: 'var(--color-deep-steel)', color: 'var(--color-steel-text)' }}>
           <p className="t-mono">© 2026 Parts-Mall Africa</p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <CookiePreferencesLink />
             <p>
               Developed by{' '}
               <a

@@ -54,23 +54,15 @@ if [ ! -f "$COMPOSE_FILE" ]; then
 fi
 
 if [ ! -f .env ]; then
-  warn ".env not found. NEXT_PUBLIC_* variables (GA4 measurement ID, Search"
-  warn "Console verification) are baked in at BUILD time — without .env,"
-  warn "they silently stay disabled rather than failing loudly. Copy"
-  warn ".env.example to .env and fill it in first if that's not intended."
+  warn ".env not found. RESEND_* (enquiry email) and NEXT_PUBLIC_GSC_VERIFICATION"
+  warn "come from it; without it they silently stay disabled. Copy .env.example"
+  warn "to .env and fill it in first if that's not intended."
   read -r -p "Continue anyway? [y/N] " reply
   [[ "$reply" =~ ^[Yy]$ ]] || exit 1
-else
-  # Read directly from .env rather than trusting the current shell's
-  # environment — docker compose's ${VAR} substitution in
-  # docker-compose.prod.yml reads .env the same way.
-  GA_ID_IN_ENV=$(grep -E '^NEXT_PUBLIC_GA_MEASUREMENT_ID=' .env | tail -1 | cut -d= -f2-)
-  if [ -z "$GA_ID_IN_ENV" ]; then
-    warn "NEXT_PUBLIC_GA_MEASUREMENT_ID is empty in .env — GA4 will silently"
-    warn "not load in this build. Not an error if that's intentional."
-  else
-    log "GA4 measurement ID for this build: $GA_ID_IN_ENV"
-  fi
+fi
+if [ ! -f cloudia/cms.env ]; then
+  warn "cloudia/cms.env not found — copy cloudia/cms.env.example and fill it in."
+  exit 1
 fi
 
 if [ "$SKIP_CHECK" = false ]; then
@@ -97,8 +89,13 @@ fi
 
 # --- build + deploy -------------------------------------------------------
 
+# The CMS first, at the version rule's version (scripts/deploy-cms.sh), then the site.
+log "Starting the CloudIA CMS..."
+./scripts/deploy-cms.sh
+export CLOUDIA_CMS_VERSION=$(./scripts/deploy-cms.sh version)
+
 log "Building and starting the app container..."
-docker compose -f "$COMPOSE_FILE" up -d --build
+docker compose -f "$COMPOSE_FILE" up -d --build app
 
 log "Waiting for the container to come up..."
 UP=false
@@ -117,19 +114,12 @@ if [ "$UP" = false ]; then
 fi
 log "Container is responding on 127.0.0.1:3000."
 
-# The container responding only proves the server started — it doesn't
-# prove build args actually made it into the bundle (this is exactly how
-# GA4 silently went missing once already: build succeeded, container ran,
-# tag just wasn't in the output). Check the real HTML, not just that it's up.
-if [ -n "${GA_ID_IN_ENV:-}" ]; then
-  if curl -fsS "http://127.0.0.1:3000/" | grep -q "googletagmanager.com/gtag/js?id=${GA_ID_IN_ENV}"; then
-    log "Confirmed: GA4 tag ($GA_ID_IN_ENV) is present in the served HTML."
-  else
-    warn "GA4 measurement ID is set in .env but the tag is NOT in the served"
-    warn "HTML. The build likely didn't receive it as a build arg — check"
-    warn "docker-compose.prod.yml's build.args and the Dockerfile's ARG/ENV"
-    warn "lines in the builder stage."
-  fi
+# The container responding only proves the server started. Check that the
+# page really rendered from the CMS (a product name only the CMS supplies).
+if curl -fsS "http://127.0.0.1:3000/" | grep -q "ZIC X7"; then
+  log "Confirmed: the homepage renders products from CloudIA."
+else
+  warn "The homepage did not render CMS products — check: docker compose -f $COMPOSE_FILE logs --tail=50 app cms"
 fi
 
 echo

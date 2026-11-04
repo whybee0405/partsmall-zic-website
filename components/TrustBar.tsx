@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { GOOGLE_RATING, KBPI } from '@/content/trust';
+import { useSiteContent } from '@/components/ContentProvider';
 
 const STAR_PATH =
   'M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.63l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z';
@@ -59,6 +59,7 @@ function StarRow({ rating, outOf }: { rating: number; outOf: number }) {
  * sequence would clash rather than read as chrome.
  */
 export default function TrustBar() {
+  const { GOOGLE_RATING, KBPI } = useSiteContent();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {

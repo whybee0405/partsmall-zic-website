@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@cloudia-cms/client": "file:vendor/whybee0405-cloudia-cms-client-1.7.0.tgz",
     "gsap": "^3.13.0",
     "lenis": "^1.3.11",
     "mouse-follower": "^1.1.2",

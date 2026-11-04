@@ -1,6 +1,8 @@
+'use client';
+
 import Image from 'next/image';
-import { PRIMARY_CTA, SECONDARY_CTA } from '@/content/cta';
 import { Cta } from '@/components/ui';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * 01 — Hero. One product, centred.
@@ -12,6 +14,7 @@ import { Cta } from '@/components/ui';
  * Design: docs/design-snapshots/sections/s01-hero.png
  */
 export default function Hero() {
+  const { PRIMARY_CTA, SECONDARY_CTA } = useSiteContent();
   return (
     <section
       id="hero"

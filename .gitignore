@@ -46,3 +46,7 @@ public/plates/*.orig.*
 # audit output
 scripts/audit-shots/
 scripts/mobile-strip/
+
+# CloudIA CMS: local secrets and the updater shared folder
+cloudia/cms.env
+cloudia-updater/

@@ -1,4 +1,36 @@
+# SK ZIC South Africa. Two services:
+#   cms  CloudIA CMS (products, contact details, FAQs, trust figures, enquiries, analytics),
+#        on 127.0.0.1:8788; nginx sends /admin and /api/* to it (except /api/enquire and
+#        /api/media/*, which the site answers itself for its own server).
+#   app  the Next.js site, on 127.0.0.1:3000.
 services:
+  cms:
+    # The version comes from CLOUDIA_CMS_VERSION: the higher of cloudia/cms-version (the git
+    # baseline) and the updater's /var/lib/cloudia-updater/skzic/version. Deploy with
+    # ./scripts/deploy-cms.sh; for other commands first run
+    #   export CLOUDIA_CMS_VERSION=$(./scripts/deploy-cms.sh version)
+    image: ghcr.io/whybee0405/cloudia-cms:${CLOUDIA_CMS_VERSION:?run ./scripts/deploy-cms.sh, or export CLOUDIA_CMS_VERSION=$(./scripts/deploy-cms.sh version)}
+    container_name: partsmall-zic-cms
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${CMS_HOST_PORT:-8788}:8787'
+    env_file:
+      # PUBLIC_URL, SMTP_*, FORM_SALT, TZ (see cloudia/cms.env.example)
+      - cloudia/cms.env
+    environment:
+      UPDATER_DIR: /app/updater
+    volumes:
+      - cms_data:/app/data
+      - ./cloudia:/app/site-config:ro
+      # Outside /var/www/html on purpose. Must belong to uid 1000.
+      - ${CMS_BACKUP_DIR:-/home/jamie/cms-backups/skzic}:/app/backups
+      - ./cloudia-updater:/app/updater
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
   app:
     build:
       context: .
@@ -9,7 +41,6 @@ services:
       # .dockerignore) and passes them through as build args — see the
       # Dockerfile's builder stage.
       args:
-        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
         NEXT_PUBLIC_GSC_VERIFICATION: ${NEXT_PUBLIC_GSC_VERIFICATION:-}
     # RESEND_API_KEY is a real secret, unlike the NEXT_PUBLIC_* build args
     # above — it's read at runtime (lib/mailer.ts), so it's passed as a
@@ -18,13 +49,25 @@ services:
     environment:
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
+      # Content, enquiries and analytics: the CMS on the Compose network.
+      CLOUDIA_URL: http://cms:8787
+      # Live branch network figures, from Parts-Mall Africa's own CMS.
+      PARTSMALL_BRANCHES_URL: ${PARTSMALL_BRANCHES_URL:-https://parts-mall.co.za/api/branches?where[active][equals]=true&limit=0&depth=0}
+    depends_on:
+      cms:
+        condition: service_healthy
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m
+      # next/image's optimised-image cache (the rest of the container stays read-only).
+      - /app/.next/cache:rw,noexec,nosuid,uid=1000,gid=1000,size=256m
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+volumes:
+  cms_data:

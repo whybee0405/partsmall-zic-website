@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { PRIMARY_CTA } from '@/content/cta';
 import { Stamp, Cta } from '@/components/ui';
+import { getSiteContent } from '@/lib/cms/content';
 
 /**
  * 09 — Ch.05. "Multi" does not mean any.
@@ -23,7 +23,8 @@ const BENEFITS = [
   'Fluid durability',
 ];
 
-export default function Transmission() {
+export default async function Transmission() {
+  const { PRIMARY_CTA } = await getSiteContent();
   return (
     <section
       id="transmission"

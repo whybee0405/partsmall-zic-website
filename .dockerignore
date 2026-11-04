@@ -8,3 +8,7 @@ scratch
 .env.*
 .DS_Store
 tsconfig.tsbuildinfo
+
+# CloudIA CMS config, migration record and updater folder: used by the cms container, not the site image
+cloudia
+cloudia-updater

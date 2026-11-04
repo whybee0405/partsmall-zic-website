@@ -3,8 +3,8 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Stamp } from '@/components/ui';
-import { YUBASE_CAPACITY } from '@/content/proof';
 import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from '@/lib/scroll';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * 06 — Ch.02. Performance begins with the base.
@@ -40,6 +40,7 @@ function splitAmount(amount: string): { target: number; suffix: string } {
 }
 
 export default function Yubase() {
+  const { YUBASE_CAPACITY } = useSiteContent();
   const stats = useRef<HTMLUListElement>(null);
 
   useEffect(() => {

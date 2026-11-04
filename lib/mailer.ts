@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { COMPANY } from '@/content/company';
+import { getSiteContent } from '@/lib/cms/content';
 import type { EnquiryPayload } from '@/lib/enquiry';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -39,7 +39,8 @@ export async function sendEnquiryEmail(payload: EnquiryPayload): Promise<SendEnq
   try {
     const { error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to: COMPANY.email,
+      // The public contact address in the CMS (Company & contact).
+      to: (await getSiteContent()).COMPANY.email,
       replyTo: payload.email,
       subject: `New enquiry — ${payload.name} (${payload.interest})`,
       text,

@@ -1,5 +1,7 @@
+'use client';
+
 import Image from 'next/image';
-import { PRODUCTS } from '@/content/products';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * 03 — The Five, static.
@@ -26,6 +28,7 @@ const LINEUP = [
 const CENTRE = 'x7-5w30';
 
 export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
+  const { PRODUCTS } = useSiteContent();
   return (
     <section
       id="range"

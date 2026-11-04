@@ -1,0 +1,457 @@
+{
+  "products": [
+    {
+      "slug": "x7-5w30",
+      "imageFile": "public/products/ZIC X7 5W30 4L.webp",
+      "data": {
+        "name": "ZIC X7",
+        "family": "petrol",
+        "grade": "5W-30",
+        "order": 10,
+        "packSizes": [
+          "1 L",
+          "4 L"
+        ],
+        "oilType": "Fully synthetic",
+        "technology": "VHVI Technology",
+        "specification": [
+          "API SP",
+          "ILSAC GF-6"
+        ],
+        "shortSpec": null,
+        "claims": [],
+        "whoItsFor": "The default modern petrol car. If your manufacturer calls for a 5W-30 and the engine is turbocharged and direct injection, the LSPI protection is the reason to be here rather than a cheaper oil.",
+        "positioning": "Everyday protection. Engineered to flow.",
+        "benefits": [
+          {
+            "text": "Engine wear protection"
+          },
+          {
+            "text": "Sludge and deposit control"
+          },
+          {
+            "text": "Oxidation stability"
+          },
+          {
+            "text": "Low volatility"
+          },
+          {
+            "text": "Friction control"
+          },
+          {
+            "text": "LSPI protection for compatible modern turbocharged petrol engines"
+          }
+        ],
+        "properties": [
+          {
+            "label": "Density",
+            "value": "0.857 g/cm\u00b3"
+          },
+          {
+            "label": "Kinematic viscosity @40\u00b0C",
+            "value": "65.4 cSt"
+          },
+          {
+            "label": "Kinematic viscosity @100\u00b0C",
+            "value": "10.96 cSt"
+          },
+          {
+            "label": "Viscosity Index",
+            "value": "160"
+          },
+          {
+            "label": "TBN",
+            "value": "7.4 mgKOH/g"
+          },
+          {
+            "label": "Flash Point",
+            "value": "226 \u00b0C"
+          },
+          {
+            "label": "Pour Point",
+            "value": "\u221242 \u00b0C"
+          },
+          {
+            "label": "HTHS @150\u00b0C",
+            "value": "3.3 cP"
+          }
+        ],
+        "warning": null,
+        "imageWidth": 1004,
+        "imageHeight": 1398,
+        "imageNote": "Official SK ZIC 4 L render. The printed label on this pack run reads API SN PLUS / ILSAC GF-5; the current published specification is API SP / ILSAC GF-6. Copy follows the specification, not the pack art. Confirm with Parts-Mall which pack run is landing in SA."
+      }
+    },
+    {
+      "slug": "x5-10w30",
+      "imageFile": "public/products/ZIC X5 10W30 1L.webp",
+      "data": {
+        "name": "ZIC X5",
+        "family": "petrol",
+        "grade": "10W-30",
+        "order": 20,
+        "packSizes": [
+          "1 L",
+          "4 L"
+        ],
+        "oilType": "Synthetic",
+        "technology": "VHVI Technology",
+        "specification": [
+          "API SN Plus"
+        ],
+        "shortSpec": null,
+        "claims": [],
+        "whoItsFor": "The sensible middle. Cars past warranty on normal mileage, where a full synthetic is more oil than the engine needs but a mineral oil is not enough.",
+        "positioning": "Dependable synthetic protection for everyday driving.",
+        "benefits": [
+          {
+            "text": "Engine cleanliness"
+          },
+          {
+            "text": "Oxidation stability"
+          },
+          {
+            "text": "Low volatility"
+          },
+          {
+            "text": "Wear protection"
+          },
+          {
+            "text": "Dependable everyday operation"
+          }
+        ],
+        "properties": [
+          {
+            "label": "Density",
+            "value": "0.863 g/cm\u00b3"
+          },
+          {
+            "label": "Kinematic viscosity @40\u00b0C",
+            "value": "66.5 cSt"
+          },
+          {
+            "label": "Kinematic viscosity @100\u00b0C",
+            "value": "10.57 cSt"
+          },
+          {
+            "label": "Viscosity Index",
+            "value": "148"
+          },
+          {
+            "label": "TBN",
+            "value": "7.4 mgKOH/g"
+          },
+          {
+            "label": "Flash Point",
+            "value": "230 \u00b0C"
+          },
+          {
+            "label": "Pour Point",
+            "value": "\u221242 \u00b0C"
+          }
+        ],
+        "warning": null,
+        "imageWidth": 162,
+        "imageHeight": 354,
+        "imageNote": "Official SK ZIC 1 L render, upscaled. A 4 L render was not available from an official source."
+      }
+    },
+    {
+      "slug": "x7-diesel-5w30",
+      "imageFile": "public/products/ZIC X7 Diesel 5W-30 6L.webp",
+      "data": {
+        "name": "ZIC X7 Diesel",
+        "family": "diesel",
+        "grade": "5W-30",
+        "order": 30,
+        "packSizes": [
+          "6 L"
+        ],
+        "oilType": "Fully synthetic",
+        "technology": null,
+        "specification": [
+          "ACEA A3/B4"
+        ],
+        "shortSpec": null,
+        "claims": [
+          {
+            "verb": "meets-or-exceeds",
+            "value": "MB 229.3"
+          },
+          {
+            "verb": "meets-or-exceeds",
+            "value": "VW 502.00 / 505.00"
+          },
+          {
+            "verb": "meets-or-exceeds",
+            "value": "Renault RN 0700 / 0710"
+          }
+        ],
+        "whoItsFor": "Modern CRDI bakkies, SUVs and vans without a particulate filter. Fully synthetic, so it is the right answer for a loaded bakkie doing long distance.",
+        "positioning": "Fully synthetic protection for hard-working diesel engines.",
+        "benefits": [
+          {
+            "text": "Soot control"
+          },
+          {
+            "text": "Sludge and deposit control"
+          },
+          {
+            "text": "Wear protection"
+          },
+          {
+            "text": "Oxidation stability"
+          },
+          {
+            "text": "Low volatility"
+          },
+          {
+            "text": "Diesel engine cleanliness"
+          }
+        ],
+        "properties": [],
+        "warning": "Formulated for compatible diesel engines without DPF, CPF or SCR requirements. Do not recommend it for a modern diesel that requires a Low SAPS oil.",
+        "imageWidth": 998,
+        "imageHeight": 1390,
+        "imageNote": null
+      }
+    },
+    {
+      "slug": "x3000-15w40",
+      "imageFile": "public/products/ZIC X3000 15W-40 6L.webp",
+      "data": {
+        "name": "ZIC X3000",
+        "family": "diesel",
+        "grade": "15W-40",
+        "order": 40,
+        "packSizes": [
+          "6 L"
+        ],
+        "oilType": "Diesel engine oil",
+        "technology": null,
+        "specification": [
+          "API CG-4"
+        ],
+        "shortSpec": null,
+        "claims": [],
+        "whoItsFor": "Work vehicles. Diesel SUVs, light trucks, medium and heavy trucks, vans, buses and older diesels, where value per litre drives the decision and the engine predates modern emissions gear.",
+        "positioning": "Dependable diesel protection. Built for work.",
+        "benefits": [
+          {
+            "text": "Practical everyday diesel protection"
+          },
+          {
+            "text": "Wear protection"
+          },
+          {
+            "text": "Deposit control"
+          }
+        ],
+        "properties": [
+          {
+            "label": "Density",
+            "value": "0.869 g/cm\u00b3"
+          },
+          {
+            "label": "Kinematic viscosity @40\u00b0C",
+            "value": "113.6 cSt"
+          },
+          {
+            "label": "Kinematic viscosity @100\u00b0C",
+            "value": "14.88 cSt"
+          },
+          {
+            "label": "Viscosity Index",
+            "value": "135"
+          },
+          {
+            "label": "TBN",
+            "value": "6.3 mgKOH/g"
+          },
+          {
+            "label": "Flash Point",
+            "value": "234 \u00b0C"
+          },
+          {
+            "label": "Pour Point",
+            "value": "\u221236 \u00b0C"
+          },
+          {
+            "label": "CCS @ \u221220\u00b0C",
+            "value": "5,800 cP"
+          },
+          {
+            "label": "HTHS @150\u00b0C",
+            "value": "4.2 cP"
+          }
+        ],
+        "warning": "API CG-4 is an older diesel category. Do not recommend it for a DPF or SCR equipped diesel unless the manufacturer specification explicitly permits it.",
+        "imageWidth": 764,
+        "imageHeight": 1080,
+        "imageNote": null
+      }
+    },
+    {
+      "slug": "atf-multi",
+      "imageFile": "public/products/ZIC ATF Multi 1L.webp",
+      "data": {
+        "name": "ZIC ATF MULTI",
+        "family": "transmission",
+        "grade": "Multi-vehicle ATF",
+        "order": 50,
+        "packSizes": [
+          "1 L"
+        ],
+        "oilType": "Fully synthetic multi-vehicle ATF",
+        "technology": null,
+        "specification": [],
+        "shortSpec": "Fully synthetic",
+        "claims": [],
+        "whoItsFor": "Automatic transmissions across a mixed workshop. Broad multi-vehicle coverage in a genuinely synthetic fluid.",
+        "positioning": "Precision fluid control for smooth, consistent shifting.",
+        "benefits": [
+          {
+            "text": "Controlled friction characteristics"
+          },
+          {
+            "text": "Smooth shifting"
+          },
+          {
+            "text": "Anti-shudder performance"
+          },
+          {
+            "text": "Oxidation stability"
+          },
+          {
+            "text": "Transmission wear protection"
+          },
+          {
+            "text": "Fluid durability"
+          },
+          {
+            "text": "Broad multi-vehicle application"
+          }
+        ],
+        "properties": [],
+        "warning": "\u201cMulti\u201d does not mean suitable for every automatic transmission. Always check the ATF specification your transmission actually requires before filling.",
+        "imageWidth": 674,
+        "imageHeight": 1416,
+        "imageNote": "Official SK ZIC 1 L render. Korean domestic label artwork; confirm the SA label variant."
+      }
+    }
+  ],
+  "faqs": [
+    {
+      "slug": "faq-1",
+      "data": {
+        "question": "What is SK ZIC?",
+        "answer": "SK ZIC is a range of engine oils and transmission fluids made by SK Enmove. The South African range includes petrol engine oil, diesel engine oil and automatic transmission fluid.",
+        "order": 10
+      }
+    },
+    {
+      "slug": "faq-2",
+      "data": {
+        "question": "Who distributes SK ZIC in South Africa?",
+        "answer": "Parts-Mall Africa distributes SK ZIC products in South Africa and across Southern Africa.",
+        "order": 20
+      }
+    },
+    {
+      "slug": "faq-3",
+      "data": {
+        "question": "Where can I buy SK ZIC in South Africa?",
+        "answer": "SK ZIC is available through the Parts-Mall Africa branch network. Contact Parts-Mall Africa or use the branch finder to confirm the nearest branch and current stock.",
+        "order": 30
+      }
+    },
+    {
+      "slug": "faq-4",
+      "data": {
+        "question": "How do I choose the correct motor oil?",
+        "answer": "Start with the viscosity grade and performance specification required in the vehicle owner manual. Match both requirements to the product specification, and ask Parts-Mall Africa if you are uncertain.",
+        "order": 40
+      }
+    },
+    {
+      "slug": "faq-5",
+      "data": {
+        "question": "What is YUBASE?",
+        "answer": "YUBASE is the Group III base oil used in SK ZIC lubricants. It is produced by SK Enmove using VHVI hydroprocessing technology to support viscosity stability, low volatility and engine cleanliness.",
+        "order": 50
+      }
+    },
+    {
+      "slug": "faq-6",
+      "data": {
+        "question": "Does multi-vehicle ATF work in every automatic transmission?",
+        "answer": "No. Multi-vehicle does not mean universal. Always confirm the exact automatic transmission fluid specification required by the vehicle manufacturer before filling.",
+        "order": 60
+      }
+    }
+  ],
+  "company": {
+    "legalName": "Parts-Mall Africa (Pty) Ltd",
+    "tradingName": "Parts-Mall Africa",
+    "country": "South Africa",
+    "registrationNumber": "2005/007249/07",
+    "vatNumber": "4430222457",
+    "email": "pma.sales1@parts-mall.com",
+    "addressStreet": "901 Herman Street, PZR Business Park",
+    "addressLocality": "Meadowdale, Germiston",
+    "addressPostalCode": "1401",
+    "phone": "011 392 1141",
+    "whatsapp": "+27 76 311 7593",
+    "whatsappMessage": "Hi, I'd like to ask about SK ZIC products.",
+    "primaryCtaLabel": "Enquire Now",
+    "primaryCtaHref": "/#enquire",
+    "secondaryCtaLabel": "Find your specification",
+    "secondaryCtaHref": "#products",
+    "branchFinderLabel": "Find your nearest branch",
+    "branchFinderHref": "https://www.parts-mall.co.za/branches"
+  },
+  "trust": {
+    "proofCells": [
+      {
+        "label": "[ BASE OIL ]",
+        "value": "World\u2019s No.1 Group III base oil, at ~35% of global supply."
+      },
+      {
+        "label": "[ HERITAGE ]",
+        "value": "No.1 in the Korea Brand Power Index for 28 consecutive years."
+      },
+      {
+        "label": "[ NETWORK ]",
+        "value": "{branches} branches, {provinces} provinces and {countries} Southern African countries."
+      },
+      {
+        "label": "[ ACCREDITATION ]",
+        "value": "RMI Approved distribution through Parts-Mall Africa."
+      }
+    ],
+    "yubaseCapacity": [
+      {
+        "amount": "48,600 b/d",
+        "site": "Ulsan"
+      },
+      {
+        "amount": "19,300 b/d",
+        "site": "ILBOC \u00b7 Cartagena"
+      },
+      {
+        "amount": "12,500 b/d",
+        "site": "PatraSK \u00b7 Dumai"
+      }
+    ],
+    "googleRatingScore": 4.6,
+    "googleRatingOutOf": 5,
+    "googleRatingCount": "1,000+",
+    "googleRatingSource": "Google reviews",
+    "googleRatingHref": "https://koreanautoparts.co.za/",
+    "kbpiYears": 28,
+    "kbpiIndex": "Korea Brand Power Index",
+    "kbpiClaim": "No.1 engine oil brand",
+    "kbpiHref": "https://www.skzic.com/eng/index.do",
+    "sourcesNote": "Reviewed 2026-08-19 (from content/trust.ts and content/proof.ts). Google rating: self-reported by Parts-Mall Africa on koreanautoparts.co.za, a snapshot, re-check periodically. Korea Brand Power Index: skzic.com/eng/index.do, retrieved 2026-08-19; the year count moves every year, re-verify before relying on it. Base oil, heritage and accreditation claims: docs/RESEARCH.md \u00a71.2 and \u00a72.2. YUBASE capacity: docs/RESEARCH.md \u00a71.2."
+  }
+}

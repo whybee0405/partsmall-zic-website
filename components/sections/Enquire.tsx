@@ -3,9 +3,9 @@
 import { useId, useState, type FocusEvent, type FormEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { ENQUIRY_REGIONS, ENQUIRY_INTERESTS } from '@/content/branches';
-import { PRIMARY_CTA } from '@/content/cta';
 import { validateEnquiry, validateField, isEnquiryField, type EnquiryErrors } from '@/lib/enquiry';
-import { trackEvent } from '@/lib/analytics';
+import { enquiryHeaders, trackEvent } from '@/lib/analytics';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * 11 — Enquire. The close.
@@ -104,6 +104,7 @@ function Field({
 }
 
 export default function Enquire() {
+  const { PRIMARY_CTA } = useSiteContent();
   const router = useRouter();
   const [errors, setErrors] = useState<EnquiryErrors>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle');
@@ -141,7 +142,8 @@ export default function Enquire() {
     try {
       const response = await fetch('/api/enquire', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // The analytics session ties the enquiry to this visit's source and campaign in CloudIA.
+        headers: { 'Content-Type': 'application/json', ...enquiryHeaders() },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error('Request failed');

@@ -1,9 +1,10 @@
-import { COMPANY } from '@/content/company';
-import { PRODUCTS } from '@/content/products';
+import { getSiteContent } from '@/lib/cms/content';
 
-export const dynamic = 'force-static';
+// Product details come from CloudIA CMS, so this is rendered per request.
+export const dynamic = 'force-dynamic';
 
-export function GET() {
+export async function GET() {
+  const { COMPANY, PRODUCTS } = await getSiteContent();
   const products = PRODUCTS.map((product) => {
     const specifications = product.specification.length ? product.specification.join(', ') : 'Refer to the current technical data sheet';
     const claims = product.claims?.map((claim) => `${claim.verb}: ${claim.value}`).join('; ');
@@ -24,7 +25,7 @@ ${product.warning ? `- Warning: ${product.warning}\n` : ''}`;
 SK ZIC motor oils and fluids are distributed across South Africa and Southern Africa by Parts-Mall Africa.
 
 Distributor contact: ${COMPANY.email} · ${COMPANY.phone} · WhatsApp ${COMPANY.whatsapp}
-Head office: 901 Herman Street, PZR Business Park, Meadowdale, Germiston 1401, South Africa
+Head office: ${COMPANY.address}, ${COMPANY.country}
 
 # Product range
 

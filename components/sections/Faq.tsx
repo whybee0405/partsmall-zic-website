@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { HOME_FAQS } from '@/lib/seo';
+import { getSiteContent } from '@/lib/cms/content';
 
-export default function Faq() {
+export default async function Faq() {
+  const { HOME_FAQS } = await getSiteContent();
   return (
     <section id="faq" className="py-20 md:py-28" aria-labelledby="faq-title">
       <div className="shell grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">

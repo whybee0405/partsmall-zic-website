@@ -5,18 +5,15 @@ import { notFound } from 'next/navigation';
 import Footer from '@/components/sections/Footer';
 import { SupportHeader } from '@/components/SupportPage';
 import { ClaimChip } from '@/components/ui';
-import { PRODUCTS } from '@/content/products';
 import StructuredData from '@/components/StructuredData';
+import { getSiteContent } from '@/lib/cms/content';
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID, absoluteUrl } from '@/lib/seo';
 
 type ProductPageProps = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return PRODUCTS.map((product) => ({ slug: product.id }));
-}
-
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const { PRODUCTS } = await getSiteContent();
   const product = PRODUCTS.find((item) => item.id === slug);
   if (!product) return {};
   const full = `${product.name} ${product.grade}: ${product.positioning} Specifications, pack sizes and application guidance for South Africa.`;
@@ -53,6 +50,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+  const { PRODUCTS } = await getSiteContent();
   const product = PRODUCTS.find((item) => item.id === slug);
   if (!product) notFound();
 

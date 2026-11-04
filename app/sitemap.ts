@@ -1,10 +1,14 @@
 import type { MetadataRoute } from 'next';
-import { PRODUCTS } from '@/content/products';
 import { SITE_URL } from '@/lib/seo';
+import { getSiteContent } from '@/lib/cms/content';
+
+// Product pages come from CloudIA CMS, so the sitemap is built per request.
+export const dynamic = 'force-dynamic';
 
 const baseUrl = SITE_URL;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { PRODUCTS } = await getSiteContent();
   const updated = new Date('2026-09-07T00:00:00+02:00');
   const staticPages = [
     { path: '', priority: 1, changeFrequency: 'monthly' as const },

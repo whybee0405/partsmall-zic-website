@@ -1,26 +1,7 @@
 /**
- * Parts-Mall Africa branch distribution.
- * Source: parts-mall.co.za/partsmall-branches.asp, transcribed 2026-08-11.
+ * Enquiry form options. The branch network figures shown on the site (regions, counts,
+ * neighbouring countries) are read live from Parts-Mall Africa's CMS: see lib/cms/content.ts.
  */
-
-export interface Region {
-  name: string;
-  count: number;
-}
-
-export const REGIONS: Region[] = [
-  { name: 'Gauteng', count: 16 },
-  { name: 'Limpopo', count: 6 },
-  { name: 'Mpumalanga', count: 4 },
-  { name: 'North West', count: 4 },
-  { name: 'Cape Region', count: 3 },
-  { name: 'Free State', count: 3 },
-  { name: 'KwaZulu-Natal', count: 3 },
-  { name: 'Elsewhere in Africa', count: 5 },
-];
-
-export const NEIGHBOURING =
-  'ESWATINI  ·  BOTSWANA  ·  MOZAMBIQUE  ·  NAMIBIA  ·  ZIMBABWE';
 
 /** Provinces plus neighbouring countries, for the enquiry form select. */
 export const ENQUIRY_REGIONS = [

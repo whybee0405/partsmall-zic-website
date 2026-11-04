@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { PRODUCTS, FAMILIES } from '@/content/products';
+import { FAMILIES } from '@/content/products';
 import { Stamp, Notice, ClaimChip } from '@/components/ui';
+import { useSiteContent } from '@/components/ContentProvider';
 
 /**
  * 08 — Ch.04. Find your ZIC.
@@ -18,6 +19,7 @@ import { Stamp, Notice, ClaimChip } from '@/components/ui';
  * Design: docs/design-snapshots/sections/s08-ch04-find-your-zic.png
  */
 export default function Products() {
+  const { PRODUCTS } = useSiteContent();
   const [family, setFamily] = useState<string>('petrol');
   const [open, setOpen] = useState<string | null>('x7-5w30');
 

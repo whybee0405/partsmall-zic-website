@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ContentSection, SupportPage, pageMetadata } from '@/components/SupportPage';
-import { COMPANY } from '@/content/company';
-import { PRODUCTS } from '@/content/products';
+import { getSiteContent } from '@/lib/cms/content';
 
 export const metadata = pageMetadata(
   'Technical Resources',
@@ -9,11 +8,12 @@ export const metadata = pageMetadata(
   '/resources',
 );
 
-function requestHref(product: string, document: string) {
-  return `mailto:${COMPANY.email}?subject=${encodeURIComponent(`${product} ${document} request`)}&body=${encodeURIComponent(`Please send me the current ${document} for ${product}.`)}`;
+function requestHref(email: string, product: string, document: string) {
+  return `mailto:${email}?subject=${encodeURIComponent(`${product} ${document} request`)}&body=${encodeURIComponent(`Please send me the current ${document} for ${product}.`)}`;
 }
 
-export default function ResourcesPage() {
+export default async function ResourcesPage() {
+  const { COMPANY, PRODUCTS } = await getSiteContent();
   return (
     <SupportPage
       stamp="REFERENCE / CONTROLLED DOCUMENTS"
@@ -46,10 +46,10 @@ export default function ResourcesPage() {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <a href={requestHref(`${product.name} ${product.grade}`, 'TDS')} className="btn btn-secondary !min-h-[44px] !px-4">
+                  <a href={requestHref(COMPANY.email, `${product.name} ${product.grade}`, 'TDS')} className="btn btn-secondary !min-h-[44px] !px-4">
                     Request TDS
                   </a>
-                  <a href={requestHref(`${product.name} ${product.grade}`, 'SDS')} className="btn btn-secondary !min-h-[44px] !px-4">
+                  <a href={requestHref(COMPANY.email, `${product.name} ${product.grade}`, 'SDS')} className="btn btn-secondary !min-h-[44px] !px-4">
                     Request SDS
                   </a>
                   <Link href={`/products/${product.id}`} className="btn btn-primary !min-h-[44px] !px-4">

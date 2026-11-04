@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Manrope, Inter, Roboto_Mono } from 'next/font/google';
 import Analytics from '@/components/Analytics';
-import CookieBanner from '@/components/CookieBanner';
+import { ContentProvider } from '@/components/ContentProvider';
 import SmoothScroll from '@/components/SmoothScroll';
 import StructuredData from '@/components/StructuredData';
-import { COMPANY } from '@/content/company';
+import { getSiteContent } from '@/lib/cms/content';
 import { DEFAULT_SOCIAL_IMAGE, ORGANIZATION_ID, SITE_NAME, SITE_URL, WEBSITE_ID } from '@/lib/seo';
 import './globals.css';
 
@@ -81,13 +81,6 @@ export const metadata: Metadata = {
   ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
     ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
     : {}),
-  // Read by public/scripts/ga4-init.js — a plain <meta> tag so the GA4
-  // measurement ID reaches that static script without an inline <script>,
-  // which would otherwise need a CSP nonce (and per-request nonces force
-  // every page to render dynamically — see components/Analytics.tsx).
-  ...(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-    ? { other: { 'ga-measurement-id': process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID } }
-    : {}),
   applicationName: SITE_NAME,
   category: 'Automotive lubricants',
   creator: 'Parts-Mall Africa',
@@ -112,7 +105,13 @@ export const viewport: Viewport = {
   themeColor: '#090b0e',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+// Products, contact details, FAQs and trust figures come from CloudIA CMS (and the branch network
+// from Parts-Mall's CMS) on every request, so a published edit shows without a rebuild.
+export const dynamic = 'force-dynamic';
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const content = await getSiteContent();
+  const { COMPANY } = content;
   const entityGraph = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -132,9 +131,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         telephone: COMPANY.phoneHref.replace('tel:', ''),
         address: {
           '@type': 'PostalAddress',
-          streetAddress: '901 Herman Street, PZR Business Park',
-          addressLocality: 'Meadowdale, Germiston',
-          postalCode: '1401',
+          streetAddress: COMPANY.addressStreet,
+          addressLocality: COMPANY.addressLocality,
+          postalCode: COMPANY.addressPostalCode,
           addressCountry: 'ZA',
         },
         areaServed: ['South Africa', 'Southern Africa'],
@@ -160,8 +159,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <SmoothScroll />
-        {children}
-        <CookieBanner />
+        <ContentProvider content={content}>{children}</ContentProvider>
         <Analytics />
       </body>
     </html>

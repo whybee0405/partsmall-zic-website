@@ -1,9 +1,11 @@
-import { PRODUCTS } from '@/content/products';
 import { SITE_URL } from '@/lib/seo';
+import { getSiteContent } from '@/lib/cms/content';
 
-export const dynamic = 'force-static';
+// Product details come from CloudIA CMS, so this is rendered per request.
+export const dynamic = 'force-dynamic';
 
-export function GET() {
+export async function GET() {
+  const { PRODUCTS } = await getSiteContent();
   const products = PRODUCTS.map(
     (product) => `- [${product.name} ${product.grade}](${SITE_URL}/products/${product.id}): ${product.positioning}`,
   ).join('\n');
