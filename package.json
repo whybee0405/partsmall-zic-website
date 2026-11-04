@@ -16,7 +16,8 @@
     "mouse-follower": "^1.1.2",
     "next": "^16.3.4",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "resend": "^6.26.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",

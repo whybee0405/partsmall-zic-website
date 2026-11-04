@@ -22,41 +22,26 @@ const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
  *
  * Still a no-op with no measurement ID configured, so safe to mount
  * unconditionally in the root layout regardless of GA4's setup state.
+ *
+ * The consent-default and init scripts live as static files under
+ * public/scripts/ rather than inline here. An inline <script> needs a CSP
+ * nonce to run under a real Content-Security-Policy, and a nonce has to be
+ * minted per request — which forces every page in the app to render
+ * dynamically instead of statically. Shipping these as ordinary same-origin
+ * script files keeps them covered by a plain `script-src 'self'` and keeps
+ * the rest of the site static. ga4-init.js gets the measurement ID from the
+ * <meta name="ga-measurement-id"> tag layout.tsx renders, not from being
+ * templated per-build — same reasoning, one static file instead of one
+ * generated per GA ID.
  */
 export default function Analytics() {
   if (!GA_MEASUREMENT_ID) return null;
 
   return (
     <>
-      <Script id="ga4-consent-default" strategy="beforeInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          window.gtag = gtag;
-          // 'denied' is the only safe default for a first paint — server-
-          // rendered HTML can't read localStorage. ConsentGate below
-          // corrects this to 'granted' within one tick on the client if a
-          // prior visit already accepted, before any page_view fires.
-          gtag('consent', 'default', {
-            ad_storage: 'denied',
-            ad_user_data: 'denied',
-            ad_personalization: 'denied',
-            analytics_storage: 'denied'
-          });
-        `}
-      </Script>
+      <Script src="/scripts/ga4-consent-default.js" strategy="beforeInteractive" />
       <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />
-      <Script id="ga4-init" strategy="afterInteractive">
-        {`
-          gtag('js', new Date());
-          // send_page_view: false — PageViewTracker below sends every page_view
-          // explicitly, including the first. The App Router never does a full
-          // page load on client-side navigation, so the implicit page_view
-          // this config call would otherwise send only ever fires once, on
-          // the very first page, and silently misses every route change after.
-          gtag('config', '${GA_MEASUREMENT_ID}', { anonymize_ip: true, send_page_view: false });
-        `}
-      </Script>
+      <Script src="/scripts/ga4-init.js" strategy="afterInteractive" />
       <ConsentGate />
       <PageViewTracker />
     </>

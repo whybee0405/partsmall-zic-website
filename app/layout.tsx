@@ -81,6 +81,13 @@ export const metadata: Metadata = {
   ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
     ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
     : {}),
+  // Read by public/scripts/ga4-init.js — a plain <meta> tag so the GA4
+  // measurement ID reaches that static script without an inline <script>,
+  // which would otherwise need a CSP nonce (and per-request nonces force
+  // every page to render dynamically — see components/Analytics.tsx).
+  ...(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+    ? { other: { 'ga-measurement-id': process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID } }
+    : {}),
   applicationName: SITE_NAME,
   category: 'Automotive lubricants',
   creator: 'Parts-Mall Africa',

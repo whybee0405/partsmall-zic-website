@@ -11,6 +11,13 @@ services:
       args:
         NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
         NEXT_PUBLIC_GSC_VERIFICATION: ${NEXT_PUBLIC_GSC_VERIFICATION:-}
+    # RESEND_API_KEY is a real secret, unlike the NEXT_PUBLIC_* build args
+    # above — it's read at runtime (lib/mailer.ts), so it's passed as a
+    # container environment variable instead. That also means changing it
+    # only needs a container restart, not a rebuild.
+    environment:
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
