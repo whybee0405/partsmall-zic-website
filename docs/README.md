@@ -50,7 +50,7 @@ Read in this order.
 | `DESIGN.md` | Tokens, components, motion, bans. |
 | `LANDING-PAGE-SPEC.md` | Section-by-section build spec, motion inventory, responsive behaviour, build order. |
 | `RESEARCH.md` | Research dossier. Every claim sourced; unverified ones flagged. |
-| `GA4-DEPLOYMENT-SETUP.md` | Future GA4, cookie consent, privacy, deployment, and verification checklist. GA4 is currently disabled. |
+| `GA4-DEPLOYMENT-SETUP.md` | Superseded (2026-11-04): record of the former GA4 and cookie-consent setup. Analytics are now CloudIA's, cookieless (`cloudia/README.md`). |
 | `design-snapshots/` | Approved design baseline, rendered from Figma. |
 
 **Figma:** [SK ZIC — Landing Page](https://www.figma.com/design/0S6E56v08klREoNwS06ry8) · page `node-id=178-2`

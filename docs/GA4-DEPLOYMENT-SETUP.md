@@ -1,5 +1,9 @@
 # Google Analytics 4 deployment and consent setup
 
+> **Superseded on 2026-11-04.** GA4, Consent Mode and the cookie banner were removed; the site now uses
+> CloudIA CMS's cookieless first-party analytics (see `lib/analytics.ts` and `cloudia/README.md`). This
+> document is kept only as a record of the previous setup.
+
 Last reviewed: 19 August 2026
 
 ## Status update — 7 September 2026
