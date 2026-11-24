@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Cta } from '@/components/ui';
 import { useSiteContent } from '@/components/ContentProvider';
+import { HERO_ID } from '@/lib/lineup';
 
 /**
  * 01 — Hero. One product, centred.
@@ -14,7 +15,8 @@ import { useSiteContent } from '@/components/ContentProvider';
  * Design: docs/design-snapshots/sections/s01-hero.png
  */
 export default function Hero() {
-  const { PRIMARY_CTA, SECONDARY_CTA } = useSiteContent();
+  const { PRIMARY_CTA, SECONDARY_CTA, PRODUCTS } = useSiteContent();
+  const x7 = PRODUCTS.find((p) => p.id === HERO_ID);
   return (
     <section
       id="hero"
@@ -60,15 +62,17 @@ export default function Hero() {
 
         {/* Plane 2 — the product, overtakes the scroll */}
         <div data-plane="2" className="relative mt-12 lg:mt-16">
-          <Image
-            src="/products/ZIC X7 5W30 4L.webp"
-            alt="ZIC X7 5W-30 fully synthetic motor oil, four litre pack"
-            width={502}
-            height={699}
-            priority
-            sizes="(max-width: 768px) 190px, 320px"
-            className="h-auto w-[190px] md:w-[260px] lg:w-[316px]"
-          />
+          {x7 && (
+            <Image
+              src={x7.image}
+              alt="ZIC X7 5W-30 fully synthetic motor oil, four litre pack"
+              width={x7.imageWidth}
+              height={x7.imageHeight}
+              priority
+              sizes="(max-width: 768px) 190px, 320px"
+              className="h-auto w-[190px] md:w-[260px] lg:w-[316px]"
+            />
+          )}
           <div
             aria-hidden
             className="absolute inset-x-0 -bottom-2 mx-auto h-6 w-4/5 rounded-[50%] blur-lg"

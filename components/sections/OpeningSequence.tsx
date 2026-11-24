@@ -8,9 +8,11 @@ import Hero from '@/components/sections/Hero';
 import TheFive from '@/components/sections/TheFive';
 import SplashFrames, { type SplashApi } from '@/components/SplashFrames';
 import { useSiteContent } from '@/components/ContentProvider';
+import { HERO_ID, lineup, rangeCounts } from '@/lib/lineup';
+import type { Product } from '@/lib/cms/types';
 
 /**
- * Sections 01-03: one becomes five.
+ * Sections 01-03: one becomes the range.
  *
  * The stage is pinned with CSS `position: sticky` rather than ScrollTrigger's
  * `pin: true`. Sticky needs no pin-spacer, causes no layout shift on refresh,
@@ -36,22 +38,74 @@ import { useSiteContent } from '@/components/ContentProvider';
  */
 
 /**
- * Left to right.
+ * Slot metrics, left to right, by how many products are published (the order
+ * itself comes from lib/lineup.ts).
  *
  * `h` / `arc` are the wide-viewport metrics, `mh` / `marc` the phone ones.
  * Heights are a share of the stage; `arc` lifts the line-up into a shallow
  * rainbow and `rot` fans each pack away from centre.
  *
  * Phone heights are constrained by width, not height: at 393px each cell gets
- * about 70px, and a jerrycan is 0.72 as wide as it is tall.
+ * about 70px with five packs (58px with six), and a jerrycan is 0.72 as wide as
+ * it is tall.
+ *
+ * Six has no middle slot, so the rainbow peaks between the third and fourth
+ * packs and the hero (third) is shifted back to the stage centre while it
+ * stands alone; see `heroD` below.
  */
-const LINEUP = [
-  { id: 'x5-10w30', h: 17, arc: 34, rot: -5, z: 3, mh: 9, marc: 20 },
-  { id: 'x7-diesel-5w30', h: 23, arc: 12, rot: -2.5, z: 4, mh: 12, marc: 7 },
-  { id: 'x7-5w30', h: 26, arc: 0, rot: 0, z: 6, mh: 13.5, marc: 0 },
-  { id: 'x3000-15w40', h: 23, arc: 12, rot: 2.5, z: 4, mh: 12, marc: 7 },
-  { id: 'atf-multi', h: 18, arc: 34, rot: 5, z: 3, mh: 10, marc: 20 },
-] as const;
+type Slot = { h: number; arc: number; rot: number; z: number; mh: number; marc: number };
+const SLOTS: Record<number, Slot[]> = {
+  5: [
+    { h: 17, arc: 34, rot: -5, z: 3, mh: 9, marc: 20 },
+    { h: 23, arc: 12, rot: -2.5, z: 4, mh: 12, marc: 7 },
+    { h: 26, arc: 0, rot: 0, z: 6, mh: 13.5, marc: 0 },
+    { h: 23, arc: 12, rot: 2.5, z: 4, mh: 12, marc: 7 },
+    { h: 18, arc: 34, rot: 5, z: 3, mh: 10, marc: 20 },
+  ],
+  6: [
+    { h: 16, arc: 36, rot: -5, z: 2, mh: 7.5, marc: 20 },
+    { h: 22, arc: 14, rot: -3, z: 4, mh: 10, marc: 8 },
+    { h: 26, arc: 0, rot: -1, z: 6, mh: 11.5, marc: 0 },
+    { h: 22, arc: 3, rot: 1, z: 5, mh: 10, marc: 2 },
+    { h: 22, arc: 14, rot: 3, z: 4, mh: 10, marc: 8 },
+    { h: 17, arc: 36, rot: 5, z: 2, mh: 8, marc: 20 },
+  ],
+};
+
+/**
+ * Any other count: a symmetric rainbow, the hero at full height. Cached per
+ * line-up so the same range always gets the same array, which is what lets the
+ * animation effect depend on it without rebuilding on every render.
+ */
+const computed = new Map<string, Slot[]>();
+function slotsFor(packs: Product[]): Slot[] {
+  const tuned = SLOTS[packs.length];
+  if (tuned) return tuned;
+  const key = packs.map((p) => p.id).join();
+  const hit = computed.get(key);
+  if (hit) return hit;
+  const mid = (packs.length - 1) / 2 || 1;
+  const slots = packs.map((p, i) => {
+    const t = (i - (packs.length - 1) / 2) / mid; // -1 .. 1
+    if (p.id === HERO_ID) return { h: 26, arc: 0, rot: 0, z: 6, mh: 13.5 * Math.min(1, 5 / packs.length), marc: 0 };
+    return {
+      h: 23 - 6 * t * t,
+      arc: 34 * t * t,
+      rot: 5 * t,
+      z: 5 - Math.round(2 * Math.abs(t)),
+      mh: (12 - 3 * t * t) * Math.min(1, 5 / packs.length),
+      marc: 20 * t * t,
+    };
+  });
+  computed.set(key, slots);
+  return slots;
+}
+
+/** Cell width at md+: wide enough for the callouts, narrow enough for the row to fit. */
+const CELL_W: Record<number, string> = {
+  5: 'md:w-[15%] md:min-w-[118px]',
+  6: 'md:w-[13%] md:min-w-[100px]',
+};
 
 /**
  * The stage headline size, shared by the hero and the range title so the three
@@ -117,7 +171,6 @@ const SPLASH_IMPACT = 0.04;
  */
 const SPLASH_SURFACE = 0.9;
 
-const CENTRE_INDEX = 2;
 const MAX_H = 26; // vh, the centre pack, wide
 const MAX_H_COMPACT = 13.5; // vh, the centre pack, phone
 const CARBON = '#090b0e';
@@ -125,6 +178,13 @@ const ENG_WHITE = '#f7f7f5';
 
 export default function OpeningSequence() {
   const { PRODUCTS, PRIMARY_CTA, SECONDARY_CTA } = useSiteContent();
+  const packs = lineup(PRODUCTS);
+  const slots = slotsFor(packs);
+  const counts = rangeCounts(PRODUCTS);
+  // The X7 opens the sequence; if it was never published, whichever pack sits
+  // nearest the middle stands in.
+  const heroAt = packs.findIndex((p) => p.id === HERO_ID);
+  const CENTRE_INDEX = heroAt >= 0 ? heroAt : Math.floor((packs.length - 1) / 2);
   const [reduced, setReduced] = useState(false);
   const [compact, setCompact] = useState(false);
   const [ready, setReady] = useState(false);
@@ -183,12 +243,22 @@ export default function OpeningSequence() {
 
       /** Offset from each cell's centre to the centre pack's, measured neutral. */
       const offsets = new Map<HTMLElement, number>();
+      /**
+       * How far the hero cell sits right of the row's centre, unscaled. Zero
+       * with an odd number of packs; with six the hero is half a cell left, and
+       * since the row scales about its own centre the shift grows with the
+       * scale, so the row is moved by -heroD x scale while the hero is alone.
+       */
+      let heroD = 0;
+      const heroX = (scale: number) => -heroD * scale;
       const measure = () => {
         gsap.set(cells, { x: 0 });
         const centre = cells[CENTRE_INDEX];
-        if (!centre) return;
+        if (!centre || !row.current) return;
         const c = centre.getBoundingClientRect();
         const cx = c.left + c.width / 2;
+        const rr = row.current.getBoundingClientRect();
+        heroD = cx - (rr.left + rr.width / 2);
         for (const el of cells) {
           const r = el.getBoundingClientRect();
           offsets.set(el, cx - (r.left + r.width / 2));
@@ -199,8 +269,8 @@ export default function OpeningSequence() {
       // and callouts stay on one straight line beneath the curve.
       packs.forEach((el, i) => {
         gsap.set(el, {
-          y: compact ? LINEUP[i].marc : LINEUP[i].arc,
-          rotate: LINEUP[i].rot,
+          y: compact ? slots[i].marc : slots[i].arc,
+          rotate: slots[i].rot,
           transformOrigin: '50% 100%',
         });
       });
@@ -301,10 +371,10 @@ export default function OpeningSequence() {
        * correct when the row is unscaled at the moment of reading.
        */
       const layout = () => {
-        gsap.set(row.current, { scale: 1, y: 0, transformOrigin: '50% 0%' });
+        gsap.set(row.current, { scale: 1, x: 0, y: 0, transformOrigin: '50% 0%' });
         measure();
         fitBand();
-        gsap.set(row.current, { scale: restScale, y: restY });
+        gsap.set(row.current, { scale: restScale, x: heroX(restScale), y: restY });
         gsap.set(siblings, {
           x: (i, el) => offsets.get(el as HTMLElement) ?? 0,
           opacity: 0,
@@ -352,7 +422,7 @@ export default function OpeningSequence() {
       const FALL_IN = 0.05; // the descent begins
       const PLUNGE = 0.6; // the last, accelerating stretch
       const LAND = 0.665; // contact
-      const REVEAL = 0.8; // one becomes five
+      const REVEAL = 0.8; // one becomes the range
 
       // --- Act 1: the type gives way to the product -------------------------
       tl.to(heroType.current, { opacity: 0, y: -70, duration: 0.09 }, 0)
@@ -375,6 +445,7 @@ export default function OpeningSequence() {
         {
           y: () => at(restY, landY, 0.62),
           scale: () => at(restScale, landScale, 0.62),
+          x: () => heroX(at(restScale, landScale, 0.62)),
           duration: PLUNGE - FALL_IN,
         },
         FALL_IN,
@@ -384,6 +455,7 @@ export default function OpeningSequence() {
           {
             y: () => landY,
             scale: () => landScale,
+            x: () => heroX(landScale),
             duration: LAND - PLUNGE,
             ease: 'power2.in',
           },
@@ -460,12 +532,12 @@ export default function OpeningSequence() {
         .to(splash.current, { opacity: 0.38, duration: 0.09 }, REVEAL - 0.05)
         .to(splash.current, { opacity: 0.05, scale: 0.97, duration: 0.16 }, REVEAL + 0.08);
 
-      // --- Act 4: one becomes five ------------------------------------------
+      // --- Act 4: one becomes the range ------------------------------------------
       // Stagger extends a tween's end by stagger x (n - 1), so these are placed
       // to finish on 1.0 rather than past it. See the note below on why the
       // timeline's total duration has to be exactly 1.
       tl.to(rangeHead.current, { opacity: 1, y: 0, duration: 0.07 }, REVEAL - 0.02)
-        .to(row.current, { scale: 1, y: 0, duration: 0.13 }, REVEAL)
+        .to(row.current, { scale: 1, x: 0, y: 0, duration: 0.13 }, REVEAL)
         .to(siblings, { x: 0, opacity: 1, scale: 1, duration: 0.13, stagger: 0.02 }, REVEAL)
         .to(leaders, { scaleY: 1, duration: 0.06, stagger: 0.015 }, REVEAL + 0.08)
         .to(callouts, { opacity: 1, y: 0, duration: 0.04, stagger: 0.012 }, REVEAL + 0.11);
@@ -482,7 +554,9 @@ export default function OpeningSequence() {
     }, wrap);
 
     return () => ctx.revert();
-  }, [ready, reduced, compact]);
+    // Rebuilt when the published range changes: `slots` is the same array for
+    // the same line-up (see slotsFor).
+  }, [ready, reduced, compact, slots, CENTRE_INDEX]);
 
   // Reduced motion: the canister once, then the range. No standalone splash
   // section, because the same pack twice running reads as a mistake.
@@ -591,7 +665,7 @@ export default function OpeningSequence() {
             style={{ opacity: 0, transform: 'translateY(26px)' }}
           >
             <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
-              Five products · Seven pack sizes
+              {counts.products} products · {counts.packs} pack sizes
             </p>
             <h2
               className="t-display mt-5 short:mt-3"
@@ -693,16 +767,15 @@ export default function OpeningSequence() {
           className="absolute inset-x-0 z-10 flex items-end justify-center gap-[1vw] md:gap-[2vw]"
           style={{ bottom: compact ? '16%' : '9%' }}
         >
-          {LINEUP.map((slot, i) => {
-            const product = PRODUCTS.find((p) => p.id === slot.id);
-            if (!product) return null;
+          {packs.map((product, i) => {
+            const slot = slots[i];
             const isCentre = i === CENTRE_INDEX;
 
             return (
               <li
                 key={product.id}
                 data-cell
-                className="flex min-w-0 flex-1 flex-col items-center md:w-[15%] md:min-w-[118px] md:flex-none"
+                className={`flex min-w-0 flex-1 flex-col items-center ${CELL_W[packs.length] ?? 'md:w-[12%] md:min-w-[88px]'} md:flex-none`}
                 style={{
                   zIndex: slot.z,
                   // The resting state is the centre pack alone; the other four

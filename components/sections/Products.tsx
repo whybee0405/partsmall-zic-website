@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { FAMILIES } from '@/content/products';
 import { Stamp, Notice, ClaimChip } from '@/components/ui';
 import { useSiteContent } from '@/components/ContentProvider';
+import { rangeCounts } from '@/lib/lineup';
 
 /**
  * 08 — Ch.04. Find your ZIC.
@@ -24,6 +25,7 @@ export default function Products() {
   const [open, setOpen] = useState<string | null>('x7-5w30');
 
   const rows = PRODUCTS.filter((p) => p.family === family);
+  const counts = rangeCounts(PRODUCTS);
 
   return (
     <section
@@ -40,7 +42,7 @@ export default function Products() {
           className="t-lead mt-6"
           style={{ maxWidth: 'var(--measure-lead)', color: 'var(--color-deep-steel)' }}
         >
-          Five products. Seven pack sizes. The SK ZIC line-up Parts-Mall Africa imports today,
+          {counts.products} products. {counts.packs} pack sizes. The SK ZIC line-up Parts-Mall Africa imports today,
           matched to the specifications this market runs.
         </p>
 
@@ -133,7 +135,8 @@ export default function Products() {
                     </span>
 
                     <span className="t-mono col-span-2 text-[0.75rem] leading-[1.65] md:col-auto" style={{ color: 'var(--color-deep-steel)' }}>
-                      {p.specification.length ? p.specification.join('\n') : p.oilType}
+                      {/* An oil type is never presented as a specification. */}
+                      {p.specification.length ? p.specification.join('\n') : 'No published specification'}
                     </span>
 
                     <span className="col-span-2 text-base leading-[1.58] md:col-auto" style={{ color: 'var(--color-steel-text)' }}>
@@ -208,9 +211,10 @@ export default function Products() {
 
         <div className="mt-12 w-full">
           <Notice label="[ Important ]" tone="alert">
-            ZIC X7 Diesel is formulated for diesel engines without DPF, CPF or SCR. ZIC X3000 is API
-            CG-4, an older diesel category. Neither is a Low SAPS oil, so neither belongs in a modern
-            particulate-filter diesel unless the manufacturer specification explicitly permits it.
+            ZIC X7 Diesel and ZIC X5 Diesel are recommended for diesel engines without DPF, CPF or
+            SCR. ZIC X3000 is API CF-4, an older diesel category. None of the three belongs in a
+            modern particulate-filter diesel unless the manufacturer specification explicitly
+            permits it.
           </Notice>
         </div>
       </div>

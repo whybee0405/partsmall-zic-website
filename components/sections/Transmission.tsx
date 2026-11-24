@@ -24,7 +24,8 @@ const BENEFITS = [
 ];
 
 export default async function Transmission() {
-  const { PRIMARY_CTA } = await getSiteContent();
+  const { PRIMARY_CTA, PRODUCTS } = await getSiteContent();
+  const atf = PRODUCTS.find((p) => p.id === 'atf-multi');
   return (
     <section
       id="transmission"
@@ -62,14 +63,16 @@ export default async function Transmission() {
             border: '1px solid var(--color-deep-steel)',
           }}
         >
-          <Image
-            src="/products/ZIC ATF Multi 1L.webp"
-            alt="ZIC ATF MULTI fully synthetic automatic transmission fluid, one litre"
-            width={337}
-            height={708}
-            sizes="152px"
-            className="h-auto w-[130px] shrink-0 md:w-[152px]"
-          />
+          {atf && (
+            <Image
+              src={atf.image}
+              alt="ZIC ATF MULTI fully synthetic automatic transmission fluid, one litre"
+              width={atf.imageWidth}
+              height={atf.imageHeight}
+              sizes="152px"
+              className="h-auto w-[130px] shrink-0 md:w-[152px]"
+            />
+          )}
 
           <div className="w-full">
             <h3

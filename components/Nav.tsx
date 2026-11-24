@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { NAV_LINKS, SECTIONS } from '@/content/sections';
 import { useSiteContent } from '@/components/ContentProvider';
+import { cols } from '@/lib/lineup';
 
 /**
  * Fixed nav.
@@ -180,7 +181,7 @@ export default function Nav() {
                     <div className="shell py-5">
                       <div className="mb-4 flex items-center justify-between">
                         <p className="t-label" style={{ color: dark ? 'var(--color-metal-grey)' : 'var(--color-steel-text)' }}>
-                          South African range / 05 products
+                          South African range / {String(PRODUCTS.length).padStart(2, '0')} products
                         </p>
                         <Link
                           href="#products"
@@ -191,7 +192,7 @@ export default function Nav() {
                           Compare the range
                         </Link>
                       </div>
-                      <ul className="grid grid-cols-5" style={{ borderBlock: `1px solid ${line}` }}>
+                      <ul className={`grid ${cols(PRODUCTS.length).base}`} style={{ borderBlock: `1px solid ${line}` }}>
                         {PRODUCTS.map((product, index) => (
                           <li key={product.id} style={{ borderLeft: index === 0 ? undefined : `1px solid ${line}` }}>
                             <Link

@@ -84,7 +84,8 @@ export default function Distribution() {
         <Stamp dark>Ch.06 / 06 — Distribution — Parts-Mall Africa</Stamp>
 
         <h2 className="t-display t-h2 mt-6" style={{ color: 'var(--color-pure-white)' }}>
-          {/* Live from Parts-Mall Africa's branch list. */}
+          {/* Live from Parts-Mall Africa's branch list. Branches are South African only; the
+              country points in neighbouring countries are never counted as branches. */}
           {numberWords(NETWORK.branches)} branches.
           <br />
           {numberWords(NETWORK.provinces)} provinces. {numberWords(NETWORK.countries)} countries.
@@ -118,6 +119,11 @@ export default function Distribution() {
               <p className="t-label mt-1" style={{ color: 'var(--color-metal-grey)' }}>
                 {r.name}
               </p>
+              {r.countryPoints && (
+                <p className="t-label mt-1" style={{ color: 'var(--color-zic-red)' }}>
+                  Country points, not branches
+                </p>
+              )}
             </li>
           ))}
         </ul>

@@ -58,7 +58,7 @@ const config: CloudiaConfig = {
           name: 'shortSpec',
           type: 'text',
           label: 'Short specification',
-          help: 'Compact label for the five-across line-up where columns are narrow. Optional.',
+          help: 'Compact label for the line-up, where columns are narrow. Optional.',
         },
         {
           name: 'claims',

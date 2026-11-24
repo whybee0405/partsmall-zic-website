@@ -15,8 +15,12 @@ import type {
  *
  * Read once per 30 seconds and shared by every request in that window; while a source is
  * unreachable the last good copy keeps being served. Parts-Mall's branch figures fall back to the
- * last transcribed numbers (August 2026) when they have never been reachable since start-up, so an
- * outage there can never take this site down.
+ * last transcribed numbers (November 2026) when they have never been reachable since start-up, so
+ * an outage there can never take this site down.
+ *
+ * Branch figures follow the client's rule: branches are South African only (42 across all nine
+ * provinces in November 2026). Parts-Mall's entries in neighbouring countries are country points
+ * and are never added into the branch count.
  */
 export const CLOUDIA_URL = (process.env.CLOUDIA_URL || 'http://127.0.0.1:8788').replace(/\/$/, '');
 const BRANCHES_URL =
@@ -46,23 +50,25 @@ const REGION_OF: Record<string, string> = {
   'Northern Cape': 'Cape Region',
   'Pan-Africa': 'Elsewhere in Africa',
 };
+/** The region that holds Parts-Mall's country points outside South Africa, not branches. */
+const COUNTRY_POINTS_REGION = 'Elsewhere in Africa';
 /** Neighbouring countries in the order the site has always listed them; new ones follow A–Z. */
 const COUNTRY_ORDER = ['Eswatini', 'Botswana', 'Mozambique', 'Namibia', 'Zimbabwe'];
 
-/** Transcribed from parts-mall.co.za on 2026-08-11; only used until the live figures load. */
-const FALLBACK_NETWORK = {
+/** Transcribed from parts-mall.co.za on 2026-11-24; only used until the live figures load. */
+const FALLBACK_NETWORK: { REGIONS: Region[]; NEIGHBOURING: string; NETWORK: Network } = {
   REGIONS: [
     { name: 'Gauteng', count: 16 },
-    { name: 'Limpopo', count: 6 },
+    { name: 'Limpopo', count: 5 },
     { name: 'Mpumalanga', count: 4 },
     { name: 'North West', count: 4 },
-    { name: 'Cape Region', count: 3 },
-    { name: 'Free State', count: 3 },
-    { name: 'KwaZulu-Natal', count: 3 },
-    { name: 'Elsewhere in Africa', count: 5 },
+    { name: 'Cape Region', count: 5 },
+    { name: 'Free State', count: 4 },
+    { name: 'KwaZulu-Natal', count: 4 },
+    { name: 'Elsewhere in Africa', count: 5, countryPoints: true },
   ],
   NEIGHBOURING: 'ESWATINI  ·  BOTSWANA  ·  MOZAMBIQUE  ·  NAMIBIA  ·  ZIMBABWE',
-  NETWORK: { branches: 44, provinces: 9, countries: 5 },
+  NETWORK: { branches: 42, provinces: 9, countries: 5, countryPoints: 5 },
 };
 type NetworkContent = typeof FALLBACK_NETWORK;
 
@@ -80,7 +86,11 @@ async function loadNetwork(): Promise<NetworkContent> {
   const regions: Region[] = [
     ...REGION_ORDER.filter((name) => counts.has(name)),
     ...[...counts.keys()].filter((name) => !REGION_ORDER.includes(name)).sort(),
-  ].map((name) => ({ name, count: counts.get(name)! }));
+  ].map((name) => ({
+    name,
+    count: counts.get(name)!,
+    ...(name === COUNTRY_POINTS_REGION ? { countryPoints: true } : null),
+  }));
 
   const abroad = [...new Set(docs.filter((b) => b.country !== 'South Africa').map((b) => b.country))];
   abroad.sort((a, b) => {
@@ -88,14 +98,18 @@ async function loadNetwork(): Promise<NetworkContent> {
     const ib = COUNTRY_ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
   });
-  const provinces = new Set(
-    docs.filter((b) => b.country === 'South Africa').map((b) => b.province),
-  ).size;
+  const home = docs.filter((b) => b.country === 'South Africa');
+  const provinces = new Set(home.map((b) => b.province)).size;
 
   return {
     REGIONS: regions,
     NEIGHBOURING: abroad.map((c) => c.toUpperCase()).join('  ·  '),
-    NETWORK: { branches: docs.length, provinces, countries: abroad.length },
+    NETWORK: {
+      branches: home.length,
+      provinces,
+      countries: abroad.length,
+      countryPoints: docs.length - home.length,
+    },
   };
 }
 
@@ -123,6 +137,8 @@ const cta = (label: string, href: string): Cta => ({
   external: /^https?:\/\//.test(href),
 });
 
+/** `imageNote` is internal (where a render came from, what to confirm) and is never read, so it
+ * never reaches the page source. */
 function toProduct(doc: Doc): Product {
   return {
     id: doc.slug,
@@ -145,8 +161,29 @@ function toProduct(doc: Doc): Product {
     image: imagePath(doc.image),
     imageWidth: Number(doc.imageWidth),
     imageHeight: Number(doc.imageHeight),
-    imageNote: text(doc.imageNote),
   };
+}
+
+/**
+ * The current draft of a product behind a CMS preview link (`?cloudia-preview=<token>`), including
+ * one that was never published. The token is the credential; null when it is malformed, expired,
+ * unknown or for another collection. Never cached: a preview must show the draft as it is now.
+ */
+export async function getProductPreview(token: string): Promise<Product | null> {
+  if (!/^cld_prv_[A-Za-z0-9_-]{16,}$/.test(token)) return null;
+  try {
+    const response = await fetch(`${CLOUDIA_URL}/api/preview/${encodeURIComponent(token)}`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return null;
+    const body = (await response.json()) as { collection?: string; slug?: string; data?: Doc; doc?: Doc };
+    if (body.collection !== 'products' || !body.slug) return null;
+    return toProduct({ ...(body.doc ?? body.data ?? {}), slug: body.slug });
+  } catch (error) {
+    console.error('[cms] preview unavailable:', error);
+    return null;
+  }
 }
 
 const byOrder = (a: Doc, b: Doc) => (Number(a.order) || 0) - (Number(b.order) || 0);
@@ -238,7 +275,10 @@ export async function getSiteContent(): Promise<SiteContent> {
   const [{ proofTemplates, ...content }, network] = await Promise.all([getCms(), getNetwork()]);
   const fill = (value: string) =>
     value
+      // {branches}: South African branches only. {countryPoints}: points in neighbouring
+      // countries, never part of the branch count. {countries}: how many of those countries.
       .replaceAll('{branches}', String(network.NETWORK.branches))
+      .replaceAll('{countryPoints}', String(network.NETWORK.countryPoints))
       .replaceAll('{provinces}', String(network.NETWORK.provinces))
       .replaceAll('{countries}', String(network.NETWORK.countries));
   return {

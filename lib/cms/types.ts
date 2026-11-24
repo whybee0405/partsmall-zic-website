@@ -20,7 +20,7 @@ export interface Product {
   technology?: string;
   /** Headline specification, set in Roboto Mono. */
   specification: string[];
-  /** Compact label for the five-across line-up, where columns are narrow. */
+  /** Compact label for the line-up, where columns are narrow. */
   shortSpec?: string;
   /** Additional OEM claims, rendered with claim chips. */
   claims?: Claim[];
@@ -34,7 +34,6 @@ export interface Product {
   image: string;
   imageWidth: number;
   imageHeight: number;
-  imageNote?: string;
 }
 
 export interface Cta {
@@ -98,13 +97,19 @@ export interface Faq {
 export interface Region {
   name: string;
   count: number;
+  /** Parts-Mall country points outside South Africa, not branches. */
+  countryPoints?: boolean;
 }
 
 /** Live Parts-Mall Africa branch network figures. */
 export interface Network {
+  /** South African branches only. */
   branches: number;
   provinces: number;
+  /** Neighbouring countries with a Parts-Mall country point. */
   countries: number;
+  /** Country points outside South Africa; never added into `branches`. */
+  countryPoints: number;
 }
 
 export interface SiteContent {

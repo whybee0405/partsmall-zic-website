@@ -8,7 +8,7 @@ Editors use https://skzic.co.za/admin.
 | `cloudia.config.ts` | Models: Products, FAQs, the private Enquiries form, Company & contact, Proof & trust figures. Edit, then `docker compose -f docker-compose.prod.yml restart cms`. |
 | `cms-version` | CloudIA version the site is built and tested against (see `scripts/deploy-cms.sh`). |
 | `cms.env.example` | Every variable the CMS reads. Copy to `cms.env` (git-ignored, mode 600). |
-| `migration/` | How the content moved from `content/*.ts` into the CMS on 2026-11-04 (`seed.json` is the exact data loaded). |
+| `migration/` | How the content moved from `content/*.ts` into the CMS on 2026-11-04 (`seed.json` is the exact data loaded). The `public/products/*.webp` renders it names were removed on 2026-11-24 once every pack image came from the CMS; they are in git at `22abaaa`. |
 
 ## How the site uses it
 

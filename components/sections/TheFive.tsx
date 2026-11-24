@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import { useSiteContent } from '@/components/ContentProvider';
+import { HERO_ID, cols, lineup, rangeCounts } from '@/lib/lineup';
 
 /**
- * 03 — The Five, static.
+ * 03 — The range, static.
  *
  * This is the reduced-motion fallback for the opening sequence. The animated
  * version lives in OpeningSequence.tsx; this renders the same content already
@@ -17,18 +18,21 @@ import { useSiteContent } from '@/components/ContentProvider';
  * Design: docs/design-snapshots/sections/s03-the-five.png
  */
 
-const LINEUP = [
-  { id: 'x5-10w30', height: 196 },
-  { id: 'x7-diesel-5w30', height: 262 },
-  { id: 'x7-5w30', height: 292 },
-  { id: 'x3000-15w40', height: 258 },
-  { id: 'atf-multi', height: 206 },
-] as const;
-
-const CENTRE = 'x7-5w30';
+/** Display height per pack (px), so 1 L, 4 L and 6 L packs keep their relative size. */
+const HEIGHT: Record<string, number> = {
+  'x5-10w30': 196,
+  'x7-diesel-5w30': 262,
+  'x7-5w30': 292,
+  'x5-diesel-15w40': 258,
+  'x3000-15w40': 258,
+  'atf-multi': 206,
+};
+const DEFAULT_HEIGHT = 240;
 
 export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
   const { PRODUCTS } = useSiteContent();
+  const counts = rangeCounts(PRODUCTS);
+  const packs = lineup(PRODUCTS);
   return (
     <section
       id="range"
@@ -50,7 +54,7 @@ export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
 
       <div className="shell stack-centre relative">
         <p className="t-stamp" style={{ color: 'var(--color-zic-red)' }}>
-          Five products · Seven pack sizes
+          {counts.products} products · {counts.packs} pack sizes
         </p>
 
         <h2 className="t-display t-h2 mt-6" style={{ color: 'var(--color-eng-white)' }}>
@@ -65,11 +69,10 @@ export default function TheFive({ backdrop = false }: { backdrop?: boolean }) {
           market runs.
         </p>
 
-        <ul className="mt-16 grid w-full grid-cols-2 gap-x-4 gap-y-12 md:mt-20 md:grid-cols-5 md:items-end md:gap-x-6">
-          {LINEUP.map((slot) => {
-            const product = PRODUCTS.find((p) => p.id === slot.id);
-            if (!product) return null;
-            const isCentre = product.id === CENTRE;
+        <ul className={`mt-16 grid w-full grid-cols-2 gap-x-4 gap-y-12 md:mt-20 ${cols(packs.length).md} md:items-end md:gap-x-6`}>
+          {packs.map((product) => {
+            const isCentre = product.id === HERO_ID;
+            const slot = { height: HEIGHT[product.id] ?? DEFAULT_HEIGHT };
 
             return (
               <li key={product.id} className="flex flex-col items-center">

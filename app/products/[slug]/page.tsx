@@ -6,23 +6,41 @@ import Footer from '@/components/sections/Footer';
 import { SupportHeader } from '@/components/SupportPage';
 import { ClaimChip } from '@/components/ui';
 import StructuredData from '@/components/StructuredData';
-import { getSiteContent } from '@/lib/cms/content';
+import { getProductPreview, getSiteContent } from '@/lib/cms/content';
+import type { Product } from '@/lib/cms/types';
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID, absoluteUrl } from '@/lib/seo';
 
-type ProductPageProps = { params: Promise<{ slug: string }> };
+type ProductPageProps = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ 'cloudia-preview'?: string | string[] }>;
+};
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { slug } = await params;
+/**
+ * The published product, or with `?cloudia-preview=<token>` the CMS draft behind that link (also
+ * for a product that was never published). A token for another entry is ignored.
+ */
+async function loadProduct({ params, searchParams }: ProductPageProps): Promise<{ product?: Product; preview: boolean }> {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const token = query['cloudia-preview'];
+  if (typeof token === 'string' && token) {
+    const draft = await getProductPreview(token);
+    if (draft?.id === slug) return { product: draft, preview: true };
+  }
   const { PRODUCTS } = await getSiteContent();
-  const product = PRODUCTS.find((item) => item.id === slug);
+  return { product: PRODUCTS.find((item) => item.id === slug), preview: false };
+}
+
+export async function generateMetadata(props: ProductPageProps): Promise<Metadata> {
+  const { product, preview } = await loadProduct(props);
   if (!product) return {};
   const full = `${product.name} ${product.grade}: ${product.positioning} Specifications, pack sizes and application guidance for South Africa.`;
   const compact = `${product.name} ${product.grade}: ${product.positioning} Specifications and application guidance for South Africa.`;
   // Meta descriptions must stay within 120-155 characters; drop "pack sizes" first if the full version runs long.
   const description = full.length <= 155 ? full : compact;
   return {
-    title: `${product.name} ${product.grade}`,
+    title: `${preview ? 'Draft preview: ' : ''}${product.name} ${product.grade}`,
     description,
+    ...(preview ? { robots: { index: false, follow: false } } : null),
     alternates: { canonical: `/products/${product.id}`, languages: { 'en-ZA': `/products/${product.id}` } },
     openGraph: {
       title: `${product.name} ${product.grade} | SK ZIC South Africa`,
@@ -48,10 +66,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
-  const { PRODUCTS } = await getSiteContent();
-  const product = PRODUCTS.find((item) => item.id === slug);
+export default async function ProductPage(props: ProductPageProps) {
+  const { product, preview } = await loadProduct(props);
   if (!product) notFound();
 
   const productUrl = absoluteUrl(`/products/${product.id}`);
@@ -100,9 +116,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
-      <StructuredData data={productGraph} />
+      {/* A draft is not a published product: no structured data for search engines to keep. */}
+      {!preview && <StructuredData data={productGraph} />}
       <SupportHeader />
       <main id="main" className="pt-[var(--nav-height)]">
+        {preview && (
+          <p
+            role="status"
+            className="t-label px-5 py-3 text-center"
+            style={{ background: 'var(--color-zic-red)', color: 'var(--color-pure-white)' }}
+          >
+            Draft preview — not published. Only people with this link can see it.
+          </p>
+        )}
         <section className="min-h-[calc(100dvh-var(--nav-height))] py-16 md:py-24">
           <div className="shell grid min-h-[70dvh] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="relative mx-auto h-[420px] w-full max-w-[460px] md:h-[560px]" style={{ background: 'var(--color-fluid-grey)' }}>
@@ -134,10 +160,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.warning && <p className="mt-8 rounded-[8px] border p-5 text-base" style={{ borderColor: 'var(--color-zic-red)', color: 'var(--color-eng-white)' }}>{product.warning}</p>}
             </div>
             <div>
-              <p className="t-label" style={{ color: 'var(--color-metal-grey)' }}>Published specification</p>
-              <p className="t-mono mt-4 text-[1.25rem] leading-relaxed">{product.specification.length ? product.specification.join(' · ') : product.oilType}</p>
-              {product.claims && <ul className="mt-8 space-y-3">{product.claims.map((claim) => <li key={claim.value} className="flex flex-wrap items-center gap-3"><ClaimChip verb={claim.verb} /><span className="t-mono text-[0.8125rem]">{claim.value}</span></li>)}</ul>}
-              <p className="t-label mt-12" style={{ color: 'var(--color-metal-grey)' }}>Benefits</p>
+              {/* Only a real specification gets this heading; an oil type is never presented as one. */}
+              {product.specification.length > 0 && (
+                <>
+                  <p className="t-label" style={{ color: 'var(--color-metal-grey)' }}>Published specification</p>
+                  <p className="t-mono mt-4 text-[1.25rem] leading-relaxed">{product.specification.join(' · ')}</p>
+                </>
+              )}
+              {product.claims && <ul className={`${product.specification.length ? 'mt-8' : ''} space-y-3`}>{product.claims.map((claim) => <li key={claim.value} className="flex flex-wrap items-center gap-3"><ClaimChip verb={claim.verb} /><span className="t-mono text-[0.8125rem]">{claim.value}</span></li>)}</ul>}
+              <p className={`t-label ${product.specification.length || product.claims ? 'mt-12' : ''}`} style={{ color: 'var(--color-metal-grey)' }}>Benefits</p>
               <ul className="mt-4 grid gap-3 sm:grid-cols-2">{product.benefits.map((benefit) => <li key={benefit} className="border-t pt-3 text-base" style={{ borderColor: 'var(--color-deep-steel)', color: 'var(--color-metal-grey)' }}>{benefit}</li>)}</ul>
             </div>
           </div>
